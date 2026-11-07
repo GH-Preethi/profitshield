@@ -12,9 +12,10 @@ import unittest
 from unittest.mock import patch
 
 import server
+from owner_auth import OwnerAuth
 
 
-class PublicAssetTests(unittest.TestCase):
+class HTTPFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
@@ -36,10 +37,17 @@ class PublicAssetTests(unittest.TestCase):
             target.write_bytes(cls.marker)
         cls.root_patch = patch.object(server, 'ROOT', cls.root)
         cls.root_patch.start()
+        cls.db_patch = patch.object(server, 'DB_PATH', cls.root / 'restaurant.sqlite3')
+        cls.db_patch.start()
         cls.network_patch = patch.object(
             server.urllib.request, 'urlopen', side_effect=AssertionError('External call'))
         cls.network_patch.start()
+        cls.auth = OwnerAuth(cls.root / 'owner-auth.sqlite3', 'https://profitshield.test')
+        cls.password = 'test-owner-passphrase-only'
+        cls.auth.set_password(cls.password)
+        cls.token, _ = cls.auth.login(cls.password)
         cls.httpd = server.ThreadingHTTPServer(('127.0.0.1', 0), server.Handler)
+        cls.httpd.owner_auth = cls.auth
         cls.thread = threading.Thread(target=cls.httpd.serve_forever, daemon=True)
         cls.thread.start()
 
@@ -49,19 +57,28 @@ class PublicAssetTests(unittest.TestCase):
         cls.httpd.server_close()
         cls.thread.join()
         cls.network_patch.stop()
+        cls.db_patch.stop()
         cls.root_patch.stop()
         cls.temp.cleanup()
 
-    def request(self, method, path, payload=None):
+    def request(self, method, path, payload=None, authenticated=True, headers=None):
         conn = http.client.HTTPConnection(*self.httpd.server_address, timeout=5)
         try:
             body = json.dumps(payload) if payload is not None else None
-            conn.request(method, path, body, {'Content-Type': 'application/json'})
+            request_headers = {'Content-Type': 'application/json', 'Origin': self.auth.origin}
+            if authenticated:
+                request_headers.update({'Cookie': self.auth.cookie_name + '=' + self.token,
+                                        'X-CSRF-Token': self.auth.csrf(self.token)})
+            if headers:
+                request_headers.update(headers)
+            conn.request(method, path, body, request_headers)
             response = conn.getresponse()
             return response.status, dict(response.getheaders()), response.read()
         finally:
             conn.close()
 
+
+class PublicAssetTests(HTTPFixture):
     def test_dashboard_get_and_head(self):
         for path in ['/', '/index.html', '/?v=1', '/index.html?v=1']:
             with self.subTest(path=path):
@@ -123,7 +140,7 @@ class PublicAssetTests(unittest.TestCase):
         for path in ['/', '/.env', '/backhouse.db?download=1', '/api/health']:
             with self.subTest(path=path):
                 with socket.create_connection(self.httpd.server_address, timeout=5) as conn:
-                    conn.sendall(('HEAD ' + path + ' HTTP/1.0\r\nHost: localhost\r\n\r\n').encode())
+                    conn.sendall(('HEAD ' + path + ' HTTP/1.0\r\nHost: localhost\r\nCookie: ' + self.auth.cookie_name + '=' + self.token + '\r\n\r\n').encode())
                     chunks = []
                     while True:
                         chunk = conn.recv(65536)
