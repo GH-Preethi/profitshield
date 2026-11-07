@@ -6,7 +6,7 @@ A small, dependency-free server (Python standard library only):
   - Importers for payout / POS / invoice CSV exports, with column mapping:
         known export formats  ->  instant
         unfamiliar columns    ->  AI maps them (OpenRouter), rules as fallback
-  - Square POS sync over the real Square API (sandbox or production)
+  - Square POS sync over the Square sandbox API only
   - AI endpoints: grounded Q&A (/api/ask) and receipt photo reading (/api/extract)
 
     export OPENROUTER_API_KEY=sk-or-...          # AI features
@@ -15,7 +15,12 @@ A small, dependency-free server (Python standard library only):
 """
 import csv
 import io
+import copy
+import hashlib
 import hmac
+import math
+import secrets
+import socket
 import json
 import os
 import re
@@ -29,6 +34,10 @@ from datetime import date, datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from square_actions import ActionError, PlanStore, fingerprint
+from input_security import (BODY_LIMIT, ROW_LIMIT, CHANNELS, UNITS, POST_ROUTES, EXPENSIVE_ROUTES,
+                            RequestLimiter, validate_origin, validate_payload, bounded_json, number,
+                            text as checked_text, invoice_line, validate_tool_args, iso_date)
 
 ROOT = Path(__file__).resolve().parent
 
@@ -45,7 +54,7 @@ def _load_env(path):
 
 
 _load_env(ROOT / ".env")
-# Import after .env loading so the authentication DB path uses that configuration.
+# Load auth configuration after .env, without weakening the common input boundary.
 from owner_auth import AUTH_PATH, LOGIN_PAGE, OwnerAuth
 SAMPLES = ROOT / "samples"
 DB_PATH = Path(os.environ.get("BACKHOUSE_DB", ROOT / "backhouse.db"))
@@ -53,12 +62,16 @@ KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
 MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-2.5-flash")
 VISION_MODEL = os.environ.get("OPENROUTER_VISION_MODEL", MODEL)
 SQUARE_TOKEN = os.environ.get("SQUARE_ACCESS_TOKEN", "").strip()
-SQUARE_BASE = ("https://connect.squareup.com" if os.environ.get("SQUARE_ENV", "sandbox") == "production"
-               else "https://connect.squareupsandbox.com")
+# Environment configuration cannot select a production endpoint.
+SQUARE_BASE = "https://connect.squareupsandbox.com"
 SQUARE_VERSION = os.environ.get("SQUARE_VERSION", "2024-10-17")
 TZ = ZoneInfo(os.environ.get("STORE_TZ", "America/New_York"))
 PORT = int(os.environ.get("PORT", "8000"))
 LOCK = threading.Lock()
+MUTATION_LOCK = threading.Lock()
+ACTION_CONTEXT = threading.local()
+PUBLIC_ORIGIN = validate_origin(os.environ.get("PROFITSHIELD_ORIGIN", f"http://localhost:{PORT}"))
+REQUEST_LIMITER = RequestLimiter()
 
 # Store catalog. Mirrors MENU / ING in index.html (names are what exports print).
 MENU = {
@@ -150,6 +163,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS invoice_lines(invoice_number TEXT, vendor TEXT, date TEXT, source TEXT, line INTEGER,
           description TEXT, ingredient TEXT, qty REAL, unit TEXT, unit_price REAL, total REAL, ai INTEGER DEFAULT 0,
           PRIMARY KEY(invoice_number, vendor, source, line));
+        CREATE TABLE IF NOT EXISTS square_actions(id TEXT PRIMARY KEY, kind TEXT, review TEXT,
+          snapshot TEXT, created REAL, status TEXT, result TEXT);
         CREATE TABLE IF NOT EXISTS item_map(alias TEXT PRIMARY KEY, sku TEXT);
         CREATE TABLE IF NOT EXISTS ingredient_map(description TEXT PRIMARY KEY, ingredient TEXT);
         CREATE TABLE IF NOT EXISTS imports(id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, file TEXT, kind TEXT,
@@ -186,23 +201,31 @@ def reset():
 def num(v):
     if v is None:
         return 0.0
+    if isinstance(v, bool) or not isinstance(v, (str, int, float)):
+        raise ValueError("Invalid numeric value")
     s = str(v).strip().replace("$", "").replace(",", "")
     neg = s.startswith("(") and s.endswith(")")
     s = s.strip("()")
     try:
         x = float(s) if s else 0.0
     except ValueError:
-        return 0.0
+        raise ValueError("Invalid numeric value") from None
+    if not math.isfinite(x) or abs(x) > 1e12:
+        raise ValueError("Numeric value must be finite and within range")
     return -x if neg else x
 
 
 def parse_date(s):
+    if s is not None and not isinstance(s, str):
+        raise ValueError("Date must be text")
     s = (s or "").strip()
     for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y", "%d %b %Y", "%b %d, %Y", "%Y/%m/%d"):
         try:
             return datetime.strptime(s, fmt).date().isoformat()
         except ValueError:
             pass
+    if s:
+        raise ValueError("Invalid date")
     return None
 
 
@@ -213,6 +236,8 @@ def parse_time(s):
             return datetime.strptime(s, fmt).strftime("%H:%M")
         except ValueError:
             pass
+    if s:
+        raise ValueError("Invalid time")
     return "12:00"
 
 
@@ -258,6 +283,7 @@ def parse_items(con, text):
             name, qty = m.group(1), int(m.group(2))
         else:
             qty, name = 1, part
+        number(qty, 'item quantity', minimum=1, maximum=1e6, integer=True)
         out.append({"sku": match_sku(con, name), "qty": qty, "name": name.strip()})
     return out
 
@@ -351,11 +377,22 @@ def map_by_ai(headers, sample_rows, filename):
 
 # ---------------------------------------------------------------- import
 def import_csv(text, filename, channel=None, allow_ai=True):
+    validate_payload('/api/import', {'text': text, 'filename': filename, 'channel': channel}, MENU, INGREDIENTS)
     reader = csv.DictReader(io.StringIO(text.lstrip("﻿")))
-    rows = list(reader)
-    headers = [h for h in (reader.fieldnames or []) if h is not None]
-    if not headers:
-        raise ValueError("couldn't find a header row")
+    headers = [h.strip() for h in (reader.fieldnames or [])]
+    if not headers or len(headers) > 100 or any(not h or len(h) > 100 for h in headers) or len(set(headers)) != len(headers):
+        raise ValueError("CSV requires distinct, nonempty headers (up to 100)")
+    reader.fieldnames = headers
+    rows = []
+    try:
+        for row in reader:
+            if len(rows) >= ROW_LIMIT:
+                raise ValueError("CSV exceeds 20000 rows")
+            if None in row or any(v is None or len(v) > 4096 for v in row.values()):
+                raise ValueError("CSV rows must match headers and cells must be at most 4096 characters")
+            rows.append(row)
+    except csv.Error:
+        raise ValueError("Invalid CSV") from None
     headers, rows, redacted, pii_cols = redact(headers, rows)
     fmt = detect_known(headers)
     mapped_by, fmt_name = "known format", None
@@ -393,7 +430,15 @@ def import_csv(text, filename, channel=None, allow_ai=True):
                 inv, vendor = (get(r, "invoice_number") or "").strip(), (get(r, "vendor") or "").strip()
                 d = parse_date(get(r, "date"))
                 if not inv or not d:
-                    continue
+                    raise ValueError("Invoice number and valid date are required")
+                checked_text(inv, 'invoice number', 200, required=True)
+                checked_text(vendor, 'vendor', 200, required=True)
+                unit = (get(r, "unit") or "ea").strip()
+                ingredient = match_ingredient(con, get(r, "description") or "")
+                invoice_line({'description': get(r, "description") or "", 'ingredient': ingredient,
+                              'qty': num(get(r, "qty")), 'unit': unit, 'unit_price': num(get(r, "unit_price")),
+                              'total': num(get(r, "total"))}, INGREDIENTS)
+                number(num(get(r, "line")), 'line', minimum=1, maximum=100000, integer=True)
                 desc = (get(r, "description") or "").strip()
                 cur = con.execute("INSERT OR IGNORE INTO invoice_lines(invoice_number, vendor, date, source, line, description,"
                                   " ingredient, qty, unit, unit_price, total, ai) VALUES(?,?,?,?,?,?,?,?,?,?,?,0)", (
@@ -409,7 +454,8 @@ def import_csv(text, filename, channel=None, allow_ai=True):
                 else:
                     d, t = parse_date(get(r, "date")), parse_time(get(r, "time"))
                 if not oid or not d:
-                    continue
+                    raise ValueError("Order id and valid date are required")
+                checked_text(oid, 'order id', 255, required=True)
                 items = parse_items(con, get(r, "items") or "")
                 cur = con.execute("INSERT OR IGNORE INTO orders VALUES(?,?,?,?,?,?,?,?,?,?)", (
                     ch, oid, d, t, abs(num(get(r, "subtotal"))), abs(num(get(r, "commission"))),
@@ -429,6 +475,7 @@ def import_csv(text, filename, channel=None, allow_ai=True):
 
 
 def save_invoice(p):
+    validate_payload('/api/invoices', p, MENU, INGREDIENTS)
     lines = p.get("lines") or []
     d = parse_date(p.get("date") or "") or datetime.now(TZ).date().isoformat()
     inv = (p.get("invoice_number") or "").strip() or "PHOTO-" + uuid.uuid4().hex[:6].upper()
@@ -509,21 +556,53 @@ def app_data():
     invoices = sorted(invs.values(), key=lambda i: (i["date"], i["source"] != "Supplier portal export" and
                                                     i["source"] != "Emailed PDF"))
     return {"menu_prices": menu_prices, "weeks": weeks, "orders": out_orders, "errors": out_errors, "invoices": invoices, "imports": imports,
-            "square": {"configured": bool(SQUARE_TOKEN), "env": "production" if "squareup.com" in SQUARE_BASE and
-                       "sandbox" not in SQUARE_BASE else "sandbox"}}
+            "square": {"configured": bool(SQUARE_TOKEN), "env": "sandbox"}}
 
 
 # ---------------------------------------------------------------- Square POS (real API)
+class NoSquareRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise ActionError("Square redirects are forbidden", 502)
+
+
+SQUARE_OPENER = urllib.request.build_opener(NoSquareRedirect())
+
+
+def sandbox_guard():
+    if SQUARE_BASE != "https://connect.squareupsandbox.com":
+        raise ActionError("Only the fixed Square sandbox endpoint is permitted", 403)
+
+
+def require_action(kind):
+    plan = getattr(ACTION_CONTEXT, 'plan', None)
+    if not plan or plan['kind'] != kind:
+        raise ActionError("A reviewed, claimed sandbox plan is required")
+    return plan
+
+
 def square(method, path, body=None):
-    req = urllib.request.Request(SQUARE_BASE + path, method=method,
-                                 data=json.dumps(body).encode() if body is not None else None,
+    sandbox_guard()
+    if not SQUARE_TOKEN:
+        raise ActionError("Connect a Square sandbox token first", 400)
+    allowed = {('GET', '/v2/locations'), ('POST', '/v2/orders/search'),
+               ('POST', '/v2/catalog/search'), ('POST', '/v2/orders'), ('POST', '/v2/catalog/object')}
+    if (method, path) not in allowed:
+        raise ActionError("Unsupported Square endpoint", 400)
+    if path == '/v2/orders':
+        require_action('seed')
+    if path == '/v2/catalog/object':
+        require_action('menu')
+    req = urllib.request.Request("https://connect.squareupsandbox.com" + path, method=method,
+                                 data=json.dumps(body, allow_nan=False).encode() if body is not None else None,
                                  headers={"Authorization": f"Bearer {SQUARE_TOKEN}", "Content-Type": "application/json",
                                           "Square-Version": SQUARE_VERSION})
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
+        with SQUARE_OPENER.open(req, timeout=30) as r:
             return json.load(r)
     except urllib.error.HTTPError as e:
-        raise RuntimeError(f"Square {e.code}: {e.read().decode(errors='ignore')[:300]}")
+        raise ActionError(f"Square sandbox request failed ({e.code}); inspect sandbox before reviewing another plan", 502) from None
+    except (urllib.error.URLError, TimeoutError):
+        raise ActionError("Square sandbox outcome is uncertain; inspect it before reviewing another plan", 502) from None
 
 
 def square_location():
@@ -534,14 +613,14 @@ def square_location():
 
 
 def square_seed():
-    """Create a few real orders in the Square sandbox so the sync has something to pull."""
-    loc, _ = square_location()
-    baskets = [[("pep", 2), ("soda", 1)], [("marg", 1), ("knots", 1)], [("wings", 1), ("caesar", 1), ("soda", 2)]]
-    for b in baskets:
-        square("POST", "/v2/orders", {"idempotency_key": uuid.uuid4().hex, "order": {
+    """Only the confirmed plan executor may create the reviewed sandbox orders."""
+    plan = require_action('seed')
+    loc = plan['review']['location']['id']
+    baskets = plan['review']['baskets']
+    for i, basket in enumerate(baskets):
+        square("POST", "/v2/orders", {"idempotency_key": plan['id'] + '-' + str(i), "order": {
             "location_id": loc, "line_items": [{"name": MENU[s][0], "quantity": str(q),
-                                                "base_price_money": {"amount": int(MENU[s][1] * 100), "currency": "USD"}}
-                                               for s, q in b]}})
+                "base_price_money": {"amount": plan['review']['unit_prices'][s], "currency": "USD"}} for s, q in basket]}})
     return {"created": len(baskets)}
 
 
@@ -571,50 +650,180 @@ def square_sync():
     return {"pulled": len(res.get("orders", [])), "new_rows": new, "location": loc_name}
 
 
-def square_set_price(name, cents):
-    """Find the item in the Square catalog (create it if missing) and set its price. Real Catalog API calls."""
+def catalog_target(name):
     res = square("POST", "/v2/catalog/search", {"object_types": ["ITEM"], "query": {
         "exact_query": {"attribute_name": "name", "attribute_value": name}}})
-    objs = res.get("objects") or []
-    money = {"amount": cents, "currency": "USD"}
-    if objs:
-        var = objs[0]["item_data"]["variations"][0]
-        var["item_variation_data"]["pricing_type"] = "FIXED_PRICING"
-        var["item_variation_data"]["price_money"] = money
-        square("POST", "/v2/catalog/object", {"idempotency_key": uuid.uuid4().hex, "object": var})
-        return "updated"
-    square("POST", "/v2/catalog/object", {"idempotency_key": uuid.uuid4().hex, "object": {
-        "type": "ITEM", "id": "#item", "item_data": {"name": name, "variations": [{
-            "type": "ITEM_VARIATION", "id": "#var", "item_variation_data": {
-                "name": "Regular", "pricing_type": "FIXED_PRICING", "price_money": money}}]}}})
-    return "created"
+    objects = res.get('objects') or []
+    if res.get('cursor') or len(objects) > 1:
+        raise ActionError("Catalog match is ambiguous; resolve it in the sandbox before review")
+    if not objects:
+        return {'mode': 'create', 'name': name}
+    variations = objects[0].get('item_data', {}).get('variations', [])
+    if len(variations) != 1:
+        raise ActionError("Review requires exactly one catalog variation per item")
+    variation = variations[0]
+    money = variation.get('item_variation_data', {}).get('price_money', {})
+    if (not isinstance(variation.get('id'), str) or type(variation.get('version')) is not int or
+            money.get('currency') != 'USD' or type(money.get('amount')) is not int or money['amount'] < 0):
+        raise ActionError("Unsupported sandbox catalog variation")
+    return {'mode': 'update', 'name': name, 'variation': variation}
+
+
+def square_set_price(name, cents):
+    plan = require_action('menu')
+    change = next((c for c in plan['review']['changes'] if c['item'] == name), None)
+    if not change or cents != change['cents'] or not plan['review']['connected']:
+        raise ActionError("Price does not match the reviewed plan")
+    target = change['target']
+    if target['mode'] == 'update':
+        obj = copy.deepcopy(target['variation'])
+        obj['item_variation_data']['pricing_type'] = 'FIXED_PRICING'
+        obj['item_variation_data']['price_money'] = {'amount': cents, 'currency': 'USD'}
+    else:
+        obj = {'type': 'ITEM', 'id': '#item', 'item_data': {'name': name, 'variations': [{
+            'type': 'ITEM_VARIATION', 'id': '#var', 'item_variation_data': {
+                'name': 'Regular', 'pricing_type': 'FIXED_PRICING',
+                'price_money': {'amount': cents, 'currency': 'USD'}}}]}}
+    square('POST', '/v2/catalog/object', {'idempotency_key': plan['id'] + '-' + change['sku'], 'object': obj})
+    return 'updated' if target['mode'] == 'update' else 'created'
+
+
+def action_state(con):
+    # Exclude the action ledger: making a second review is not itself a data change.
+    records = {table: [tuple(row) for row in con.execute('SELECT * FROM '+table+' ORDER BY rowid')]
+               for table in ('orders', 'errors', 'invoice_lines', 'menu_prices', 'item_map', 'ingredient_map')}
+    return fingerprint({'data': records, 'sandbox': SQUARE_BASE,
+                        'connection': hashlib.sha256(SQUARE_TOKEN.encode()).hexdigest(), 'menu': MENU})
+
+
+PLANS = PlanStore(db)
+
+
+def cents(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 < value <= 1e6 or not math.isfinite(value):
+        raise ActionError("Prices must be finite positive numbers up to 1,000,000", 400)
+    rounded = int(round(value * 100))
+    if abs(value * 100 - rounded) > .000001:
+        raise ActionError("Prices must use at most two decimal places", 400)
+    return rounded
+
+
+def preview_menu(p):
+    sandbox_guard()
+    if not isinstance(p, dict) or set(p) != {'changes', 'channels', 'week'}:
+        raise ActionError("Supply changes, channels and selected week", 400)
+    if not isinstance(p['channels'], list) or not 1 <= len(p['channels']) <= 4 or any(
+            ch not in ('In-store', 'DoorDash', 'Uber Eats', 'Grubhub') for ch in p['channels']):
+        raise ActionError("Select valid channels", 400)
+    if len(set(p['channels'])) != len(p['channels']):
+        raise ActionError("Repeated channels", 400)
+    if not isinstance(p['week'], str):
+        raise ActionError("A valid selected week is required", 400)
+    try:
+        week = date.fromisoformat(p['week'])
+    except ValueError:
+        raise ActionError("A valid selected week is required", 400) from None
+    if week.isoformat() != p['week'] or week.weekday() != 0:
+        raise ActionError("Select an ISO Monday week", 400)
+    changes = p['changes']
+    if not isinstance(changes, list) or not 1 <= len(changes) <= len(MENU):
+        raise ActionError("Review requires a bounded nonempty change list", 400)
+    with MUTATION_LOCK, LOCK, db() as con:
+        if not con.execute('SELECT 1 FROM orders WHERE date BETWEEN ? AND ?',
+                           (week.isoformat(), (week+timedelta(days=6)).isoformat())).fetchone():
+            raise ActionError("Selected week has no restaurant records", 400)
+        saved = {r['sku']: r['price'] for r in con.execute('SELECT * FROM menu_prices')}
+        seen, reviewed = set(), []
+        for change in changes:
+            if not isinstance(change, dict) or set(change) != {'sku', 'price', 'old_price'}:
+                raise ActionError("Each reviewed change needs sku, old_price and price", 400)
+            sku = change['sku']
+            if not isinstance(sku, str) or sku not in MENU or sku in seen:
+                raise ActionError("Unknown or repeated menu item", 400)
+            seen.add(sku)
+            new, old = cents(change['price']), cents(change['old_price'])
+            if old != cents(saved.get(sku, MENU[sku][1])):
+                raise ActionError("Simulation price is stale; simulate and review again")
+            if new == old:
+                raise ActionError("Price must change", 400)
+            reviewed.append({'sku': sku, 'item': MENU[sku][0], 'old_price': old/100,
+                             'new_price': new/100, 'cents': new})
+        connected = bool(SQUARE_TOKEN) and 'In-store' in p['channels']
+        for change in reviewed:
+            change['target'] = catalog_target(change['item']) if connected else {'mode': 'manual'}
+        review = {'week': p['week'], 'channels': p['channels'], 'changes': reviewed,
+                  'connected': connected, 'environment': 'sandbox',
+                  'notice': 'Square writes are sandbox only. Delivery apps require manual portal edits. '
+                            'Local reference prices will update; this does not prove a live menu was changed.'}
+        state = action_state(con)
+    return PLANS.create('menu', review, state)
+
+
+def preview_seed(p):
+    sandbox_guard()
+    if p != {}:
+        raise ActionError("Seed review expects an empty JSON object", 400)
+    loc, name = square_location()
+    review = {'location': {'id': loc, 'name': name}, 'environment': 'sandbox',
+              'unit_prices': {sku: int(round(value[1]*100)) for sku, value in MENU.items()},
+              'baskets': [[['pep', 2], ['soda', 1]], [['marg', 1], ['knots', 1]],
+                          [['wings', 1], ['caesar', 1], ['soda', 2]]],
+              'notice': 'Creates exactly 3 sandbox test orders. No production orders are created.'}
+    with LOCK, db() as con:
+        state = action_state(con)
+    return PLANS.create('seed', review, state)
+
+
+def execute_action(p, kind):
+    sandbox_guard()
+    with MUTATION_LOCK:
+        with LOCK:
+            plan = PLANS.claim(p, kind, action_state)
+        try:
+            review = plan['review']
+            if kind == 'seed':
+                loc, name = square_location()
+                if {'id': loc, 'name': name} != review['location']:
+                    raise ActionError("Sandbox location changed; review again")
+            elif review['connected']:
+                for change in review['changes']:
+                    if catalog_target(change['item']) != change['target']:
+                        raise ActionError("Sandbox catalog changed; review again")
+            ACTION_CONTEXT.plan = plan
+            if kind == 'seed':
+                result = square_seed()
+                result['sync'] = square_sync()
+            else:
+                results = []
+                # Every target was checked before the first external write.
+                for change in review['changes']:
+                    pushed = {}
+                    if 'In-store' in review['channels']:
+                        pushed['Square POS'] = ('sandbox price ' + square_set_price(change['item'], change['cents']) +
+                                                ' via Catalog API') if review['connected'] else 'not connected; no Square write'
+                    for channel in review['channels']:
+                        if channel != 'In-store':
+                            pushed[channel] = 'manual merchant portal change required'
+                    with LOCK, db() as con:
+                        con.execute('INSERT OR REPLACE INTO menu_prices VALUES(?,?,?,?)',
+                                    (change['sku'], change['new_price'], datetime.now(TZ).isoformat(timespec='seconds'), json.dumps(pushed)))
+                    results.append({**{k: change[k] for k in ('sku', 'item', 'old_price', 'new_price')}, 'pushed': pushed})
+                result = {'results': results}
+            PLANS.finish(plan, 'completed', result)
+            return {'plan_id': plan['id'], 'environment': 'sandbox', **result}
+        except Exception:
+            PLANS.finish(plan, 'failed')
+            raise
+        finally:
+            ACTION_CONTEXT.plan = None
 
 
 def apply_menu(p):
-    changes = p.get("changes") or []
-    channels = p.get("channels") or ["In-store", "DoorDash", "Uber Eats", "Grubhub"]
-    results = []
-    with LOCK, db() as con:
-        for c in changes:
-            sku, price = c.get("sku"), round(float(c.get("price")), 2)
-            if sku not in MENU:
-                continue
-            pushed = {}
-            if "In-store" in channels:
-                if SQUARE_TOKEN:
-                    try:
-                        pushed["Square POS"] = "price " + square_set_price(MENU[sku][0], int(round(price * 100))) + " via Catalog API"
-                    except Exception as e:
-                        pushed["Square POS"] = "failed: " + str(e)[:120]
-                else:
-                    pushed["Square POS"] = "not connected (set SQUARE_ACCESS_TOKEN)"
-            for ch in ("DoorDash", "Uber Eats", "Grubhub"):
-                if ch in channels:
-                    pushed[ch] = "change ready for merchant portal (menu API is partner-only)"
-            con.execute("INSERT OR REPLACE INTO menu_prices VALUES(?,?,?,?)",
-                        (sku, price, datetime.now(TZ).isoformat(timespec="seconds"), json.dumps(pushed)))
-            results.append({"sku": sku, "item": MENU[sku][0], "old_price": MENU[sku][1], "new_price": price, "pushed": pushed})
-    return {"results": results}
+    return execute_action(p, 'menu')
+
+
+def confirm_seed(p):
+    return execute_action(p, 'seed')
 
 
 # ---------------------------------------------------------------- AI
@@ -830,6 +1039,7 @@ For "what if" questions use simulate_price_change and state its assumption."""
 
 
 def ask(p):
+    validate_payload('/api/ask', p, MENU, INGREDIENTS)
     facts = p.get("facts", {})
     ctx = {"facts": facts, "week": p.get("week") or facts.get("week_start"), "prev_week": p.get("prev_week")}
     msgs = [{"role": "system", "content": AGENT_SYSTEM},
@@ -859,7 +1069,10 @@ def ask(p):
         for c in calls:
             name = c["function"]["name"]
             try:
-                args = json.loads(c["function"].get("arguments") or "{}")
+                arguments = c['function'].get('arguments') or '{}'
+                checked_text(arguments, 'tool arguments', 8000)
+                args = json.loads(arguments)
+                validate_tool_args(name, args, MENU)
                 res = TOOLS[name][0](ctx, **args) if name in TOOLS else {"error": "unknown tool"}
             except Exception as e:
                 res = {"error": str(e)}
@@ -872,6 +1085,7 @@ def ask(p):
 
 
 def extract(p):
+    validate_payload('/api/extract', p, MENU, INGREDIENTS)
     image = p.get("image", "")
     if not image.startswith("data:"):
         raise ValueError("send the file as a data URL")
@@ -886,18 +1100,29 @@ def extract(p):
         {"role": "user", "content": [
             {"type": "text", "text": "INGREDIENTS:\n" + json.dumps(ings) + "\nPREVIOUSLY CONFIRMED MATCHES:\n" + json.dumps(known)},
             part]}], json_mode=True))
+    bounded_json(out)
+    if not isinstance(out, dict) or not isinstance(out.get('lines'), list) or not 1 <= len(out['lines']) <= 500:
+        raise ValueError("Invalid extracted invoice")
     lines = []
-    for l in out.get("lines") or []:
-        try:
-            qty, price = float(l.get("qty") or 0), float(l.get("unit_price") or 0)
-        except (TypeError, ValueError):
-            continue
-        ing = l.get("ingredient")
-        lines.append({"description": str(l.get("description", ""))[:120], "qty": qty, "unit": l.get("unit") or "ea",
-                      "unit_price": price, "total": float(l.get("total") or qty * price),
-                      "ingredient": ing if ing in INGREDIENTS else None,
-                      "confidence": max(0.0, min(1.0, float(l.get("confidence") or 0.5))),
-                      "page": int(l.get("page") or 1) if str(l.get("page") or "1").isdigit() else 1})
+    for raw in out['lines']:
+        if not isinstance(raw, dict):
+            raise ValueError("Invalid extracted invoice line")
+        qty, price = raw.get('qty'), raw.get('unit_price')
+        number(qty, 'qty', minimum=0.000001, maximum=1e6)
+        number(price, 'unit_price', maximum=1e6)
+        line = {"description": raw.get("description", ""), "qty": qty, "unit": raw.get("unit", "ea"),
+                "unit_price": price, "total": raw.get('total', qty * price),
+                "ingredient": raw.get('ingredient'), "confidence": raw.get('confidence', 0.5),
+                "page": raw.get('page', 1)}
+        invoice_line(line, INGREDIENTS)
+        lines.append(line)
+    for field in ('vendor', 'invoice_number'):
+        if out.get(field) is not None:
+            checked_text(out[field], field, 200)
+    if out.get('date') is not None:
+        iso_date(out['date'])
+    if out.get('total') is not None:
+        number(out['total'], 'invoice total')
     return {"vendor": out.get("vendor"), "invoice_number": out.get("invoice_number"), "date": out.get("date"),
             "total": out.get("total"), "lines": lines}
 
@@ -909,15 +1134,32 @@ PUBLIC_ASSETS = {"/": "index.html", "/index.html": "index.html"}
 
 
 class Handler(BaseHTTPRequestHandler):
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(10)
+        self.csp_nonce = secrets.token_urlsafe(24)
 
     def end_headers(self):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "same-origin")
+        self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'nonce-" + self.csp_nonce +
+                         "'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                         "font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; "
+                         "object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
+        if PUBLIC_ORIGIN.startswith('https://'):
+            self.send_header("Strict-Transport-Security", "max-age=31536000")
         super().end_headers()
 
+    def _limited(self, costly=False):
+        if not REQUEST_LIMITER.allow(self.client_address[0], costly=costly):
+            self._json(429, {"error": "Request limit reached; retry later"})
+            return True
+        return False
+
     def _json(self, code, obj, cookie=None):
-        body = json.dumps(obj).encode()
+        body = json.dumps(obj, allow_nan=False).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
         if cookie:
@@ -934,33 +1176,36 @@ class Handler(BaseHTTPRequestHandler):
         self.do_GET()
 
     def do_GET(self):
+        if self._limited():
+            return
         # Match canonical URL paths only. Do not decode or normalize untrusted
         # paths into filesystem names (including encoded traversal/separators).
         path = self.path.split("?", 1)[0].split("#", 1)[0]
         auth = self.server.owner_auth
-        token = auth.token_from_cookie(self.headers.get("Cookie"))
+        token = auth.token_from_cookie(self.headers.get('Cookie'))
         authenticated = auth.authorized(token)
         if path == "/api/health":
             if not authenticated:
-                return self._json(200, {"ok": True, "backend": True})
+                return self._json(200, {'ok': True, 'backend': True})
             return self._json(200, {"ok": True, "ai": bool(KEY), "model": MODEL, "backend": True,
                                     "square": bool(SQUARE_TOKEN)})
-        if path.startswith("/api/") and not authenticated:
-            return self._json(401, {"error": "Sign in required"})
-        if path == "/api/auth/session":
-            return self._json(200, {"owner": True, "csrf": auth.csrf(token)})
+        if path.startswith('/api/') and not authenticated:
+            return self._json(401, {'error': 'Sign in required'})
+        if path == '/api/auth/session':
+            return self._json(200, {'owner': True, 'csrf': auth.csrf(token)})
         if path == "/api/data":
             return self._json(200, app_data())
         asset = PUBLIC_ASSETS.get(path)
-        if asset is not None or path == "/login":
-            if not authenticated or path == "/login":
+        if asset is not None or path == '/login':
+            if not authenticated or path == '/login':
                 page = LOGIN_PAGE
             else:
                 target = ROOT / asset
                 if target.is_symlink() or not target.is_file():
-                    return self._json(404, {"error": "not found"})
+                    return self._json(404, {'error': 'not found'})
                 page = ('<script>window.PS_CSRF=' + json.dumps(auth.csrf(token)) + ';</script>' +
-                        target.read_text(encoding="utf-8"))
+                        target.read_text(encoding='utf-8'))
+            page = page.replace('<script>', '<script nonce="' + self.csp_nonce + '">')
             body = ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
                     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">"
                     "</head><body>" + page + "</body></html>").encode("utf-8")
@@ -975,34 +1220,65 @@ class Handler(BaseHTTPRequestHandler):
         return self._json(404, {"error": "not found"})
 
     def do_POST(self):
+        if self._limited(costly=self.path in EXPENSIVE_ROUTES):
+            return
         auth = self.server.owner_auth
-        token = auth.token_from_cookie(self.headers.get("Cookie"))
-        # Fail closed before reading/dispatching any sensitive request.
-        if self.path != "/api/auth/login" and not auth.authorized(token):
-            return self._json(401, {"error": "Sign in required"})
-        if self.headers.get("Origin") != auth.origin:
+        token = auth.token_from_cookie(self.headers.get('Cookie'))
+        if self.path != '/api/auth/login' and not auth.authorized(token):
+            return self._json(401, {'error': 'Sign in required'})
+        if self.path not in POST_ROUTES | {'/api/auth/login', '/api/auth/logout'}:
+            return self._json(404, {'error': 'unknown route'})
+        if self.headers.get("Origin") != auth.origin or self.headers.get("Sec-Fetch-Site") == "cross-site":
             return self._json(403, {"error": "Invalid request origin"})
-        if self.path != "/api/auth/login" and not hmac.compare_digest(
-                self.headers.get("X-CSRF-Token", "").encode(), auth.csrf(token).encode()):
-            return self._json(403, {"error": "Invalid CSRF token"})
-        if self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower() != "application/json":
+        if self.path != '/api/auth/login' and not hmac.compare_digest(
+                self.headers.get('X-CSRF-Token', '').encode(), auth.csrf(token).encode()):
+            return self._json(403, {'error': 'Invalid CSRF token'})
+        if self.headers.get("Content-Type", "").split(';', 1)[0].strip().lower() != "application/json":
             return self._json(415, {"error": "Use application/json"})
         try:
-            n = int(self.headers.get("Content-Length", 0))
-            limit = 16 * 1024 if self.path == "/api/auth/login" else 16 * 1024 * 1024
-            if n < 0 or n > limit or self.headers.get("Transfer-Encoding"):
-                return self._json(413, {"error": "Request too large or unsupported encoding"})
-            p = json.loads(self.rfile.read(n) or b"{}")
-            if not isinstance(p, dict):
-                raise ValueError("Expected a JSON object")
-            if self.path == "/api/auth/login":
-                session, status = auth.login(p.get("password"), previous=token)
-                if not session:
-                    return self._json(status, {"error": "Sign in failed"})
-                return self._json(200, {"owner": True, "csrf": auth.csrf(session)}, cookie=auth.cookie(session))
-            if self.path == "/api/auth/logout":
+            if self.headers.get('Transfer-Encoding') or self.headers.get('Content-Encoding'):
+                return self._json(413, {"error": "Unsupported body encoding"})
+            lengths = self.headers.get_all('Content-Length', [])
+            if len(lengths) != 1 or not re.fullmatch(r'[0-9]{1,10}', lengths[0]):
+                raise ValueError("A single nonnegative Content-Length is required")
+            n = int(lengths[0])
+            review_route = self.path in ('/api/menu/preview', '/api/menu/apply', '/api/square/seed/preview', '/api/square/seed')
+            limit = 16384 if self.path == '/api/auth/login' else (32768 if review_route else BODY_LIMIT)
+            if n > limit:
+                return self._json(413, {"error": "Body exceeds 16 MiB or uses unsupported encoding"})
+            raw = self.rfile.read(n)
+            if len(raw) != n:
+                raise ValueError("Incomplete request body")
+            def reject_constant(_):
+                raise ValueError("JSON numbers must be finite")
+            def distinct_fields(pairs):
+                result = {}
+                for key, value in pairs:
+                    if key in result:
+                        raise ValueError("Duplicate JSON field")
+                    result[key] = value
+                return result
+            p = json.loads(raw or b"{}", parse_constant=reject_constant, object_pairs_hook=distinct_fields)
+            if self.path in ('/api/auth/login', '/api/auth/logout'):
+                bounded_json(p)
+                if not isinstance(p, dict):
+                    raise ValueError('JSON object required')
+                if self.path == '/api/auth/login':
+                    if set(p) - {'password'}:
+                        raise ValueError('Unexpected login field')
+                    session, status = auth.login(p.get('password'), previous=token)
+                    if not session:
+                        return self._json(status, {'error': 'Sign in failed'})
+                    return self._json(200, {'owner': True, 'csrf': auth.csrf(session)}, cookie=auth.cookie(session))
+                if p:
+                    raise ValueError('Logout expects an empty object')
                 auth.logout(token)
-                return self._json(200, {"ok": True}, cookie=auth.cookie(clear=True))
+                return self._json(200, {'ok': True}, cookie=auth.cookie(clear=True))
+            validate_payload(self.path, p, MENU, INGREDIENTS)
+            if self.path == '/api/menu/preview':
+                return self._json(200, preview_menu(p))
+            if self.path == '/api/square/seed/preview':
+                return self._json(200, preview_seed(p))
             if self.path == "/api/import":
                 return self._json(200, import_csv(p.get("text", ""), p.get("filename", "upload.csv"), p.get("channel")))
             if self.path == "/api/invoices":
@@ -1012,12 +1288,9 @@ class Handler(BaseHTTPRequestHandler):
             if self.path == "/api/reset":
                 reset()
                 return self._json(200, {"ok": True})
-            if self.path in ("/api/square/sync", "/api/square/seed"):
-                if not SQUARE_TOKEN:
-                    return self._json(400, {"error": "SQUARE_ACCESS_TOKEN is not set"})
-                if self.path.endswith("seed"):
-                    square_seed()
-                    time.sleep(1)
+            if self.path == '/api/square/seed':
+                return self._json(200, confirm_seed(p))
+            if self.path == '/api/square/sync':
                 return self._json(200, square_sync())
             if self.path in ("/api/ask", "/api/extract"):
                 print(f"  {self.path}: {(p.get('question') or p.get('filename') or '')[:80]}")
@@ -1025,9 +1298,15 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json(400, {"error": "OPENROUTER_API_KEY is not set"})
                 return self._json(200, ask(p) if self.path == "/api/ask" else extract(p))
             return self._json(404, {"error": "unknown route"})
-        except Exception as e:
-            print(f"  ERROR {self.path}: {e}")
-            return self._json(400 if isinstance(e, ValueError) else 500, {"error": str(e)})
+        except ActionError as error:
+            return self._json(error.status, {'error': str(error)})
+        except (ValueError, TypeError, csv.Error, RecursionError, OverflowError):
+            return self._json(400, {"error": "Invalid request data; check fields, dates and numeric ranges"})
+        except (TimeoutError, socket.timeout):
+            return self._json(408, {"error": "Request body timed out"})
+        except Exception:
+            print(f"  ERROR {self.path}: request failed")
+            return self._json(500, {"error": "Request failed"})
 
     def log_message(self, fmt, *args):
         if args and "/api/" in str(args[0]) and "data" not in str(args[0]):
@@ -1042,12 +1321,12 @@ def configured_auth():
 
 
 if __name__ == "__main__":
-    local_http = os.environ.get("PROFITSHIELD_LOCAL_HTTP") == "1"
     auth = configured_auth()
+    local_http = os.environ.get('PROFITSHIELD_LOCAL_HTTP') == '1'
     init_db()
     print(f"ProfitShield on http://localhost:{PORT}")
     print(f"  AI: {'on, ' + MODEL if KEY else 'off (set OPENROUTER_API_KEY)'}")
     print(f"  Square: {'on, ' + SQUARE_BASE if SQUARE_TOKEN else 'off (set SQUARE_ACCESS_TOKEN for live POS sync)'}")
-    httpd = ThreadingHTTPServer(("127.0.0.1" if local_http else "0.0.0.0", PORT), Handler)
+    httpd = ThreadingHTTPServer(('127.0.0.1' if local_http else '0.0.0.0', PORT), Handler)
     httpd.owner_auth = auth
     httpd.serve_forever()

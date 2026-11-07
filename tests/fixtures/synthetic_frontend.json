@@ -1,0 +1,17 @@
+{
+  "weeks": [
+    {"id":"2026-10-19","start":"2026-10-19","label":"Oct 19–25"},
+    {"id":"2026-10-26","start":"2026-10-26","label":"Oct 26 – Nov 1"}
+  ],
+  "orders": [
+    {"id":"SYNTH-OLD","channel":"DoorDash","week":"2026-10-19","date":"2026-10-19","dow":0,"hour":12,"minute":0,"items":[{"sku":"marg","qty":1}],"subtotal":16,"rate":0.2,"commission":3.2,"promo":null,"promoAmt":0},
+    {"id":"SYNTH-POS-OLD","channel":"In-store","week":"2026-10-19","date":"2026-10-19","dow":0,"hour":12,"minute":0,"items":[{"sku":"soda","qty":1}],"subtotal":4.5,"rate":0,"commission":0,"promo":null,"promoAmt":0},
+    {"id":"SYNTH-NEW","channel":"DoorDash","week":"2026-10-26","date":"2026-10-30","dow":4,"hour":19,"minute":0,"items":[{"sku":"marg","qty":2}],"subtotal":32,"rate":0.25,"commission":8,"promo":"Fixture offer","promoAmt":2},
+    {"id":"SYNTH-POS-NEW","channel":"In-store","week":"2026-10-26","date":"2026-10-30","dow":4,"hour":19,"minute":0,"items":[{"sku":"soda","qty":2}],"subtotal":9,"rate":0,"commission":0,"promo":null,"promoAmt":0}
+  ],
+  "errors": [{"id":"FIXTURE-ERROR","orderId":"SYNTH-NEW","channel":"DoorDash","week":"2026-10-26","date":"2026-10-30","dow":4,"hour":19,"sku":"soda","item":"Soda (2 L)","reason":"Fixture missing item","amount":1}],
+  "invoices": [
+    {"id":"FIXTURE-OLD","vendor":"Fixture Foods","date":"2026-10-19","week":"2026-10-19","source":"Fixture portal","total":41,"lines":[{"desc":"MOZZARELLA","ing":"mozz","qty":10,"unit":"lb","unitPrice":4.1,"total":41}]},
+    {"id":"FIXTURE-NEW","vendor":"Fixture Foods","date":"2026-10-26","week":"2026-10-26","source":"Fixture portal","total":56,"lines":[{"desc":"MOZZARELLA","ing":"mozz","qty":10,"unit":"lb","unitPrice":5.6,"total":56}]}
+  ]
+}

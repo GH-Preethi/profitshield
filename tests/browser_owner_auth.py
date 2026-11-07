@@ -36,14 +36,14 @@ with tempfile.TemporaryDirectory() as tmp, patch.object(server, 'DB_PATH', Path(
             def login():
                 page.locator('#password').fill(password)
                 page.locator('button').click()
-                page.wait_for_function("document.querySelector('#dataText')?.textContent.includes('Live database')")
+                page.locator('#dataText').filter(has_text='Live database').wait_for()
             login()
             assert '1,776' in page.locator('#dataText').inner_text()
             for view in ['overview','leaks','agents','payouts','invoices','margins','sources']:
                 page.locator('nav [data-go="'+view+'"]').click()
                 page.locator('#v-'+view).wait_for(state='visible')
             print('Owner login and all seven live views: PASS')
-            status = page.evaluate("async()=>{const r=await apiFetch('/api/invoices',{method:'POST',body:JSON.stringify({vendor:'Test',invoice_number:'TEST-AUTH',date:'2026-10-30',lines:[]})});return r.status}")
+            status = page.evaluate("async()=>{const r=await apiFetch('/api/invoices',{method:'POST',body:JSON.stringify({vendor:'Test',invoice_number:'TEST-AUTH',date:'2026-10-30',lines:[{description:'Fixture supplies',qty:1,unit:'ea',unit_price:2}]})});return r.status}")
             assert status == 200
             print('Session/CSRF wrapper permits local invoice save: PASS')
             page.locator('#logout').click()
@@ -59,7 +59,7 @@ with tempfile.TemporaryDirectory() as tmp, patch.object(server, 'DB_PATH', Path(
             login()
             page.route('**/api/data', lambda r: r.fulfill(status=503, body='{"error":"unavailable"}', content_type='application/json'))
             page.reload()
-            page.wait_for_function("document.querySelector('main')?.textContent.includes('Unable to load your live database')")
+            page.locator('main').filter(has_text='Unable to load your live database').wait_for()
             assert page.locator('#kpis').count() == 0
             print('Failed live load does not fall back to demo: PASS')
             assert not errors, errors

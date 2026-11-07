@@ -1,12 +1,13 @@
 """Owner authentication tests exercise real local HTTP; integrations stay mocked."""
 import json
+import re
 import os
 import time
 from unittest.mock import patch
 
 from owner_auth import OwnerAuth
 import server
-from test_http_security import HTTPFixture
+from test_http_security import HTTPFixture, valid_payload
 
 
 class OwnerAuthTests(HTTPFixture):
@@ -26,7 +27,7 @@ class OwnerAuthTests(HTTPFixture):
         for method, paths in [('GET', ['/api/data', '/api/auth/session']),
                               ('HEAD', ['/api/data', '/api/auth/session']),
                               ('POST', ['/api/data', '/api/reset', '/api/import', '/api/invoices',
-                                        '/api/menu/apply', '/api/ask', '/api/extract',
+                                        '/api/menu/apply', '/api/menu/preview', '/api/square/seed/preview', '/api/ask', '/api/extract',
                                         '/api/square/sync', '/api/square/seed', '/api/auth/logout'])]:
             for path in paths:
                 with self.subTest(method=method, path=path), patch.object(server, 'app_data') as data:
@@ -41,6 +42,26 @@ class OwnerAuthTests(HTTPFixture):
         self.assertNotIn(b'genData', body)
         health = json.loads(self.request('GET', '/api/health', authenticated=False)[2])
         self.assertEqual(health, {'ok': True, 'backend': True})
+
+    def test_every_review_endpoint_requires_session_csrf(self):
+        routes = {'/api/menu/preview': 'preview_menu', '/api/menu/apply': 'apply_menu',
+                  '/api/square/seed/preview': 'preview_seed', '/api/square/seed': 'confirm_seed'}
+        for route, handler in routes.items():
+            with self.subTest(route=route), patch.object(server, handler) as dispatch:
+                self.assertEqual(self.request('POST', route, valid_payload(route),
+                                              headers={'X-CSRF-Token': ''})[0], 403)
+                dispatch.assert_not_called()
+
+    def test_login_and_dashboard_scripts_share_response_nonce(self):
+        for authenticated in [False, True]:
+            status, headers, body = self.request('GET', '/', authenticated=authenticated)
+            self.assertEqual(status, 200)
+            nonce = re.search(r"script-src 'nonce-([^']+)'", headers['Content-Security-Policy'])[1]
+            scripts = re.findall(rb'<script([^>]*)>', body)
+            self.assertTrue(scripts)
+            for attributes in scripts:
+                self.assertIn(('nonce="'+nonce+'"').encode(), attributes)
+            self.assertNotIn(self.token.encode(), body)
 
     def test_login_password_hash_and_cookie_security(self):
         self.assertEqual(self.login('incorrect password')[0], 401)
