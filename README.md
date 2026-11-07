@@ -93,3 +93,103 @@ Week-over-week change splits into sales & mix, a price effect per ingredient (th
 4. **Ask (25s).** "Why did my profit drop?" then "What if I raise pizza prices by $0.75?" Point at the tools-used line and the chart. Type "execute": Square gets the new price via API, the delivery apps get a change list.
 5. **Real data (25s).** Sources: drop the unusual Grubhub CSV (AI maps the columns, 100 personal fields removed, 0 duplicates). Drop the Sysco PDF; it reads all 3 pages and the mozzarella line shows its page number.
 6. **Close (10s).** "Swiggy built Guru for one platform. Owners live across five. ProfitShield sees all of them and shows its receipts."
+
+## HTTP file access and regression tests
+
+Only `/` and `/index.html` serve the dashboard. Its scripts, styles and icons
+are embedded; fonts load from Google Fonts. All other file paths return 404,
+including sample files, configuration, database files and Python source.
+GET and HEAD share this allowlist. Query strings do not change the selected
+asset; encoded or noncanonical asset paths are not accepted. Future public
+assets must be added individually to `PUBLIC_ASSETS` in `server.py`.
+
+Run the standard-library HTTP regression tests with:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+Tests use temporary dummy private files and mock API operations; they do not
+use integration credentials, call external services or reset the real database.
+This file allowlist does not add authentication to the application APIs.
+
+## Input and HTTP security
+
+The server escapes imported order IDs, invoice units/pages/quantities and review
+input values before inserting them into HTML. Text remains text, including
+legacy records that predate validation. A fresh per-response nonce authorizes
+the dashboard script; inline event handlers and eval are blocked by CSP. Google
+Fonts are still allowed, and inline styles remain allowed for the existing UI.
+Responses also set nosniff, frame denial, same-origin referrer policy and disabled
+camera/microphone/geolocation permissions. HTTPS origins additionally enable
+HSTS; configure TLS at a trusted reverse proxy before hosted use.
+
+All POST requests must use `application/json`, a single valid Content-Length and
+the exact configured Origin. Compressed/chunked request bodies and cross-site
+Fetch Metadata requests are rejected. Configure the browser origin explicitly:
+
+```bash
+# Local default is http://localhost:8000; use this if opening via 127.0.0.1:
+export PROFITSHIELD_ORIGIN=http://127.0.0.1:8000
+# Hosted: use the actual HTTPS browser origin, without a path or trailing slash.
+# export PROFITSHIELD_ORIGIN=https://your-profitshield-host.example
+```
+
+The origin is never inferred from Host or forwarded headers. Non-browser clients
+must supply the same Origin and JSON content type. These checks defend browser
+cross-origin writes; they are not authentication. Owner authentication remains
+in its separate PR and must be integrated before exposing sensitive APIs to a
+hosted network. Keep the backend private behind the HTTPS proxy.
+
+Validation happens before database writes or integration dispatch. JSON must be
+an object with recognized fields, supported nested shapes, valid dates, allowed
+channels/SKUs/ingredients/units, and finite bounded numbers. Duplicate JSON keys,
+NaN/Infinity, excessive nesting, malformed structures and invalid Unicode are
+rejected. Monetary inputs are bounded by 1e12; menu prices by 1e6. Invoice lines
+require positive quantities (up to 1e6), nonnegative unit prices (up to 1e6), and
+units matching the selected ingredient. Negative invoice/credit-note quantities
+are not supported. Existing refund/sign accounting semantics are unchanged.
+AI extraction output and tool arguments are also validated before use.
+
+Limits:
+- JSON body: 16 MiB; CSV text: 4 MiB, 20,000 rows, 100 distinct headers,
+  4,096 characters per cell.
+- Receipt/PDF: 8 MiB decoded; only base64 JPEG, PNG, WebP and PDF with matching
+  signatures. Signature checks do not prove a complete document is readable.
+- Invoice: 1–500 lines. Questions: 2,000 characters; history: six messages.
+- Per process: 120 requests/minute per peer IP, 300 total requests/minute and
+  10 write/integration requests/minute globally. Rejections return 429 with
+  Retry-After: 60. Limits use locked, bounded in-memory sliding windows and reset
+  on process restart. At most 1,024 active peer windows are retained.
+- Client sockets use a 10-second inactivity timeout. Proxy-level connection,
+  header/body deadline and DDoS limits are still required for hosted access.
+
+All peer limits use the direct connection IP, ignoring spoofable forwarded IP
+headers. Behind a proxy, requests may share its IP. This policy is intended for
+one restaurant and one server process, not multiple workers or replicas.
+
+Invalid CSV rows reject and roll back the whole import instead of silently
+skipping rows or converting bad numeric values to zero. Blank optional numbers
+still default to zero; supported CSV date formats are preserved. Error statuses
+are 400 for invalid data/file limits, 403 for origin policy, 413 for oversized
+HTTP bodies/unsupported encodings, 415 for content type, and 429 for throttling.
+Internal exceptions return generic errors without upstream diagnostic details.
+Live-data load failures show an error instead of silently switching to demo.
+
+Run the dependency-free suite:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+With Playwright and Chromium already installed, run the optional stored-XSS/UI
+regression (temporary sample databases; integrations mocked/blocked):
+
+```bash
+python3 tests/browser_input_security.py
+```
+
+It checks imported malicious IDs, legacy malicious invoice units/pages, receipt
+review attributes, all six views, a sample receipt save, the current Ask request
+schema with AI mocked, and mobile rendering. No production credentials or real
+financial documents are used.

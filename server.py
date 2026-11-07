@@ -15,6 +15,9 @@ A small, dependency-free server (Python standard library only):
 """
 import csv
 import io
+import math
+import secrets
+import socket
 import json
 import os
 import re
@@ -25,9 +28,12 @@ import urllib.error
 import urllib.request
 import uuid
 from datetime import date, datetime, timedelta, timezone
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from input_security import (BODY_LIMIT, ROW_LIMIT, CHANNELS, UNITS, POST_ROUTES, EXPENSIVE_ROUTES,
+                            RequestLimiter, validate_origin, validate_payload, bounded_json, number,
+                            text as checked_text, invoice_line, validate_tool_args, iso_date)
 
 ROOT = Path(__file__).resolve().parent
 
@@ -56,6 +62,8 @@ SQUARE_VERSION = os.environ.get("SQUARE_VERSION", "2024-10-17")
 TZ = ZoneInfo(os.environ.get("STORE_TZ", "America/New_York"))
 PORT = int(os.environ.get("PORT", "8000"))
 LOCK = threading.Lock()
+PUBLIC_ORIGIN = validate_origin(os.environ.get("PROFITSHIELD_ORIGIN", f"http://localhost:{PORT}"))
+REQUEST_LIMITER = RequestLimiter()
 
 # Store catalog. Mirrors MENU / ING in index.html (names are what exports print).
 MENU = {
@@ -183,23 +191,31 @@ def reset():
 def num(v):
     if v is None:
         return 0.0
+    if isinstance(v, bool) or not isinstance(v, (str, int, float)):
+        raise ValueError("Invalid numeric value")
     s = str(v).strip().replace("$", "").replace(",", "")
     neg = s.startswith("(") and s.endswith(")")
     s = s.strip("()")
     try:
         x = float(s) if s else 0.0
     except ValueError:
-        return 0.0
+        raise ValueError("Invalid numeric value") from None
+    if not math.isfinite(x) or abs(x) > 1e12:
+        raise ValueError("Numeric value must be finite and within range")
     return -x if neg else x
 
 
 def parse_date(s):
+    if s is not None and not isinstance(s, str):
+        raise ValueError("Date must be text")
     s = (s or "").strip()
     for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y", "%d %b %Y", "%b %d, %Y", "%Y/%m/%d"):
         try:
             return datetime.strptime(s, fmt).date().isoformat()
         except ValueError:
             pass
+    if s:
+        raise ValueError("Invalid date")
     return None
 
 
@@ -210,6 +226,8 @@ def parse_time(s):
             return datetime.strptime(s, fmt).strftime("%H:%M")
         except ValueError:
             pass
+    if s:
+        raise ValueError("Invalid time")
     return "12:00"
 
 
@@ -255,6 +273,7 @@ def parse_items(con, text):
             name, qty = m.group(1), int(m.group(2))
         else:
             qty, name = 1, part
+        number(qty, 'item quantity', minimum=1, maximum=1e6, integer=True)
         out.append({"sku": match_sku(con, name), "qty": qty, "name": name.strip()})
     return out
 
@@ -348,11 +367,22 @@ def map_by_ai(headers, sample_rows, filename):
 
 # ---------------------------------------------------------------- import
 def import_csv(text, filename, channel=None, allow_ai=True):
+    validate_payload('/api/import', {'text': text, 'filename': filename, 'channel': channel}, MENU, INGREDIENTS)
     reader = csv.DictReader(io.StringIO(text.lstrip("﻿")))
-    rows = list(reader)
-    headers = [h for h in (reader.fieldnames or []) if h is not None]
-    if not headers:
-        raise ValueError("couldn't find a header row")
+    headers = [h.strip() for h in (reader.fieldnames or [])]
+    if not headers or len(headers) > 100 or any(not h or len(h) > 100 for h in headers) or len(set(headers)) != len(headers):
+        raise ValueError("CSV requires distinct, nonempty headers (up to 100)")
+    reader.fieldnames = headers
+    rows = []
+    try:
+        for row in reader:
+            if len(rows) >= ROW_LIMIT:
+                raise ValueError("CSV exceeds 20000 rows")
+            if None in row or any(v is None or len(v) > 4096 for v in row.values()):
+                raise ValueError("CSV rows must match headers and cells must be at most 4096 characters")
+            rows.append(row)
+    except csv.Error:
+        raise ValueError("Invalid CSV") from None
     headers, rows, redacted, pii_cols = redact(headers, rows)
     fmt = detect_known(headers)
     mapped_by, fmt_name = "known format", None
@@ -390,7 +420,15 @@ def import_csv(text, filename, channel=None, allow_ai=True):
                 inv, vendor = (get(r, "invoice_number") or "").strip(), (get(r, "vendor") or "").strip()
                 d = parse_date(get(r, "date"))
                 if not inv or not d:
-                    continue
+                    raise ValueError("Invoice number and valid date are required")
+                checked_text(inv, 'invoice number', 200, required=True)
+                checked_text(vendor, 'vendor', 200, required=True)
+                unit = (get(r, "unit") or "ea").strip()
+                ingredient = match_ingredient(con, get(r, "description") or "")
+                invoice_line({'description': get(r, "description") or "", 'ingredient': ingredient,
+                              'qty': num(get(r, "qty")), 'unit': unit, 'unit_price': num(get(r, "unit_price")),
+                              'total': num(get(r, "total"))}, INGREDIENTS)
+                number(num(get(r, "line")), 'line', minimum=1, maximum=100000, integer=True)
                 desc = (get(r, "description") or "").strip()
                 cur = con.execute("INSERT OR IGNORE INTO invoice_lines(invoice_number, vendor, date, source, line, description,"
                                   " ingredient, qty, unit, unit_price, total, ai) VALUES(?,?,?,?,?,?,?,?,?,?,?,0)", (
@@ -406,7 +444,8 @@ def import_csv(text, filename, channel=None, allow_ai=True):
                 else:
                     d, t = parse_date(get(r, "date")), parse_time(get(r, "time"))
                 if not oid or not d:
-                    continue
+                    raise ValueError("Order id and valid date are required")
+                checked_text(oid, 'order id', 255, required=True)
                 items = parse_items(con, get(r, "items") or "")
                 cur = con.execute("INSERT OR IGNORE INTO orders VALUES(?,?,?,?,?,?,?,?,?,?)", (
                     ch, oid, d, t, abs(num(get(r, "subtotal"))), abs(num(get(r, "commission"))),
@@ -426,6 +465,7 @@ def import_csv(text, filename, channel=None, allow_ai=True):
 
 
 def save_invoice(p):
+    validate_payload('/api/invoices', p, MENU, INGREDIENTS)
     lines = p.get("lines") or []
     d = parse_date(p.get("date") or "") or datetime.now(TZ).date().isoformat()
     inv = (p.get("invoice_number") or "").strip() or "PHOTO-" + uuid.uuid4().hex[:6].upper()
@@ -588,6 +628,7 @@ def square_set_price(name, cents):
 
 
 def apply_menu(p):
+    validate_payload('/api/menu/apply', p, MENU, INGREDIENTS)
     changes = p.get("changes") or []
     channels = p.get("channels") or ["In-store", "DoorDash", "Uber Eats", "Grubhub"]
     results = []
@@ -827,6 +868,7 @@ For "what if" questions use simulate_price_change and state its assumption."""
 
 
 def ask(p):
+    validate_payload('/api/ask', p, MENU, INGREDIENTS)
     facts = p.get("facts", {})
     ctx = {"facts": facts, "week": p.get("week") or facts.get("week_start"), "prev_week": p.get("prev_week")}
     msgs = [{"role": "system", "content": AGENT_SYSTEM},
@@ -856,7 +898,10 @@ def ask(p):
         for c in calls:
             name = c["function"]["name"]
             try:
-                args = json.loads(c["function"].get("arguments") or "{}")
+                arguments = c['function'].get('arguments') or '{}'
+                checked_text(arguments, 'tool arguments', 8000)
+                args = json.loads(arguments)
+                validate_tool_args(name, args, MENU)
                 res = TOOLS[name][0](ctx, **args) if name in TOOLS else {"error": "unknown tool"}
             except Exception as e:
                 res = {"error": str(e)}
@@ -869,6 +914,7 @@ def ask(p):
 
 
 def extract(p):
+    validate_payload('/api/extract', p, MENU, INGREDIENTS)
     image = p.get("image", "")
     if not image.startswith("data:"):
         raise ValueError("send the file as a data URL")
@@ -883,47 +929,97 @@ def extract(p):
         {"role": "user", "content": [
             {"type": "text", "text": "INGREDIENTS:\n" + json.dumps(ings) + "\nPREVIOUSLY CONFIRMED MATCHES:\n" + json.dumps(known)},
             part]}], json_mode=True))
+    bounded_json(out)
+    if not isinstance(out, dict) or not isinstance(out.get('lines'), list) or not 1 <= len(out['lines']) <= 500:
+        raise ValueError("Invalid extracted invoice")
     lines = []
-    for l in out.get("lines") or []:
-        try:
-            qty, price = float(l.get("qty") or 0), float(l.get("unit_price") or 0)
-        except (TypeError, ValueError):
-            continue
-        ing = l.get("ingredient")
-        lines.append({"description": str(l.get("description", ""))[:120], "qty": qty, "unit": l.get("unit") or "ea",
-                      "unit_price": price, "total": float(l.get("total") or qty * price),
-                      "ingredient": ing if ing in INGREDIENTS else None,
-                      "confidence": max(0.0, min(1.0, float(l.get("confidence") or 0.5))),
-                      "page": int(l.get("page") or 1) if str(l.get("page") or "1").isdigit() else 1})
+    for raw in out['lines']:
+        if not isinstance(raw, dict):
+            raise ValueError("Invalid extracted invoice line")
+        qty, price = raw.get('qty'), raw.get('unit_price')
+        number(qty, 'qty', minimum=0.000001, maximum=1e6)
+        number(price, 'unit_price', maximum=1e6)
+        line = {"description": raw.get("description", ""), "qty": qty, "unit": raw.get("unit", "ea"),
+                "unit_price": price, "total": raw.get('total', qty * price),
+                "ingredient": raw.get('ingredient'), "confidence": raw.get('confidence', 0.5),
+                "page": raw.get('page', 1)}
+        invoice_line(line, INGREDIENTS)
+        lines.append(line)
+    for field in ('vendor', 'invoice_number'):
+        if out.get(field) is not None:
+            checked_text(out[field], field, 200)
+    if out.get('date') is not None:
+        iso_date(out['date'])
+    if out.get('total') is not None:
+        number(out['total'], 'invoice total')
     return {"vendor": out.get("vendor"), "invoice_number": out.get("invoice_number"), "date": out.get("date"),
             "total": out.get("total"), "lines": lines}
 
 
 # ---------------------------------------------------------------- http
-class Handler(SimpleHTTPRequestHandler):
-    def __init__(self, *a, **kw):
-        super().__init__(*a, directory=str(ROOT), **kw)
+# The dashboard embeds its scripts, styles and icons. No repository directory is
+# public: add future assets here individually, never via directory serving.
+PUBLIC_ASSETS = {"/": "index.html", "/index.html": "index.html"}
+
+
+class Handler(BaseHTTPRequestHandler):
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(10)
+        self.csp_nonce = secrets.token_urlsafe(24)
+
+    def end_headers(self):
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "same-origin")
+        self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'nonce-" + self.csp_nonce +
+                         "'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                         "font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; "
+                         "object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
+        if PUBLIC_ORIGIN.startswith('https://'):
+            self.send_header("Strict-Transport-Security", "max-age=31536000")
+        super().end_headers()
+
+    def _limited(self, costly=False):
+        if not REQUEST_LIMITER.allow(self.client_address[0], costly=costly):
+            self._json(429, {"error": "Request limit reached; retry later"})
+            return True
+        return False
 
     def _json(self, code, obj):
-        body = json.dumps(obj).encode()
+        body = json.dumps(obj, allow_nan=False).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
+        if code == 429:
+            self.send_header("Retry-After", "60")
         self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
-        self.wfile.write(body)
+        if self.command != "HEAD":
+            self.wfile.write(body)
+
+    def do_HEAD(self):
+        self.do_GET()
 
     def do_GET(self):
-        if self.path.startswith("/api/health"):
+        if self._limited():
+            return
+        # Match canonical URL paths only. Do not decode or normalize untrusted
+        # paths into filesystem names (including encoded traversal/separators).
+        path = self.path.split("?", 1)[0].split("#", 1)[0]
+        if path == "/api/health":
             return self._json(200, {"ok": True, "ai": bool(KEY), "model": MODEL, "backend": True,
                                     "square": bool(SQUARE_TOKEN)})
-        if self.path.startswith("/api/data"):
+        if path == "/api/data":
             return self._json(200, app_data())
-        if self.path.split("?")[0].split("#")[0] not in ("/", "/index.html"):
-            # Only the app page is served. No .env, database, source code or sample files over HTTP.
-            return self._json(404, {"error": "not found"})
-        if True:
-            page = (ROOT / "index.html").read_text(encoding="utf-8")
+        asset = PUBLIC_ASSETS.get(path)
+        if asset is not None:
+            target = ROOT / asset
+            # Fail closed if an allowlisted file is replaced with a symlink.
+            if target.is_symlink() or not target.is_file():
+                return self._json(404, {"error": "not found"})
+            page = target.read_text(encoding="utf-8").replace('<script>', '<script nonce="' + self.csp_nonce + '">')
             body = ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
                     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">"
                     "</head><body>" + page + "</body></html>").encode("utf-8")
@@ -932,16 +1028,43 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_header("Cache-Control", "no-store")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
-            self.wfile.write(body)
+            if self.command != "HEAD":
+                self.wfile.write(body)
             return
-    def do_HEAD(self):
-        self.send_response(404)
-        self.end_headers()
+        return self._json(404, {"error": "not found"})
 
     def do_POST(self):
-        n = int(self.headers.get("Content-Length", 0))
+        if self._limited(costly=self.path in EXPENSIVE_ROUTES):
+            return
+        if self.path not in POST_ROUTES:
+            return self._json(404, {"error": "unknown route"})
+        if self.headers.get("Origin") != PUBLIC_ORIGIN or self.headers.get("Sec-Fetch-Site") == "cross-site":
+            return self._json(403, {"error": "Invalid request origin"})
+        if self.headers.get("Content-Type", "").split(';', 1)[0].strip().lower() != "application/json":
+            return self._json(415, {"error": "Use application/json"})
         try:
-            p = json.loads(self.rfile.read(n) or b"{}")
+            if self.headers.get('Transfer-Encoding') or self.headers.get('Content-Encoding'):
+                return self._json(413, {"error": "Unsupported body encoding"})
+            lengths = self.headers.get_all('Content-Length', [])
+            if len(lengths) != 1 or not re.fullmatch(r'[0-9]{1,10}', lengths[0]):
+                raise ValueError("A single nonnegative Content-Length is required")
+            n = int(lengths[0])
+            if n > BODY_LIMIT:
+                return self._json(413, {"error": "Body exceeds 16 MiB or uses unsupported encoding"})
+            raw = self.rfile.read(n)
+            if len(raw) != n:
+                raise ValueError("Incomplete request body")
+            def reject_constant(_):
+                raise ValueError("JSON numbers must be finite")
+            def distinct_fields(pairs):
+                result = {}
+                for key, value in pairs:
+                    if key in result:
+                        raise ValueError("Duplicate JSON field")
+                    result[key] = value
+                return result
+            p = json.loads(raw or b"{}", parse_constant=reject_constant, object_pairs_hook=distinct_fields)
+            validate_payload(self.path, p, MENU, INGREDIENTS)
             if self.path == "/api/import":
                 return self._json(200, import_csv(p.get("text", ""), p.get("filename", "upload.csv"), p.get("channel")))
             if self.path == "/api/invoices":
@@ -964,9 +1087,13 @@ class Handler(SimpleHTTPRequestHandler):
                     return self._json(400, {"error": "OPENROUTER_API_KEY is not set"})
                 return self._json(200, ask(p) if self.path == "/api/ask" else extract(p))
             return self._json(404, {"error": "unknown route"})
-        except Exception as e:
-            print(f"  ERROR {self.path}: {e}")
-            return self._json(400 if isinstance(e, ValueError) else 500, {"error": str(e)})
+        except (ValueError, TypeError, csv.Error, RecursionError, OverflowError):
+            return self._json(400, {"error": "Invalid request data; check fields, dates and numeric ranges"})
+        except (TimeoutError, socket.timeout):
+            return self._json(408, {"error": "Request body timed out"})
+        except Exception:
+            print(f"  ERROR {self.path}: request failed")
+            return self._json(500, {"error": "Request failed"})
 
     def log_message(self, fmt, *args):
         if args and "/api/" in str(args[0]) and "data" not in str(args[0]):
