@@ -60,6 +60,10 @@ class HTTPFixture(unittest.TestCase):
         cls.network_patch.start()
         cls.square_patch = patch.object(server.SQUARE_OPENER, 'open', side_effect=AssertionError('External Square call'))
         cls.square_patch.start()
+        cls.auth = OwnerAuth(cls.root / 'owner-auth.sqlite3', 'https://profitshield.test')
+        cls.password = 'test-owner-passphrase-only'
+        cls.auth.set_password(cls.password)
+        cls.token, _ = cls.auth.login(cls.password)
         cls.httpd = server.ThreadingHTTPServer(('127.0.0.1', 0), server.Handler)
         cls.httpd.owner_auth = cls.auth
         cls.thread = threading.Thread(target=cls.httpd.serve_forever, daemon=True)

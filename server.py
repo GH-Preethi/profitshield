@@ -17,6 +17,7 @@ import csv
 import io
 import copy
 import hashlib
+import hmac
 import math
 import secrets
 import socket
@@ -1242,7 +1243,8 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError("A single nonnegative Content-Length is required")
             n = int(lengths[0])
             review_route = self.path in ('/api/menu/preview', '/api/menu/apply', '/api/square/seed/preview', '/api/square/seed')
-            if n > (32768 if review_route else BODY_LIMIT):
+            limit = 16384 if self.path == '/api/auth/login' else (32768 if review_route else BODY_LIMIT)
+            if n > limit:
                 return self._json(413, {"error": "Body exceeds 16 MiB or uses unsupported encoding"})
             raw = self.rfile.read(n)
             if len(raw) != n:

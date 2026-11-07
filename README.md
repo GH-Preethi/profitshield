@@ -201,3 +201,129 @@ payloads are validated separately from one-use confirmation payloads; unreviewed
 legacy price writes remain rejected. The review endpoints retain their 32 KiB
 limit and action failures retain their conflict/status codes. Import validation
 helpers and request-security imports must remain wired when merging features.
+
+## Owner authentication and recovery
+
+This is one restaurant with one owner account; there is no public signup,
+password reset by email, role hierarchy or default password. The owner has
+access to all restaurant operations. Financial calculations are unchanged.
+
+### Bootstrap on the server console
+
+Use an interactive trusted terminal, not a URL or password argument:
+
+```bash
+# Optional: set a private, persistent path, consistently for CLI and server.
+export PROFITSHIELD_AUTH_DB=/private/persistent/owner-auth.sqlite3
+python3 owner_auth.py bootstrap
+```
+
+The parent directory must already exist and be writable only by the service
+administrator. Use a unique passphrase (14–1024 characters); input is hidden
+and confirmed. Passwords use scrypt (N=131072, r=8, p=1, random 32-byte salt,
+64-byte derived key). Only the salt/hash is stored; scrypt uses about 128 MiB
+per verification. The auth SQLite file is separate from restaurant data,
+created with mode 0600, and excluded from Git and HTTP. If the owner has not
+been bootstrapped, login fails closed. Bootstrap refuses to overwrite an owner.
+
+For the default location, omit the export. When using a custom path in `.env`,
+pass that same path using CLI `--db` or export it before running the CLI;
+`owner_auth.py` does not read `.env`. `server.py` does.
+
+### Hosted configuration
+
+```bash
+export PROFITSHIELD_ORIGIN=https://your-actual-profitshield-host.example
+python3 server.py
+```
+
+The origin is required and must match the browser's scheme, hostname and port.
+Terminate HTTPS at a trusted reverse proxy, redirect HTTP to HTTPS, configure
+HSTS there, and restrict the backend port to that proxy. Do not expose the raw
+Python HTTP port publicly or serve the repository through the proxy. The app
+does not trust forwarded headers to derive its origin. TLS certificates and
+proxy deployment are outside this repository's configuration.
+
+Hosted cookies are host-only `__Host-profitshield`, Secure, HttpOnly,
+SameSite=Strict, Path=/, with a 12-hour maximum lifetime. Random 256-bit session
+tokens are stored only as SHA-256 hashes. Sessions expire after 30 minutes of
+inactivity or 12 hours absolutely, survive restarts, rotate on a new login from
+the same browser, and are revoked on logout/recovery. The CSRF token is derived
+from the session and delivered only in authenticated responses; it is not a
+replacement for the HttpOnly session cookie. No session token is kept in browser
+localStorage. Auth responses use `Cache-Control: no-store`.
+
+All sensitive GET/HEAD APIs require a session. All POST APIs require a session,
+the exact configured Origin, `application/json`, and `X-CSRF-Token`; login is
+the sole session/CSRF-token exception, but still requires Origin and JSON to
+prevent login CSRF. `/api/auth/session` returns the owner's CSRF token.
+`/api/auth/logout` revokes the current session. Public `/api/health` exposes only
+liveness/backend indicators, without integration details. Dashboard access
+without a session shows only the sign-in page. Live load failure shows an error
+instead of silently substituting demo data.
+
+Five failed logins lock further attempts for 60 seconds, persisted across
+restarts. This single-owner lockout deliberately applies globally, so an attacker
+could temporarily deny login. Add proxy-level request/connection limits and
+monitor failed login status codes; application lockout is not DDoS protection.
+JSON requests are capped at 16 KiB for login and 16 MiB for other POST APIs.
+
+### Local development
+
+```bash
+python3 owner_auth.py bootstrap   # once, using the same DB path as the server
+export PROFITSHIELD_LOCAL_HTTP=1
+export PROFITSHIELD_ORIGIN=http://127.0.0.1:8000
+python3 server.py
+```
+
+This explicit development mode binds only to 127.0.0.1 and uses a separate
+non-Secure cookie name. It must never be used for hosted access. No Square or
+AI credentials are needed for auth tests or sample-data development. Never
+configure production Square credentials/endpoints for development or tests.
+
+### Recovery and revocation
+
+With trusted server-console access, stop the server and run:
+
+```bash
+python3 owner_auth.py recover  # add --db /the/same/auth/path when applicable
+```
+
+Enter and confirm a new passphrase, then restart. Recovery revokes every session
+and clears login lockouts without changing restaurant data. If a session is
+suspected compromised, use this procedure. Keep the auth database and its backups
+private; it contains password hashes and active session metadata. Do not delete
+or reset restaurant data to recover access. There is no remote recovery endpoint.
+
+### Validation and limitations
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+If Playwright and Chromium are already available, run the optional UI regression:
+
+```bash
+python3 tests/browser_owner_auth.py
+```
+
+It checks sign-in, all six live views, authenticated local save, sign-out,
+expiry redirects, and failed-live-load behavior using temporary databases and
+blocked external requests. It does not install browser dependencies.
+
+Tests cover password verification, anonymous denial, owner authorization, login
+CSRF, session CSRF, secure cookies, rotation, idle/absolute expiry, logout,
+lockout persistence, recovery, bootstrap and HTTP file isolation. Integration
+operations are mocked. Existing authentication-independent business behavior
+is preserved; external execution approval and accounting corrections remain
+separate work. The shared input-security layer escapes reviewed imported-data fields and nonce-authorizes scripts. HttpOnly cookies alone do not stop malicious same-origin scripts from acting as the owner; future rendering changes must preserve both defenses. This release does not add MFA, email recovery or multiple users.
+
+## Authentication integration notes
+
+Auth gates cover the shared input-security boundary and all Square review and
+confirmation routes. Login/CSRF bootstrap scripts carry the same per-response CSP
+nonce as the dashboard. Square writes still require one-use plan approval in
+addition to an owner session, exact Origin and session CSRF token. The current
+prototype grants one owner access to all stored records; multi-location schema
+and authorization isolation remain separate requirements, not implemented here.
