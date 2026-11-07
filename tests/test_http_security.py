@@ -12,9 +12,20 @@ import unittest
 from unittest.mock import patch
 
 import server
+from input_security import RequestLimiter
 
 
-class PublicAssetTests(unittest.TestCase):
+def valid_payload(route):
+    return {
+        '/api/import': {'text': 'Order,Date,Time,Gross Sales,Itemization\nx,2026-10-26,12:00,10,1x Margherita pizza', 'filename': 'square.csv'},
+        '/api/invoices': {'date': '2026-10-26', 'lines': [{'description': 'Supplies', 'qty': 1, 'unit': 'ea', 'unit_price': 2}]},
+        '/api/menu/apply': {'changes': [{'sku': 'soda', 'price': 5}]},
+        '/api/ask': {'question': 'Why?', 'facts': {}, 'week': '2026-10-26', 'prev_week': '2026-10-19'},
+        '/api/extract': {'image': 'data:image/jpeg;base64,/9j/dGVzdA=='},
+    }.get(route, {})
+
+
+class HTTPFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
@@ -36,6 +47,10 @@ class PublicAssetTests(unittest.TestCase):
             target.write_bytes(cls.marker)
         cls.root_patch = patch.object(server, 'ROOT', cls.root)
         cls.root_patch.start()
+        cls.limiter_patch = patch.object(server, 'REQUEST_LIMITER', RequestLimiter(10000, 20000, 10000))
+        cls.limiter_patch.start()
+        cls.db_patch = patch.object(server, 'DB_PATH', cls.root / 'temporary.db')
+        cls.db_patch.start()
         cls.network_patch = patch.object(
             server.urllib.request, 'urlopen', side_effect=AssertionError('External call'))
         cls.network_patch.start()
@@ -49,26 +64,33 @@ class PublicAssetTests(unittest.TestCase):
         cls.httpd.server_close()
         cls.thread.join()
         cls.network_patch.stop()
+        cls.db_patch.stop()
+        cls.limiter_patch.stop()
         cls.root_patch.stop()
         cls.temp.cleanup()
 
-    def request(self, method, path, payload=None):
+    def request(self, method, path, payload=None, headers=None, raw=None):
         conn = http.client.HTTPConnection(*self.httpd.server_address, timeout=5)
         try:
             body = json.dumps(payload) if payload is not None else None
-            conn.request(method, path, body, {'Content-Type': 'application/json'})
+            request_headers = {'Content-Type': 'application/json', 'Origin': server.PUBLIC_ORIGIN}
+            request_headers.update(headers or {})
+            conn.request(method, path, raw if raw is not None else body, request_headers)
             response = conn.getresponse()
             return response.status, dict(response.getheaders()), response.read()
         finally:
             conn.close()
 
+
+class PublicAssetTests(HTTPFixture):
     def test_dashboard_get_and_head(self):
         for path in ['/', '/index.html', '/?v=1', '/index.html?v=1']:
             with self.subTest(path=path):
                 status, headers, body = self.request('GET', path)
                 self.assertEqual(status, 200)
                 self.assertEqual(headers['Content-Type'], 'text/html; charset=utf-8')
-                self.assertIn(self.dashboard.encode('utf-8'), body)
+                self.assertIn(self.dashboard.split('<script>')[0].encode('utf-8'), body)
+                self.assertIn(b'<script nonce=', body)
                 self.assertIn(b'<meta name="viewport"', body)
                 self.assertEqual(int(headers['Content-Length']), len(body))
                 head_status, head_headers, head_body = self.request('HEAD', path)
@@ -171,7 +193,7 @@ class PublicAssetTests(unittest.TestCase):
             for route, function in routes.items():
                 with self.subTest(route=route), patch.object(
                         server, function, return_value={'ok': True}) as mock:
-                    status, _, body = self.request('POST', route, {})
+                    status, _, body = self.request('POST', route, valid_payload(route))
                     self.assertEqual(status, 200)
                     self.assertEqual(json.loads(body), {'ok': True})
                     mock.assert_called_once()
@@ -181,7 +203,7 @@ class PublicAssetTests(unittest.TestCase):
                 seed.assert_called_once()
         with patch.object(server, 'KEY', ''), patch.object(server, 'SQUARE_TOKEN', ''):
             for path in ['/api/ask', '/api/extract', '/api/square/sync']:
-                self.assertEqual(self.request('POST', path, {})[0], 400)
+                self.assertEqual(self.request('POST', path, valid_payload(path))[0], 400)
 
 
 if __name__ == '__main__':
