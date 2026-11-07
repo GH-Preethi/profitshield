@@ -25,7 +25,7 @@ import urllib.error
 import urllib.request
 import uuid
 from datetime import date, datetime, timedelta, timezone
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -900,9 +900,12 @@ def extract(p):
 
 
 # ---------------------------------------------------------------- http
-class Handler(SimpleHTTPRequestHandler):
-    def __init__(self, *a, **kw):
-        super().__init__(*a, directory=str(ROOT), **kw)
+# The dashboard embeds its scripts, styles and icons. No repository directory is
+# public: add future assets here individually, never via directory serving.
+PUBLIC_ASSETS = {"/": "index.html", "/index.html": "index.html"}
+
+
+class Handler(BaseHTTPRequestHandler):
 
     def _json(self, code, obj):
         body = json.dumps(obj).encode()
@@ -911,19 +914,28 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
-        self.wfile.write(body)
+        if self.command != "HEAD":
+            self.wfile.write(body)
+
+    def do_HEAD(self):
+        self.do_GET()
 
     def do_GET(self):
-        if self.path.startswith("/api/health"):
+        # Match canonical URL paths only. Do not decode or normalize untrusted
+        # paths into filesystem names (including encoded traversal/separators).
+        path = self.path.split("?", 1)[0].split("#", 1)[0]
+        if path == "/api/health":
             return self._json(200, {"ok": True, "ai": bool(KEY), "model": MODEL, "backend": True,
                                     "square": bool(SQUARE_TOKEN)})
-        if self.path.startswith("/api/data"):
+        if path == "/api/data":
             return self._json(200, app_data())
-        if self.path.split("?")[0].split("#")[0] not in ("/", "/index.html"):
-            # Only the app page is served. No .env, database, source code or sample files over HTTP.
-            return self._json(404, {"error": "not found"})
-        if True:
-            page = (ROOT / "index.html").read_text(encoding="utf-8")
+        asset = PUBLIC_ASSETS.get(path)
+        if asset is not None:
+            target = ROOT / asset
+            # Fail closed if an allowlisted file is replaced with a symlink.
+            if target.is_symlink() or not target.is_file():
+                return self._json(404, {"error": "not found"})
+            page = target.read_text(encoding="utf-8")
             body = ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
                     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">"
                     "</head><body>" + page + "</body></html>").encode("utf-8")
@@ -932,11 +944,10 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_header("Cache-Control", "no-store")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
-            self.wfile.write(body)
+            if self.command != "HEAD":
+                self.wfile.write(body)
             return
-    def do_HEAD(self):
-        self.send_response(404)
-        self.end_headers()
+        return self._json(404, {"error": "not found"})
 
     def do_POST(self):
         n = int(self.headers.get("Content-Length", 0))
