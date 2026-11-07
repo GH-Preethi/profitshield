@@ -14,7 +14,7 @@ from unittest.mock import patch
 import server
 
 
-class PublicAssetTests(unittest.TestCase):
+class HTTPFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
@@ -25,7 +25,7 @@ class PublicAssetTests(unittest.TestCase):
         cls.private_paths = [
             '.env', '.env.example', 'backhouse.db', 'other.sqlite',
             'other.sqlite3', 'backhouse.db-wal', 'backhouse.db-shm',
-            'server.py', 'README.md', '.git/config', '.hidden',
+            'server.py', 'square_actions.py', 'README.md', '.git/config', '.hidden',
             'samples/orders.csv', 'samples/invoice.pdf', 'samples/receipt.jpg',
             'future-asset.js', 'nested/index.html', 'private/financial-report.pdf',
             'backups/restaurant.sqlite3', '.env.production', 'backhouse.db-journal',
@@ -36,9 +36,13 @@ class PublicAssetTests(unittest.TestCase):
             target.write_bytes(cls.marker)
         cls.root_patch = patch.object(server, 'ROOT', cls.root)
         cls.root_patch.start()
+        cls.db_patch = patch.object(server, 'DB_PATH', cls.root / 'test.db')
+        cls.db_patch.start()
         cls.network_patch = patch.object(
             server.urllib.request, 'urlopen', side_effect=AssertionError('External call'))
         cls.network_patch.start()
+        cls.square_patch = patch.object(server.SQUARE_OPENER, 'open', side_effect=AssertionError('External Square call'))
+        cls.square_patch.start()
         cls.httpd = server.ThreadingHTTPServer(('127.0.0.1', 0), server.Handler)
         cls.thread = threading.Thread(target=cls.httpd.serve_forever, daemon=True)
         cls.thread.start()
@@ -49,19 +53,25 @@ class PublicAssetTests(unittest.TestCase):
         cls.httpd.server_close()
         cls.thread.join()
         cls.network_patch.stop()
+        cls.square_patch.stop()
+        cls.db_patch.stop()
         cls.root_patch.stop()
         cls.temp.cleanup()
 
-    def request(self, method, path, payload=None):
+    def request(self, method, path, payload=None, headers=None):
         conn = http.client.HTTPConnection(*self.httpd.server_address, timeout=5)
         try:
             body = json.dumps(payload) if payload is not None else None
-            conn.request(method, path, body, {'Content-Type': 'application/json'})
+            request_headers = {'Content-Type': 'application/json', 'Origin': server.PUBLIC_ORIGIN}
+            request_headers.update(headers or {})
+            conn.request(method, path, body, request_headers)
             response = conn.getresponse()
             return response.status, dict(response.getheaders()), response.read()
         finally:
             conn.close()
 
+
+class PublicAssetTests(HTTPFixture):
     def test_dashboard_get_and_head(self):
         for path in ['/', '/index.html', '/?v=1', '/index.html?v=1']:
             with self.subTest(path=path):
@@ -162,7 +172,8 @@ class PublicAssetTests(unittest.TestCase):
     def test_post_api_dispatch_preserved_without_side_effects(self):
         routes = {
             '/api/import': 'import_csv', '/api/invoices': 'save_invoice',
-            '/api/menu/apply': 'apply_menu', '/api/reset': 'reset',
+            '/api/menu/apply': 'apply_menu', '/api/menu/preview': 'preview_menu',
+            '/api/square/seed/preview': 'preview_seed', '/api/square/seed': 'confirm_seed', '/api/reset': 'reset',
             '/api/ask': 'ask', '/api/extract': 'extract',
             '/api/square/sync': 'square_sync',
         }
@@ -175,10 +186,6 @@ class PublicAssetTests(unittest.TestCase):
                     self.assertEqual(status, 200)
                     self.assertEqual(json.loads(body), {'ok': True})
                     mock.assert_called_once()
-            with patch.object(server, 'square_seed') as seed, patch.object(
-                    server, 'square_sync', return_value={'pulled': 3}), patch.object(server.time, 'sleep'):
-                self.assertEqual(self.request('POST', '/api/square/seed', {})[0], 200)
-                seed.assert_called_once()
         with patch.object(server, 'KEY', ''), patch.object(server, 'SQUARE_TOKEN', ''):
             for path in ['/api/ask', '/api/extract', '/api/square/sync']:
                 self.assertEqual(self.request('POST', path, {})[0], 400)
