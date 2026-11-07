@@ -1,0 +1,27 @@
+{
+  "source_commit": "0a0ef1adbe2c53150fb3ce84a0064b50029790ae",
+  "sample_counts": {"orders": 1776, "errors": 16, "invoices": 9, "weeks": 4},
+  "sample_import_rows": {"doordash": 781, "ubereats": 442, "grubhub": 184, "square": 369, "supplier": 63},
+  "week": "2026-10-26",
+  "previous_week": "2026-10-19",
+  "imported": {
+    "estimate_change": -573.766875,
+    "sales_change_pct": 12.400550044199976,
+    "commission_orders": 112,
+    "commission_overcharge": 135.96,
+    "unapproved_promo_orders": 38,
+    "unapproved_promo_cost": 190,
+    "duplicate_document_amount": 737.8,
+    "mozzarella_impact": -253.125,
+    "error_charge_count": 8,
+    "error_charge_total": 75,
+    "error_change": -52.5,
+    "pizza_units": {"DoorDash": 207, "Grubhub": 42, "In-store": 106, "Uber Eats": 95},
+    "pizza_50_cent_simulation": 190.07
+  },
+  "generated_preview": {
+    "estimate_change": -578.106875,
+    "commission_overcharge": 135.8,
+    "error_change": -57
+  }
+}

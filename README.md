@@ -93,3 +93,16 @@ Week-over-week change splits into sales & mix, a price effect per ingredient (th
 4. **Ask (25s).** "Why did my profit drop?" then "What if I raise pizza prices by $0.75?" Point at the tools-used line and the chart. Type "execute": Square gets the new price via API, the delivery apps get a change list.
 5. **Real data (25s).** Sources: drop the unusual Grubhub CSV (AI maps the columns, 100 personal fields removed, 0 duplicates). Drop the Sysco PDF; it reads all 3 pages and the mozzarella line shows its page number.
 6. **Close (10s).** "Swiggy built Guru for one platform. Owners live across five. ProfitShield sees all of them and shows its receipts."
+
+## Automated tests
+
+No application/development package installs or credentials are required. Use
+Python 3.9+ and Node.js 24 (the CI runtime):
+
+```bash
+python3 -m unittest discover -s tests -v
+node --test tests/js/*.test.cjs
+```
+
+See [tests/README.md](tests/README.md) for isolated fixtures, audit baselines,
+mocked integrations, calculation-test boundaries, CI and known limitations.
