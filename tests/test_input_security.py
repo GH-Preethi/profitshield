@@ -85,12 +85,22 @@ class InputHTTPTests(HTTPFixture):
 
     def test_ambiguous_content_lengths_rejected(self):
         for length_headers in ['', 'Content-Length: -1\r\n', 'Content-Length: 2\r\nContent-Length: 2\r\n']:
-            raw = ('POST /api/reset HTTP/1.0\r\nHost: localhost\r\nOrigin: '+server.PUBLIC_ORIGIN+
-                   '\r\nContent-Type: application/json\r\n'+length_headers+'\r\n{}').encode()
+            raw = ('POST /api/reset HTTP/1.0\r\nHost: localhost\r\nOrigin: '+self.auth.origin+
+                   '\r\nCookie: '+self.auth.cookie_name+'='+self.token+'\r\nX-CSRF-Token: '+self.auth.csrf(self.token)+'\r\nContent-Type: application/json\r\n'+length_headers+'\r\n{}').encode()
             with socket.create_connection(self.httpd.server_address, timeout=5) as conn:
                 conn.sendall(raw)
                 response = conn.recv(4096)
             self.assertIn(b' 400 ', response.split(b'\r\n')[0])
+
+    def test_new_review_routes_cannot_bypass_input_security(self):
+        routes = {'/api/menu/preview': 'preview_menu', '/api/menu/apply': 'apply_menu',
+                  '/api/square/seed/preview': 'preview_seed', '/api/square/seed': 'confirm_seed'}
+        for route, function in routes.items():
+            with self.subTest(route=route), patch.object(server, function) as dispatch:
+                self.assertEqual(self.request('POST', route, {}, headers={'Origin': 'https://attacker.test'})[0], 403)
+                self.assertEqual(self.request('POST', route, {}, headers={'Content-Type': 'text/plain'})[0], 415)
+                self.assertEqual(self.request('POST', route, raw=b'[]')[0], 400)
+                dispatch.assert_not_called()
 
     def test_throttling_returns_retry_after_before_dispatch(self):
         with patch.object(server, 'REQUEST_LIMITER', RequestLimiter(2, 100, 100)), patch.object(server, 'reset') as reset:

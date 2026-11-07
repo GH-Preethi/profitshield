@@ -12,6 +12,7 @@ import threading
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import server
+from owner_auth import OwnerAuth
 from input_security import RequestLimiter
 from playwright.sync_api import sync_playwright
 
@@ -43,6 +44,9 @@ with tempfile.TemporaryDirectory() as tmp, patch.object(server, 'DB_PATH', Path(
         con.execute("UPDATE invoice_lines SET unit=?,page=? WHERE ingredient='mozz'", (ATTACK, ATTACK))
     httpd = server.ThreadingHTTPServer(('127.0.0.1', 0), server.Handler)
     origin = 'http://127.0.0.1:' + str(httpd.server_port)
+    auth = OwnerAuth(Path(tmp)/'browser-auth.sqlite3', origin, local_http=True)
+    auth.set_password('browser-owner-test-password')
+    httpd.owner_auth = auth
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     thread.start()
     try:
@@ -53,12 +57,14 @@ with tempfile.TemporaryDirectory() as tmp, patch.object(server, 'DB_PATH', Path(
             page.on('pageerror', lambda error: errors.append(str(error)))
             page.route('**/*', lambda r: r.continue_() if r.request.url.startswith(origin) else r.abort())
             page.goto(origin)
+            page.locator('#password').fill('browser-owner-test-password')
+            page.locator('button').click()
             page.locator('#dataText').filter(has_text='Live database').wait_for()
             def no_injected_nodes(selector):
                 assert page.locator(selector+' img').count() == 0
                 assert page.locator(selector+' [onerror], '+selector+' [onfocus], '+selector+' [autofocus]').count() == 0
                 assert not page.evaluate('window.__xss')
-            for view in ['overview','leaks','payouts','invoices','margins','sources']:
+            for view in ['overview','leaks','agents','payouts','invoices','margins','sources']:
                 page.locator('nav [data-go="'+view+'"]').click()
                 page.locator('#v-'+view).wait_for(state='visible')
             page.evaluate("go('payouts')")
@@ -94,7 +100,7 @@ with tempfile.TemporaryDirectory() as tmp, patch.object(server, 'DB_PATH', Path(
                 status = page.evaluate("async()=>{const r=await apiFetch('/api/ask',{method:'POST',body:JSON.stringify({question:'Why?',facts:facts(),history:[],week:CUR,prev_week:prevOf(CUR)})});return r.status}")
                 assert status == 200
             print('Current browser facts pass the Ask API schema with AI mocked: PASS')
-            print('All six views, mobile dashboard and nonce CSP: PASS; no JavaScript errors')
+            print('All seven views, mobile dashboard and nonce CSP: PASS; no JavaScript errors')
             page.route('**/api/data', lambda r: r.fulfill(status=503, body='{"error":"unavailable"}', content_type='application/json'))
             page.reload()
             page.locator('main').filter(has_text='Unable to load your live database').wait_for()
