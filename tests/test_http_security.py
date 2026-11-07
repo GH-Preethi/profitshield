@@ -12,6 +12,17 @@ import unittest
 from unittest.mock import patch
 
 import server
+from input_security import RequestLimiter
+
+
+def valid_payload(route):
+    return {
+        '/api/import': {'text': 'Order,Date,Time,Gross Sales,Itemization\nx,2026-10-26,12:00,10,1x Margherita pizza', 'filename': 'square.csv'},
+        '/api/invoices': {'date': '2026-10-26', 'lines': [{'description': 'Supplies', 'qty': 1, 'unit': 'ea', 'unit_price': 2}]},
+        '/api/menu/apply': {'changes': [{'sku': 'soda', 'price': 5}]},
+        '/api/ask': {'question': 'Why?', 'facts': {}, 'week': '2026-10-26', 'prev_week': '2026-10-19'},
+        '/api/extract': {'image': 'data:image/jpeg;base64,/9j/dGVzdA=='},
+    }.get(route, {})
 
 
 class HTTPFixture(unittest.TestCase):
@@ -25,7 +36,7 @@ class HTTPFixture(unittest.TestCase):
         cls.private_paths = [
             '.env', '.env.example', 'backhouse.db', 'other.sqlite',
             'other.sqlite3', 'backhouse.db-wal', 'backhouse.db-shm',
-            'server.py', 'square_actions.py', 'README.md', '.git/config', '.hidden',
+            'server.py', 'README.md', '.git/config', '.hidden',
             'samples/orders.csv', 'samples/invoice.pdf', 'samples/receipt.jpg',
             'future-asset.js', 'nested/index.html', 'private/financial-report.pdf',
             'backups/restaurant.sqlite3', '.env.production', 'backhouse.db-journal',
@@ -36,13 +47,13 @@ class HTTPFixture(unittest.TestCase):
             target.write_bytes(cls.marker)
         cls.root_patch = patch.object(server, 'ROOT', cls.root)
         cls.root_patch.start()
-        cls.db_patch = patch.object(server, 'DB_PATH', cls.root / 'test.db')
+        cls.limiter_patch = patch.object(server, 'REQUEST_LIMITER', RequestLimiter(10000, 20000, 10000))
+        cls.limiter_patch.start()
+        cls.db_patch = patch.object(server, 'DB_PATH', cls.root / 'temporary.db')
         cls.db_patch.start()
         cls.network_patch = patch.object(
             server.urllib.request, 'urlopen', side_effect=AssertionError('External call'))
         cls.network_patch.start()
-        cls.square_patch = patch.object(server.SQUARE_OPENER, 'open', side_effect=AssertionError('External Square call'))
-        cls.square_patch.start()
         cls.httpd = server.ThreadingHTTPServer(('127.0.0.1', 0), server.Handler)
         cls.thread = threading.Thread(target=cls.httpd.serve_forever, daemon=True)
         cls.thread.start()
@@ -53,18 +64,18 @@ class HTTPFixture(unittest.TestCase):
         cls.httpd.server_close()
         cls.thread.join()
         cls.network_patch.stop()
-        cls.square_patch.stop()
         cls.db_patch.stop()
+        cls.limiter_patch.stop()
         cls.root_patch.stop()
         cls.temp.cleanup()
 
-    def request(self, method, path, payload=None, headers=None):
+    def request(self, method, path, payload=None, headers=None, raw=None):
         conn = http.client.HTTPConnection(*self.httpd.server_address, timeout=5)
         try:
             body = json.dumps(payload) if payload is not None else None
             request_headers = {'Content-Type': 'application/json', 'Origin': server.PUBLIC_ORIGIN}
             request_headers.update(headers or {})
-            conn.request(method, path, body, request_headers)
+            conn.request(method, path, raw if raw is not None else body, request_headers)
             response = conn.getresponse()
             return response.status, dict(response.getheaders()), response.read()
         finally:
@@ -78,7 +89,8 @@ class PublicAssetTests(HTTPFixture):
                 status, headers, body = self.request('GET', path)
                 self.assertEqual(status, 200)
                 self.assertEqual(headers['Content-Type'], 'text/html; charset=utf-8')
-                self.assertIn(self.dashboard.encode('utf-8'), body)
+                self.assertIn(self.dashboard.split('<script>')[0].encode('utf-8'), body)
+                self.assertIn(b'<script nonce=', body)
                 self.assertIn(b'<meta name="viewport"', body)
                 self.assertEqual(int(headers['Content-Length']), len(body))
                 head_status, head_headers, head_body = self.request('HEAD', path)
@@ -172,8 +184,7 @@ class PublicAssetTests(HTTPFixture):
     def test_post_api_dispatch_preserved_without_side_effects(self):
         routes = {
             '/api/import': 'import_csv', '/api/invoices': 'save_invoice',
-            '/api/menu/apply': 'apply_menu', '/api/menu/preview': 'preview_menu',
-            '/api/square/seed/preview': 'preview_seed', '/api/square/seed': 'confirm_seed', '/api/reset': 'reset',
+            '/api/menu/apply': 'apply_menu', '/api/reset': 'reset',
             '/api/ask': 'ask', '/api/extract': 'extract',
             '/api/square/sync': 'square_sync',
         }
@@ -182,13 +193,17 @@ class PublicAssetTests(HTTPFixture):
             for route, function in routes.items():
                 with self.subTest(route=route), patch.object(
                         server, function, return_value={'ok': True}) as mock:
-                    status, _, body = self.request('POST', route, {})
+                    status, _, body = self.request('POST', route, valid_payload(route))
                     self.assertEqual(status, 200)
                     self.assertEqual(json.loads(body), {'ok': True})
                     mock.assert_called_once()
+            with patch.object(server, 'square_seed') as seed, patch.object(
+                    server, 'square_sync', return_value={'pulled': 3}), patch.object(server.time, 'sleep'):
+                self.assertEqual(self.request('POST', '/api/square/seed', {})[0], 200)
+                seed.assert_called_once()
         with patch.object(server, 'KEY', ''), patch.object(server, 'SQUARE_TOKEN', ''):
             for path in ['/api/ask', '/api/extract', '/api/square/sync']:
-                self.assertEqual(self.request('POST', path, {})[0], 400)
+                self.assertEqual(self.request('POST', path, valid_payload(path))[0], 400)
 
 
 if __name__ == '__main__':
