@@ -93,3 +93,22 @@ Week-over-week change splits into sales & mix, a price effect per ingredient (th
 4. **Ask (25s).** "Why did my profit drop?" then "What if I raise pizza prices by $0.75?" Point at the tools-used line and the chart. Type "execute": Square gets the new price via API, the delivery apps get a change list.
 5. **Real data (25s).** Sources: drop the unusual Grubhub CSV (AI maps the columns, 100 personal fields removed, 0 duplicates). Drop the Sysco PDF; it reads all 3 pages and the mozzarella line shows its page number.
 6. **Close (10s).** "Swiggy built Guru for one platform. Owners live across five. ProfitShield sees all of them and shows its receipts."
+
+## HTTP file access and regression tests
+
+Only `/` and `/index.html` serve the dashboard. Its scripts, styles and icons
+are embedded; fonts load from Google Fonts. All other file paths return 404,
+including sample files, configuration, database files and Python source.
+GET and HEAD share this allowlist. Query strings do not change the selected
+asset; encoded or noncanonical asset paths are not accepted. Future public
+assets must be added individually to `PUBLIC_ASSETS` in `server.py`.
+
+Run the standard-library HTTP regression tests with:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+Tests use temporary dummy private files and mock API operations; they do not
+use integration credentials, call external services or reset the real database.
+This file allowlist does not add authentication to the application APIs.
