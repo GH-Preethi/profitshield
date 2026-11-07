@@ -2,32 +2,32 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: merchant-console shell (Stripe/Ramp pattern). Grouped left rail, page header with week picker,
    overview reads top-down: what slipped away -> the numbers -> why -> by channel. AI lives in a right panel on every page. */
 :root{
-  --bg:#F6F7F9; --surface:#FFFFFF; --sunk:#F0F1F4; --hover:#F3F4F6; --ink:#101114; --ink2:#2B2D33; --muted:#646873; --faint:#9A9EA8; --line:#E5E7EB; --line2:#EEF0F3;
-  --brand:#E8412C; --brand-weak:#FDECE9;
-  --neg:#C9372C; --neg-weak:#FCEBE9; --pos:#147A4D; --pos-weak:#E3F3EA; --warn:#965F06; --warn-weak:#FBF0DA; --info:#2F5BD3; --info-weak:#E9EFFD;
-  --btn:#101114; --btn-ink:#FFFFFF; --focus:#3B6BE0; --scrim:rgba(16,17,20,.28);
-  --shadow:0 1px 2px rgba(16,17,20,.04),0 1px 1px rgba(16,17,20,.03); --shadow-lg:0 12px 40px rgba(16,17,20,.16),0 2px 6px rgba(16,17,20,.06);
-  --display:"Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bg:#F2F2F4; --surface:#FFFFFF; --sunk:#EDEDF0; --hover:#F6F6F8; --ink:#0E0F11; --ink2:#2A2B30; --muted:#6B6D75; --faint:#A0A2A9; --line:#E4E4E8; --line2:#EFEFF2;
+  --brand:#F0592A; --brand-weak:#FEEEE7;
+  --neg:#D2382B; --neg-weak:#FCEDEB; --pos:#1A8152; --pos-weak:#E5F4EC; --warn:#C25414; --warn-weak:#FDF0E7; --info:#3557C9; --info-weak:#EBEFFC;
+  --btn:#0E0F11; --btn-ink:#FFFFFF; --focus:#F0592A; --scrim:rgba(14,15,17,.24);
+  --shadow:0 1px 2px rgba(14,15,17,.05),0 4px 14px rgba(14,15,17,.04); --shadow-lg:0 18px 50px rgba(14,15,17,.16),0 3px 8px rgba(14,15,17,.06);
+  --display:"Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --body:"Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --r:12px;
+  --r:14px;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0D0E10; --surface:#151619; --sunk:#1B1C20; --hover:#1E2024; --ink:#EDEEF1; --ink2:#D6D8DE; --muted:#9EA2AC; --faint:#6C707A; --line:#26282D; --line2:#202226;
-  --brand:#F2573F; --brand-weak:#3A1D18;
-  --neg:#F27D6C; --neg-weak:#3A1D1A; --pos:#4CC38A; --pos-weak:#14301F; --warn:#E5AA4E; --warn-weak:#33270F; --info:#8AAAF7; --info-weak:#1A2440;
-  --btn:#EDEEF1; --btn-ink:#101114; --focus:#86A7F7; --scrim:rgba(0,0,0,.5);
+  --bg:#0C0C0E; --surface:#16171A; --sunk:#1D1E22; --hover:#1C1D21; --ink:#F0F0F2; --ink2:#D6D7DC; --muted:#9C9EA6; --faint:#6A6C74; --line:#27282D; --line2:#212226;
+  --brand:#FF6B3D; --brand-weak:#3A2117;
+  --neg:#F47B6E; --neg-weak:#3A1D1A; --pos:#4CC38A; --pos-weak:#14301F; --warn:#FF9A5C; --warn-weak:#3A2414; --info:#8EA6F7; --info-weak:#1B2343;
+  --btn:#F0F0F2; --btn-ink:#0E0F11; --focus:#FF6B3D; --scrim:rgba(0,0,0,.5);
   --shadow:none; --shadow-lg:0 12px 40px rgba(0,0,0,.5); color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#0D0E10; --surface:#151619; --sunk:#1B1C20; --hover:#1E2024; --ink:#EDEEF1; --ink2:#D6D8DE; --muted:#9EA2AC; --faint:#6C707A; --line:#26282D; --line2:#202226;
-  --brand:#F2573F; --brand-weak:#3A1D18;
-  --neg:#F27D6C; --neg-weak:#3A1D1A; --pos:#4CC38A; --pos-weak:#14301F; --warn:#E5AA4E; --warn-weak:#33270F; --info:#8AAAF7; --info-weak:#1A2440;
-  --btn:#EDEEF1; --btn-ink:#101114; --focus:#86A7F7; --scrim:rgba(0,0,0,.5);
+  --bg:#0C0C0E; --surface:#16171A; --sunk:#1D1E22; --hover:#1C1D21; --ink:#F0F0F2; --ink2:#D6D7DC; --muted:#9C9EA6; --faint:#6A6C74; --line:#27282D; --line2:#212226;
+  --brand:#FF6B3D; --brand-weak:#3A2117;
+  --neg:#F47B6E; --neg-weak:#3A1D1A; --pos:#4CC38A; --pos-weak:#14301F; --warn:#FF9A5C; --warn-weak:#3A2414; --info:#8EA6F7; --info-weak:#1B2343;
+  --btn:#F0F0F2; --btn-ink:#0E0F11; --focus:#FF6B3D; --scrim:rgba(0,0,0,.5);
   --shadow:none; --shadow-lg:0 12px 40px rgba(0,0,0,.5); color-scheme:dark }
 
 *{box-sizing:border-box}
@@ -37,7 +37,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:6px}
 .num,td.n,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.015em;text-wrap:balance;margin:0}
+h1,h2,h3{font-family:var(--display);font-weight:650;letter-spacing:-.025em;text-wrap:balance;margin:0}
 p{margin:0}
 svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
@@ -45,7 +45,7 @@ svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100%}
 .side{background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:18px;padding-block:16px;padding-left:max(14px, env(safe-area-inset-left, 0px));padding-right:14px;overflow:auto}
 .brand{display:flex;align-items:center;gap:9px;padding:2px 6px}
-.brand b{font-family:var(--display);font-size:18px;letter-spacing:-.02em}
+.brand b{font-family:var(--display);font-size:17px;font-weight:700;letter-spacing:-.03em}
 .store{all:unset;cursor:default;display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px}
 .avatar{width:28px;height:28px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;font-weight:700;font-size:12px;color:var(--ink2);flex:none}
 .store-t{display:grid;line-height:1.25;min-width:0}
@@ -66,14 +66,15 @@ svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .main{min-width:0;padding-block:20px 72px;padding-left:32px;padding-right:max(32px, env(safe-area-inset-right, 0px))}
 .page{max-width:1240px;margin:0 auto;display:grid;gap:20px}
 .pagehead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
-.pagehead h1{font-size:26px;line-height:1.15}
+.pagehead h1{font-size:30px;line-height:1.1}
 .pagehead p{color:var(--muted);margin-top:4px}
 .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .select{position:relative;display:inline-flex}
 .select select{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:7px 32px 7px 32px;font-size:13px;font-weight:500;cursor:pointer;box-shadow:var(--shadow)}
 .select .i{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted)}
 .select .i.l{left:10px}.select .i.r{right:10px}
-.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:7px 13px;border-radius:9px;background:var(--btn);color:var(--btn-ink);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap}
+.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:8px 14px;border-radius:9px;background:var(--btn);color:var(--btn-ink);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap}
+.btn.primary{background:var(--brand);color:#fff}
 .btn:hover{opacity:.9}
 .btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
 .btn.ghost:hover{background:var(--hover);opacity:1}
@@ -97,13 +98,13 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid v
 
 /* recovery banner */
 .banner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;padding:20px 22px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);position:relative;overflow:hidden}
-.banner::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--brand)}
-.banner h2{font-size:21px;line-height:1.25}
-.banner h2 em{font-style:normal;color:var(--neg)}
+.banner{padding:26px 28px}
+.banner h2{font-size:26px;line-height:1.2;letter-spacing:-.03em;max-width:26ch}
+.banner h2 em{font-style:normal;color:var(--brand)}
 .banner p{color:var(--muted);margin-top:6px;max-width:70ch}
 .progress{display:grid;gap:6px;min-width:240px}
 .progress .track{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
-.progress .track i{display:block;height:100%;background:var(--pos);border-radius:99px;transition:width .4s}
+.progress .track i{display:block;height:100%;background:var(--brand);border-radius:99px;transition:width .4s}
 .progress .lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
 .progress .lbl b{color:var(--ink);font-family:var(--mono);font-weight:500}
 
@@ -112,7 +113,7 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid v
 .kpi{padding:14px 16px 12px;display:grid;gap:4px}
 .kpi-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .kpi small{color:var(--muted);font-size:12.5px;font-weight:500}
-.kpi .v{font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.kpi .v{font-family:var(--display);font-size:28px;font-weight:650;letter-spacing:-.035em;line-height:1.15}
 .kpi .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
 .kpi .foot .note{font-size:11.5px}
 .delta{font-family:var(--mono);font-size:11.5px;padding:1px 7px;border-radius:99px;white-space:nowrap}
@@ -137,7 +138,7 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid v
 .lt{display:grid;min-width:0}
 .lt b{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lt span{color:var(--muted);font-size:12px}
-.lv{font-family:var(--mono);font-size:13.5px;color:var(--neg);text-align:right}
+.lv{font-family:var(--mono);font-size:13.5px;color:var(--ink);text-align:right}
 .lv.done{color:var(--pos)}
 
 /* findings inbox */
@@ -153,7 +154,7 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid v
 .ft b{font-weight:600;font-size:14px}
 .ft span{color:var(--muted);font-size:12.5px}
 .fimp{text-align:right;display:grid;gap:1px;min-width:92px}
-.fimp .num{font-size:15px;color:var(--neg)}
+.fimp .num{font-size:15px;color:var(--ink)}
 .fimp .num.pos{color:var(--pos)}
 .fimp small{color:var(--muted);font-size:11px;font-family:var(--mono)}
 .fstat{display:flex;gap:6px;align-items:center;justify-content:flex-end;min-width:140px}
@@ -258,6 +259,34 @@ pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-heigh
 .bar-cell{display:flex;align-items:center;gap:8px;min-width:140px}
 .mbar{height:6px;border-radius:3px;background:var(--sunk);flex:1;position:relative;overflow:hidden}
 .mbar i{position:absolute;left:0;top:0;bottom:0;background:var(--ink);border-radius:3px}
+.feed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:10px 20px 20px}
+.fcard{border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:8px;align-content:start;background:var(--surface);box-shadow:var(--shadow)}
+.fhead{display:flex;align-items:center;gap:10px}
+.fic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--sunk);color:var(--ink2);flex:none}
+.fic.brand{background:var(--brand-weak);color:var(--brand)}
+.fmeta{display:grid;line-height:1.25;min-width:0}
+.fmeta b{font-size:13.5px;font-weight:600}
+.fmeta small{font-size:11.5px;color:var(--muted)}
+.fcard p{font-size:13px;color:var(--ink2)}
+.fact{display:flex;gap:6px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.okx{display:flex;gap:6px}
+.okx button{all:unset;cursor:pointer;width:30px;height:26px;border:1px solid var(--line);border-radius:8px;display:grid;place-items:center;background:var(--surface)}
+.okx button.ok{color:var(--pos)} .okx button.no{color:var(--neg)}
+.okx button:hover{background:var(--hover)}
+.map{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;font-size:12px}
+.map span{border:1px solid var(--line);border-radius:7px;padding:4px 8px;background:var(--bg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agents{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.agent{padding:18px 20px;display:grid;gap:10px;align-content:start}
+.agent h3{font-size:16px}
+.agent p{color:var(--muted);font-size:13px}
+.agent-stats{display:flex;flex-wrap:wrap;gap:16px;padding-top:10px;border-top:1px solid var(--line2)}
+.agent-stats div{display:grid}
+.agent-stats b{font-family:var(--mono);font-weight:500;font-size:15px}
+.agent-stats small{color:var(--muted);font-size:11.5px}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--pos)}
+.live i{width:6px;height:6px;border-radius:50%;background:var(--pos);box-shadow:0 0 0 3px var(--pos-weak)}
+@media (max-width: 1100px){ .feed{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+@media (max-width: 760px){ .feed,.agents{grid-template-columns:minmax(0,1fr)} }
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:13px;z-index:60;max-width:calc(100% - 32px);box-shadow:var(--shadow-lg)}
 
 @media (max-width: 1100px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} .grid2{grid-template-columns:minmax(0,1fr)} }
@@ -300,6 +329,9 @@ pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-heigh
   <symbol id="i-pct" viewBox="0 0 24 24"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.2"/><circle cx="17" cy="17" r="2.2"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
   <symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 16.5h5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
   <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></symbol>
 </svg>
 <div class="app">
@@ -314,6 +346,7 @@ pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-heigh
         <button data-go="overview"><svg class="i"><use href="#i-home"/></svg>Home</button>
         <button data-go="leaks"><svg class="i"><use href="#i-leak"/></svg>Money leaks<span class="count" id="navCount"></span></button>
         <button data-go="ask"><svg class="i"><use href="#i-spark"/></svg>Ask ProfitShield</button>
+        <button data-go="agents"><svg class="i"><use href="#i-bot"/></svg>Agents</button>
       </div>
       <div class="navgroup" style="margin-top:14px">
         <div class="navlabel">Books</div>
@@ -344,7 +377,7 @@ pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-heigh
     <!-- HOME -->
     <section class="view" id="v-overview">
       <div class="banner">
-        <div><h2 id="bannerTitle"></h2><p id="bannerSub"></p><div class="row" style="margin-top:12px"><button class="btn" id="openTop">Review leaks</button><button class="btn ghost" id="askWhy"><svg class="i" style="color:var(--brand)"><use href="#i-spark"/></svg>Explain this week</button></div></div>
+        <div><h2 id="bannerTitle"></h2><p id="bannerSub"></p><div class="row" style="margin-top:12px"><button class="btn primary" id="openTop">Review leaks</button><button class="btn ghost" id="askWhy"><svg class="i" style="color:var(--brand)"><use href="#i-spark"/></svg>Explain this week</button></div></div>
         <div class="progress"><div class="lbl"><span>Recovered</span><b id="recLbl">$0 of $0</b></div><div class="track"><i id="recBar" style="width:0"></i></div><span class="note" id="recNote"></span></div>
       </div>
       <div class="kpis" id="kpis"></div>
@@ -359,6 +392,10 @@ pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-heigh
         </div>
       </div>
       <div class="card">
+        <div class="card-h"><h2>Agent activity</h2><p>What ProfitShield's agents did with this week's data. You approve anything that changes your books.</p></div>
+        <div class="feed" id="feed"></div>
+      </div>
+      <div class="card">
         <div class="card-h"><h2>By channel</h2><p>What each app really pays you after fees, promotions and error charges.</p></div>
         <div class="tbl-wrap" style="margin-top:6px"><table id="chanTable"></table></div>
       </div>
@@ -371,6 +408,9 @@ pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-heigh
         <div class="findings" id="findings"></div>
       </div>
     </section>
+
+    <!-- AGENTS -->
+    <section class="view" id="v-agents"><div class="agents" id="agentList"></div></section>
 
     <!-- ASK (full-page fallback, panel is primary) -->
     <section class="view" id="v-ask"></section>
@@ -657,7 +697,7 @@ const skey=f=>CUR+'|'+f.kind+'|'+(f.g||f.ch||'')+'|'+(f.name||'');
 const statusOf=f=>STATUS[skey(f)]||'open';
 function setStatus(f,s){STATUS[skey(f)]=s;try{localStorage.setItem('ps-status',JSON.stringify(STATUS))}catch(e){}renderOverview();if($('#v-leaks').classList.contains('active'))renderLeaks()}
 const ICON={price:['i-tag','warn'],comm:['i-pct','neg'],promo:['i-tag','warn'],err:['i-box','info'],dup:['i-inv','neg']};
-const STAT_PILL={open:['Open','neg'],disputed:['In dispute','warn'],resolved:['Resolved','pos']};
+const STAT_PILL={open:['Needs review','warn'],disputed:['Disputed','info'],resolved:['Recovered','pos']};
 const ACTION_WORD={price:'Ask supplier',comm:'Dispute',promo:'Request credit',err:'Fix packing',dup:'Request credit'};
 function renderWeekSeg(){
   const sel=$('#weekSel');sel.innerHTML=WEEKS.slice(1).map(w=>`<option value="${w.id}" ${w.id===CUR?'selected':''}>Week of ${w.label}</option>`).join('');
@@ -688,6 +728,7 @@ function renderOverview(){
   const rows=CHANNELS.map(ch=>{const r=os.filter(o=>o.channel===ch);const g=r.reduce((s,o)=>s+o.subtotal,0);const fee=r.reduce((s,o)=>s+o.subtotal*o.rate,0);const pr=r.reduce((s,o)=>s+o.promoAmt,0);const er=r.reduce((s,o)=>s+(errBy[o.id]||0),0);const net=g-fee-pr-er;const over=r.filter(o=>o.rate>CONTRACT[ch]+0.002).length;const un=r.filter(o=>o.promo&&!isApproved(o)).length;return{ch,n:r.length,g,fee,pr,er,net,keep:g?net/g:0,over,un}});
   const tot=rows.reduce((s,r)=>s+r.g,0);
   $('#chanTable').innerHTML=`<thead><tr><th>Channel</th><th class="n">Orders</th><th>Share of sales</th><th class="n">Sales</th><th class="n">Fees</th><th class="n">Promos</th><th class="n">Error charges</th><th class="n">You keep</th><th>Flags</th></tr></thead><tbody>${rows.map(r=>`<tr><td><span class="chan"><i style="background:${CH_COLOR[r.ch]}"></i>${esc(r.ch)}</span></td><td class="n">${r.n}</td><td><div class="share"><span class="t"><i style="width:${(r.g/tot*100).toFixed(1)}%;background:${CH_COLOR[r.ch]}"></i></span><span class="num note">${(r.g/tot*100).toFixed(0)}%</span></div></td><td class="n">${money(r.g)}</td><td class="n">${r.fee?money(r.fee):'–'}</td><td class="n">${r.pr?money(r.pr):'–'}</td><td class="n">${r.er?money(r.er):'–'}</td><td class="n"><b>${money(r.net)}</b> <span class="note">${(r.keep*100).toFixed(0)}%</span></td><td>${r.over?`<span class="pill neg">${r.over} over contract</span> `:''}${r.un?`<span class="pill warn">${r.un} unapproved promo</span>`:''}${!r.over&&!r.un?'<span class="pill pos">Clean</span>':''}</td></tr>`).join('')}</tbody>`;
+  renderFeed();
   $('#navCount').textContent=findings.filter(f=>statusOf(f)==='open').length||'';
   $('#openTop').onclick=()=>go('leaks');
   $('#askWhy').onclick=()=>{openAssist();ask('Why did my profit drop this week?')};
@@ -695,7 +736,7 @@ function renderOverview(){
 let LEAKTAB='open';
 function renderLeaks(){
   const F=A.findings;const groups={open:F.filter(f=>statusOf(f)==='open'),disputed:F.filter(f=>statusOf(f)==='disputed'),resolved:F.filter(f=>statusOf(f)==='resolved'),all:F};
-  $('#leakTabs').innerHTML=[['open','Open'],['disputed','In dispute'],['resolved','Resolved'],['all','All']].map(([k,l])=>`<button class="tab" role="tab" aria-selected="${k===LEAKTAB}" data-t="${k}">${l}<span class="num">${groups[k].length}</span></button>`).join('');
+  $('#leakTabs').innerHTML=[['open','Needs review'],['disputed','Disputed'],['resolved','Recovered'],['all','All']].map(([k,l])=>`<button class="tab" role="tab" aria-selected="${k===LEAKTAB}" data-t="${k}">${l}<span class="num">${groups[k].length}</span></button>`).join('');
   $$('#leakTabs .tab').forEach(b=>b.onclick=()=>{LEAKTAB=b.dataset.t;renderLeaks()});
   const list=groups[LEAKTAB];
   $('#findings').innerHTML=list.map(f=>{const st=statusOf(f);const [ic,tone]=ICON[f.kind]||['i-leak','neg'];return`<div class="finding" role="button" tabindex="0" data-f="${f.id}"><span class="lic ${tone}"><svg class="i"><use href="#${ic}"/></svg></span><span class="ft"><b>${esc(f.title)}</b><span>${esc(f.sub)}</span><span class="tags">${f.tags.map(([t,l])=>`<span class="pill ${t}">${esc(l)}</span>`).join('')}</span></span><span class="fstat"><span class="pill ${STAT_PILL[st][1]}">${STAT_PILL[st][0]}</span>${st==='open'?`<button class="btn ghost sm" data-act="${f.kind==='price'||f.kind==='err'?'resolved':'disputed'}">${f.kind==='price'||f.kind==='err'?'Mark handled':'Mark disputed'}</button>`:st==='disputed'?`<button class="btn ghost sm" data-act="resolved">Credit received</button>`:`<button class="btn ghost sm" data-act="open">Reopen</button>`}</span><span class="fimp"><span class="num ${st==='resolved'?'pos':''}">${signed(f.impact)}</span><small>${signed(f.impact*52)}/yr</small></span></div>`}).join('')||`<p class="pad note">${LEAKTAB==='open'?'Nothing open. Nice work.':'Nothing here yet.'}</p>`;
@@ -918,6 +959,46 @@ async function executeSim(){
 }
 document.addEventListener('click',e=>{if(e.target.closest('[data-exec]')){e.preventDefault();executeSim()}});
 
+/* ============ agents ============ */
+const AGENTS=[
+  {k:'ingest',icon:'i-plug',name:'Ingestion agent',where:'Runs on every upload and sync',desc:'Reads payout CSVs, POS exports, invoice PDFs and receipt photos. Maps unfamiliar columns and item names to your books and strips personal data before anything is stored or sent to AI.'},
+  {k:'audit',icon:'i-bell',name:'Audit agent',where:'Runs in the background after new data lands',desc:'Checks every order against your contract rates and approved promotions, compares supplier prices week over week, catches duplicate invoices and error-charge spikes, then raises alerts.'},
+  {k:'guru',icon:'i-spark',name:'Guru',where:'Ask ProfitShield, on every page',desc:'Answers plain-language questions by choosing which tools to run: profit bridge, commission check, promo finder, price-change finder, margins. Every number comes from code and links to its rows.'},
+  {k:'sim',icon:'i-trend',name:'Simulation agent',where:'Inside each leak and in chat',desc:'Tests fixes before you make them, like raising pizza prices on delivery only, and shows the weekly profit each option brings back.'},
+  {k:'exec',icon:'i-check',name:'Execution agent',where:'After you approve a change',desc:'Pushes approved price changes to your POS through the Square API and prepares the exact edits for each delivery app portal.'},
+  {k:'dispute',icon:'i-inv',name:'Dispute agent',where:'Recovery module',desc:'Builds dispute tickets and credit requests with the exact order IDs, payout rows and invoice lines, ready for you to file.'}];
+function agentStats(){
+  const F=A.findings,imps=BACKEND.imports||[];
+  const rows=imps.reduce((s,i)=>s+(i.rows||0),0),pii=imps.reduce((s,i)=>s+(i.redacted||0),0),aiMapped=imps.filter(i=>i.mapped_by==='AI'||i.mapped_by==='AI + owner').length;
+  const disp=F.filter(f=>['comm','promo','dup'].includes(f.kind));const pf=F.find(f=>f.kind==='price');
+  const sim=pf?simulate(pf.affected.filter(k=>k!=='knots'),0.75,['DoorDash','Uber Eats','Grubhub']):null;
+  const repriced=Object.keys(MENU).filter(k=>Math.abs(MENU[k].price-MENU_BASE[k])>.001);
+  return{ingest:[[BACKEND.on?imps.length:6,'imports'],[BACKEND.on?rows.toLocaleString():DB.orders.length.toLocaleString(),'rows read'],[pii,'personal fields removed']],
+    audit:[[F.length,'leaks found'],[money(-F.reduce((s,f)=>s+Math.min(0,f.impact),0)),'at stake this week'],[A.c.orders.toLocaleString(),'orders checked']],
+    guru:[[8,'tools'],[HISTORY.filter(h=>h.role==='user').length,'questions this session'],[AI.on?'On':'Off','AI status']],
+    sim:[[sim?signed(sim.extra_profit_per_week):'–','best fix / week'],[sim?Math.round(sim.extra_profit_per_week/Math.max(1,sim.price_increase_leak_per_week)*100)+'%':'–','of the leak covered']],
+    exec:[[repriced.length,'prices changed'],[BACKEND.square?'Connected':'Not connected','Square POS']],
+    dispute:[[disp.length,'tickets ready'],[money(-disp.reduce((s,f)=>s+f.impact,0)),'claimable']],_sim:sim,_pf:pf,_disp:disp,_repriced:repriced};
+}
+function renderFeed(){
+  const S=agentStats(),F=A.findings;const cards=[];
+  const card=(icon,brand,agent,when,text,extra,act)=>`<div class="fcard"><div class="fhead"><span class="fic ${brand?'brand':''}"><svg class="i"><use href="#${icon}"/></svg></span><span class="fmeta"><b>${agent}</b><small>${when}</small></span></div><p>${text}</p>${extra||''}${act?`<div class="fact">${act}</div>`:''}</div>`;
+  F.slice(0,2).forEach(f=>cards.push(card('i-bell',true,'Audit agent','Alert · '+weekOf(CUR).label,`<b>${esc(f.title)}.</b> ${esc(f.sub)}`,'',`<span class="num" style="color:var(--neg)">${signed(f.impact)}/wk</span><button class="btn ghost sm" data-f="${f.id}">Review</button>`)));
+  if(S._disp.length)cards.push(card('i-inv',false,'Dispute agent','Drafted',`${S._disp.length} tickets ready with order IDs and payout rows, worth ${money(-S._disp.reduce((s,f)=>s+f.impact,0))}. You file them in each merchant portal.`,'',`<span class="note">Needs your approval</span><button class="btn ghost sm" data-go="leaks">Open tickets</button>`));
+  const lastMap=(BACKEND.imports||[]).find(i=>i.mapped_by&&i.mapped_by!=='known format'&&i.mapping&&i.mapping!=='{}');
+  let mp=[];try{mp=lastMap?Object.entries(JSON.parse(lastMap.mapping)).slice(0,3):[]}catch(e){}
+  cards.push(card('i-plug',false,'Ingestion agent',lastMap?'Mapped '+esc(lastMap.file):'Synced',lastMap?`Unfamiliar ${esc(lastMap.channel||'')} layout mapped by ${esc(lastMap.mapped_by)}. ${lastMap.redacted?lastMap.redacted+' personal fields removed before storage.':''}`:`${DB.orders.length.toLocaleString()} orders and ${DB.invoices.length} invoices in your books. Drop an unfamiliar export on Connections to watch it map the columns.`,
+    mp.map(([k,v])=>`<div class="map"><span>${esc(v)}</span><svg class="i" style="width:14px;height:14px;color:var(--faint)"><use href="#i-send"/></svg><span>${esc(k.replace(/_/g,' '))}</span></div>`).join(''),lastMap?'':`<span></span><button class="btn ghost sm" data-go="sources">Connections</button>`));
+  if(S._sim)cards.push(card('i-trend',false,'Simulation agent','Suggested fix',`Raise ${esc(S._sim.items.join(' and ').toLowerCase())} by $0.75 on delivery apps: <b>${signed(S._sim.extra_profit_per_week)} a week</b>, covering ${S.sim[1][0]} of the ${esc(ING[S._pf.g].name.toLowerCase())} increase.`,'',`<span class="note">Assumes volume holds</span><button class="btn ghost sm" data-f="${S._pf.id}">Simulate</button>`));
+  cards.push(card('i-check',false,'Execution agent',S._repriced.length?'Applied':'Waiting',S._repriced.length?`${S._repriced.length} price changes live: ${S._repriced.map(k=>esc(MENU[k].name)+' '+money(MENU[k].price,2)).join(', ')}.`:'No changes pending. Approve a simulated fix and it pushes to Square, plus a ready change list for each delivery app.','',''));
+  $('#feed').innerHTML=cards.slice(0,6).join('');
+  $$('#feed [data-f]').forEach(b=>b.onclick=()=>openFinding(b.dataset.f));
+}
+function renderAgents(){
+  const S=agentStats();
+  $('#agentList').innerHTML=AGENTS.map(a=>`<div class="card agent"><div class="fhead"><span class="fic ${a.k==='guru'||a.k==='audit'?'brand':''}"><svg class="i"><use href="#${a.icon}"/></svg></span><span class="fmeta"><b style="font-size:15px">${a.name}</b><small>${a.where}</small></span><span style="margin-left:auto" class="live"><i></i>${a.k==='guru'&&!AI.on?'Rules mode':'Active'}</span></div><p>${a.desc}</p><div class="agent-stats">${S[a.k].map(([v,l])=>`<div><b>${esc(v)}</b><small>${l}</small></div>`).join('')}</div></div>`).join('');
+}
+
 /* ============ Ask ============ */
 const AI={on:false,model:''};
 const SUGG=['Why did profit drop?','Am I being overcharged?','What should I fix first?','What if I raise pizza prices by $0.75?','Which item lost the most margin?','Did I pay any invoice twice?'];
@@ -978,12 +1059,12 @@ $$('#sugg button').forEach(b=>b.onclick=()=>ask(b.textContent));
 function greet(){$('#msgs').innerHTML='';renderMsg('bot',`I've checked ${A.c.orders.toLocaleString()} orders, every payout line and your supplier invoices for the week of ${weekOf(CUR).label}. ${A.findings.length?`The biggest leak is ${A.findings[0].title.charAt(0).toLowerCase()+A.findings[0].title.slice(1)} [${A.findings[0].id}].`:'Nothing unusual.'} Ask me anything, or try a suggestion below.`)}
 
 /* ============ routing ============ */
-const VIEWS=['overview','leaks','payouts','invoices','margins','sources'];
-const HEAD={overview:['Home',()=>`Forbes Ave Slice Co. · week of ${weekOf(CUR).label}`],leaks:['Money leaks',()=>'Everything that cost you money last week, with the evidence and the fix.'],payouts:['Payouts',()=>'Every delivery order, line by line, as the apps paid it.'],invoices:['Invoices',()=>'Supplier invoices and what you paid per ingredient.'],margins:['Menu & margins',()=>'What each dish really earns, in store and on delivery.'],sources:['Connections',()=>'Where your numbers come from.']};
+const VIEWS=['overview','leaks','agents','payouts','invoices','margins','sources'];
+const HEAD={overview:['Home',()=>`Forbes Ave Slice Co. · week of ${weekOf(CUR).label}`],leaks:['Money leaks',()=>'Everything that cost you money last week, with the evidence and the fix.'],agents:['Agents',()=>'Six agents watch your books. They prepare everything; you approve what changes.'],payouts:['Payouts',()=>'Every delivery order, line by line, as the apps paid it.'],invoices:['Invoices',()=>'Supplier invoices and what you paid per ingredient.'],margins:['Menu & margins',()=>'What each dish really earns, in store and on delivery.'],sources:['Connections',()=>'Where your numbers come from.']};
 let VIEW='overview';
 function go(v){if(v==='ask'){openAssist();return}if(!VIEWS.includes(v))v='overview';VIEW=v;$$('.view').forEach(s=>s.classList.toggle('active',s.id==='v-'+v));$$('.nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===v?'page':'false'));
   $('#pageTitle').textContent=HEAD[v][0];$('#pageSub').textContent=HEAD[v][1]();if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);
-  ({leaks:renderLeaks,payouts:renderPayouts,invoices:renderInvoices,margins:renderMargins,sources:renderSources}[v]||(()=>{}))();window.scrollTo(0,0)}
+  ({agents:renderAgents,leaks:renderLeaks,payouts:renderPayouts,invoices:renderInvoices,margins:renderMargins,sources:renderSources}[v]||(()=>{}))();window.scrollTo(0,0)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go)}});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h!==VIEW)go(h)});
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();openAssist()}});
@@ -994,7 +1075,7 @@ function recompute(){A=analyze();renderWeekSeg();renderOverview();go(VIEW);if(!H
 async function loadBackend(){
   const r=await fetch('/api/data',{cache:'no-store'});const d=await r.json();
   if(!d.weeks||!d.weeks.length)throw new Error('no data yet');
-  WEEKS=d.weeks;DB={orders:d.orders,errors:d.errors,invoices:d.invoices};Object.keys(MENU).forEach(k=>MENU[k].price=(d.menu_prices&&d.menu_prices[k])?d.menu_prices[k].price:MENU_BASE[k]);BACKEND.imports=d.imports||[];BACKEND.square=!!(d.square&&d.square.configured);
+  WEEKS=d.weeks;DB={orders:d.orders,errors:d.errors,invoices:d.invoices};Object.keys(MENU).forEach(k=>MENU[k].price=(d.menu_prices&&d.menu_prices[k])?d.menu_prices[k].price:MENU_BASE[k]);BACKEND.imports=d.imports||[];BACKEND.menu=d.menu_prices||{};BACKEND.square=!!(d.square&&d.square.configured);
   if(!WEEKS.some(w=>w.id===CUR)){const counts=WEEKS.map(w=>DB.orders.filter(o=>o.week===w.id&&o.channel!=='In-store').length);const mx=Math.max(...counts);let i=counts.length-1;while(i>0&&counts[i]<mx*.5)i--;CUR=WEEKS[Math.max(1,i)].id}
 }
 (async function boot(){

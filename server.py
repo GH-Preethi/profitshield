@@ -919,9 +919,10 @@ class Handler(SimpleHTTPRequestHandler):
                                     "square": bool(SQUARE_TOKEN)})
         if self.path.startswith("/api/data"):
             return self._json(200, app_data())
-        if self.path.endswith(".db"):
+        if self.path.split("?")[0].split("#")[0] not in ("/", "/index.html"):
+            # Only the app page is served. No .env, database, source code or sample files over HTTP.
             return self._json(404, {"error": "not found"})
-        if self.path.split("?")[0].split("#")[0] in ("/", "/index.html"):
+        if True:
             page = (ROOT / "index.html").read_text(encoding="utf-8")
             body = ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
                     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">"
@@ -933,7 +934,9 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
-        return super().do_GET()
+    def do_HEAD(self):
+        self.send_response(404)
+        self.end_headers()
 
     def do_POST(self):
         n = int(self.headers.get("Content-Length", 0))
