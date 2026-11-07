@@ -499,10 +499,15 @@ pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-heigh
 <div class="toast" id="toast" hidden></div>
 
 <script>
+async function apiFetch(url,options={}){
+  const headers=new Headers(options.headers||{});
+  if(options.method==='POST'){headers.set('Content-Type','application/json');if(!options.body)options={...options,body:'{}'};}
+  return fetch(url,{...options,headers,credentials:'same-origin'});
+}
 /* ============ helpers ============ */
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=(n,d=0)=>(n<0?'−':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const signed=(n,d=0)=>(n>0?'+':'')+money(n,d);
 const pct=(n,d=1)=>(n>0?'+':'')+(n*100).toFixed(d)+'%';
@@ -700,7 +705,7 @@ const ICON={price:['i-tag','warn'],comm:['i-pct','neg'],promo:['i-tag','warn'],e
 const STAT_PILL={open:['Needs review','warn'],disputed:['Disputed','info'],resolved:['Recovered','pos']};
 const ACTION_WORD={price:'Ask supplier',comm:'Dispute',promo:'Request credit',err:'Fix packing',dup:'Request credit'};
 function renderWeekSeg(){
-  const sel=$('#weekSel');sel.innerHTML=WEEKS.slice(1).map(w=>`<option value="${w.id}" ${w.id===CUR?'selected':''}>Week of ${w.label}</option>`).join('');
+  const sel=$('#weekSel');sel.innerHTML=WEEKS.slice(1).map(w=>`<option value="${esc(w.id)}" ${w.id===CUR?'selected':''}>Week of ${esc(w.label)}</option>`).join('');
   sel.onchange=()=>{CUR=sel.value;recompute()};
 }
 function spark(vals,color){const W=96,H=30,mx=Math.max(...vals),mn=Math.min(...vals),rg=(mx-mn)||1;const pts=vals.map((v,i)=>[i*(W-4)/(vals.length-1||1)+2,H-4-(v-mn)/rg*(H-10)]);
@@ -724,7 +729,7 @@ function renderOverview(){
   $('#topLeaks').innerHTML=findings.slice(0,5).map(f=>{const st=statusOf(f);const [ic,tone]=ICON[f.kind]||['i-leak','neg'];return`<button class="leak" data-f="${f.id}"><span class="lic ${tone}"><svg class="i"><use href="#${ic}"/></svg></span><span class="lt"><b>${esc(f.title)}</b><span>${st==='open'?esc(f.tags[0][1])+' · '+ACTION_WORD[f.kind]:STAT_PILL[st][0]}</span></span><span class="lv ${st==='resolved'?'done':''}">${st==='resolved'?'✓ ':''}${signed(f.impact)}</span></button>`}).join('')||'<p class="pad note">No leaks this week.</p>';
   $$('#topLeaks .leak').forEach(b=>b.onclick=()=>openFinding(b.dataset.f));
   // channels
-  const os=DB.orders.filter(o=>o.week===CUR);const errBy={};DB.errors.filter(e=>e.week===CUR).forEach(e=>errBy[e.orderId]=(errBy[e.orderId]||0)+e.amount);
+  const os=DB.orders.filter(o=>o.week===CUR);const errBy=Object.create(null);DB.errors.filter(e=>e.week===CUR).forEach(e=>errBy[e.orderId]=(errBy[e.orderId]||0)+e.amount);
   const rows=CHANNELS.map(ch=>{const r=os.filter(o=>o.channel===ch);const g=r.reduce((s,o)=>s+o.subtotal,0);const fee=r.reduce((s,o)=>s+o.subtotal*o.rate,0);const pr=r.reduce((s,o)=>s+o.promoAmt,0);const er=r.reduce((s,o)=>s+(errBy[o.id]||0),0);const net=g-fee-pr-er;const over=r.filter(o=>o.rate>CONTRACT[ch]+0.002).length;const un=r.filter(o=>o.promo&&!isApproved(o)).length;return{ch,n:r.length,g,fee,pr,er,net,keep:g?net/g:0,over,un}});
   const tot=rows.reduce((s,r)=>s+r.g,0);
   $('#chanTable').innerHTML=`<thead><tr><th>Channel</th><th class="n">Orders</th><th>Share of sales</th><th class="n">Sales</th><th class="n">Fees</th><th class="n">Promos</th><th class="n">Error charges</th><th class="n">You keep</th><th>Flags</th></tr></thead><tbody>${rows.map(r=>`<tr><td><span class="chan"><i style="background:${CH_COLOR[r.ch]}"></i>${esc(r.ch)}</span></td><td class="n">${r.n}</td><td><div class="share"><span class="t"><i style="width:${(r.g/tot*100).toFixed(1)}%;background:${CH_COLOR[r.ch]}"></i></span><span class="num note">${(r.g/tot*100).toFixed(0)}%</span></div></td><td class="n">${money(r.g)}</td><td class="n">${r.fee?money(r.fee):'–'}</td><td class="n">${r.pr?money(r.pr):'–'}</td><td class="n">${r.er?money(r.er):'–'}</td><td class="n"><b>${money(r.net)}</b> <span class="note">${(r.keep*100).toFixed(0)}%</span></td><td>${r.over?`<span class="pill neg">${r.over} over contract</span> `:''}${r.un?`<span class="pill warn">${r.un} unapproved promo</span>`:''}${!r.over&&!r.un?'<span class="pill pos">Clean</span>':''}</td></tr>`).join('')}</tbody>`;
@@ -784,7 +789,7 @@ function openFinding(id){
   let foot='';
   if(f.kind==='price'){
     const lines=DB.invoices.filter(i=>(i.week===CUR||i.week===prevOf(CUR))).flatMap(i=>i.lines.filter(l=>l.ing===f.g).map(l=>({i,l})));
-    body+=`<div class="box"><div class="box-h"><span>Invoice lines for ${esc(ING[f.g].name.toLowerCase())}</span><span class="mono">${esc(ING[f.g].desc)}</span></div><div class="tbl-wrap"><table><thead><tr><th>Invoice</th><th>Date</th><th class="n">Qty</th><th class="n">Unit price</th><th class="n">Total</th></tr></thead><tbody>${lines.map(({i,l})=>`<tr class="${i.week===CUR?'flag':''}"><td>${esc(i.vendor)} ${esc(i.id)}${l.page?` <span class="pill warn">${esc(i.source==='PDF invoice'?'PDF':'Photo')} page ${l.page}</span>`:''}${i.copy?' <span class="pill mute">copy</span>':''}</td><td>${nice(i.date)}</td><td class="n">${l.qty} ${l.unit}</td><td class="n">${money(l.unitPrice,2)}</td><td class="n">${money(l.total,2)}</td></tr>`).join('')}</tbody></table></div></div>`;
+    body+=`<div class="box"><div class="box-h"><span>Invoice lines for ${esc(ING[f.g].name.toLowerCase())}</span><span class="mono">${esc(ING[f.g].desc)}</span></div><div class="tbl-wrap"><table><thead><tr><th>Invoice</th><th>Date</th><th class="n">Qty</th><th class="n">Unit price</th><th class="n">Total</th></tr></thead><tbody>${lines.map(({i,l})=>`<tr class="${i.week===CUR?'flag':''}"><td>${esc(i.vendor)} ${esc(i.id)}${l.page?` <span class="pill warn">${esc(i.source==='PDF invoice'?'PDF':'Photo')} page ${esc(l.page)}</span>`:''}${i.copy?' <span class="pill mute">copy</span>':''}</td><td>${nice(i.date)}</td><td class="n">${esc(l.qty)} ${esc(l.unit)}</td><td class="n">${money(l.unitPrice,2)}</td><td class="n">${money(l.total,2)}</td></tr>`).join('')}</tbody></table></div></div>`;
     body+=`<div class="box"><div class="box-h"><span>Menu items affected</span><span>Food cost per item</span></div><div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="n">Last wk</th><th class="n">This wk</th><th class="n">Margin now</th></tr></thead><tbody>${f.affected.map(k=>{const a=itemCost(k,A.p.P),b=itemCost(k,A.c.P);return`<tr><td>${esc(MENU[k].name)}</td><td class="n">${money(a,2)}</td><td class="n">${money(b,2)}</td><td class="n">${((1-b/MENU[k].price)*100).toFixed(1)}%</td></tr>`}).join('')}</tbody></table></div></div>`;
     const marg=itemCost('marg',A.c.P);
     body+=`<div class="callout"><b>Options</b><span>Ask ${esc(ING[f.g].vendor)} for a contract price, compare a second distributor, or raise delivery prices on pizzas by $0.75, which covers the increase on about ${Math.round(A.c.Q[f.g]/.375)} pizzas a week.</span></div>`;
@@ -793,18 +798,18 @@ function openFinding(id){
   }
   if(f.kind==='comm'||f.kind==='promo'){
     const rows=f.orders;
-    body+=`<div class="box"><div class="box-h"><span>${rows.length} orders from the ${esc(f.ch)} payout report</span><span>${f.kind==='comm'?'Contract '+(CONTRACT[f.ch]*100).toFixed(0)+'%':'Approved promos: '+APPROVED_PROMOS.filter(p=>p.channel===f.ch).length}</span></div><div class="tbl-wrap" style="max-height:340px"><table><thead><tr><th>Order</th><th>Date</th><th class="n">Subtotal</th>${f.kind==='comm'?'<th class="n">Rate</th><th class="n">Over</th>':'<th>Promo</th><th class="n">You paid</th>'}</tr></thead><tbody>${rows.map(o=>`<tr class="flag"><td class="mono">${o.id}</td><td>${DOW[o.dow]} ${nice(o.date)}</td><td class="n">${money(o.subtotal,2)}</td>${f.kind==='comm'?`<td class="n">${(o.rate*100).toFixed(0)}%</td><td class="n">${money(o.subtotal*(o.rate-CONTRACT[o.channel]),2)}</td>`:`<td>${esc(o.promo)}</td><td class="n">${money(o.promoAmt,2)}</td>`}</tr>`).join('')}</tbody></table></div></div>`;
+    body+=`<div class="box"><div class="box-h"><span>${rows.length} orders from the ${esc(f.ch)} payout report</span><span>${f.kind==='comm'?'Contract '+(CONTRACT[f.ch]*100).toFixed(0)+'%':'Approved promos: '+APPROVED_PROMOS.filter(p=>p.channel===f.ch).length}</span></div><div class="tbl-wrap" style="max-height:340px"><table><thead><tr><th>Order</th><th>Date</th><th class="n">Subtotal</th>${f.kind==='comm'?'<th class="n">Rate</th><th class="n">Over</th>':'<th>Promo</th><th class="n">You paid</th>'}</tr></thead><tbody>${rows.map(o=>`<tr class="flag"><td class="mono">${esc(o.id)}</td><td>${DOW[o.dow]} ${nice(o.date)}</td><td class="n">${money(o.subtotal,2)}</td>${f.kind==='comm'?`<td class="n">${(o.rate*100).toFixed(0)}%</td><td class="n">${money(o.subtotal*(o.rate-CONTRACT[o.channel]),2)}</td>`:`<td>${esc(o.promo)}</td><td class="n">${money(o.promoAmt,2)}</td>`}</tr>`).join('')}</tbody></table></div></div>`;
     body+=`<div><div class="eyebrow" style="margin-bottom:8px">Ready to send</div><pre class="draft">${esc(draftFor(f))}</pre></div><p class="note">You submit this from your own merchant portal. ProfitShield prepares the evidence; it never files on your behalf.</p>`;
     foot=`<button class="btn" data-copy>Copy dispute</button><button class="btn ghost" data-go2="payouts">Open in payouts</button>`;
   }
   if(f.kind==='err'){
     const byDay={};f.errs.forEach(e=>{const k=DOW[e.dow];byDay[k]=(byDay[k]||0)+1});
-    body+=`<div class="box"><div class="box-h"><span>${f.errs.length} error charges this week</span><span>usually ~${Math.round(f.baseN)}</span></div><div class="tbl-wrap"><table><thead><tr><th>Charge</th><th>Order</th><th>When</th><th>Item</th><th class="n">Charged</th></tr></thead><tbody>${f.errs.map(e=>`<tr class="${(e.dow===4||e.dow===5)&&e.hour>=18&&e.hour<=20?'flag':''}"><td class="mono">${e.id}</td><td class="mono">${e.orderId}</td><td>${DOW[e.dow]} ${hh(e.hour)}</td><td>${e.sku&&MENU[e.sku]?esc(MENU[e.sku].name):e.item?esc(e.item):'Whole order'} <span class="pill mute">${esc(e.reason)}</span></td><td class="n">${money(e.amount,2)}</td></tr>`).join('')}</tbody></table></div></div>`;
+    body+=`<div class="box"><div class="box-h"><span>${f.errs.length} error charges this week</span><span>usually ~${Math.round(f.baseN)}</span></div><div class="tbl-wrap"><table><thead><tr><th>Charge</th><th>Order</th><th>When</th><th>Item</th><th class="n">Charged</th></tr></thead><tbody>${f.errs.map(e=>`<tr class="${(e.dow===4||e.dow===5)&&e.hour>=18&&e.hour<=20?'flag':''}"><td class="mono">${esc(e.id)}</td><td class="mono">${esc(e.orderId)}</td><td>${DOW[e.dow]} ${hh(e.hour)}</td><td>${e.sku&&MENU[e.sku]?esc(MENU[e.sku].name):e.item?esc(e.item):'Whole order'} <span class="pill mute">${esc(e.reason)}</span></td><td class="n">${money(e.amount,2)}</td></tr>`).join('')}</tbody></table></div></div>`;
     body+=`<div class="callout"><b>Pattern</b><span>${esc(f.sub)} This looks like a packing problem during the dinner rush, not random bad luck.</span></div><div><div class="eyebrow" style="margin-bottom:8px">Fix for the team</div><pre class="draft">${esc(draftFor(f))}</pre></div>`;
     foot=`<button class="btn" data-copy>Copy team note</button>`;
   }
   if(f.kind==='dup'){
-    body+=f.group.map(i=>`<div class="box"><div class="box-h"><span>${esc(i.vendor)} ${esc(i.id)} · ${nice(i.date)}</span><span>${esc(i.source)}</span></div><div class="tbl-wrap"><table><tbody>${i.lines.map(l=>`<tr><td class="mono" style="font-size:12px">${esc(l.desc)}</td><td class="n">${l.qty} ${l.unit}</td><td class="n">${money(l.total,2)}</td></tr>`).join('')}<tr><td><b>Total</b></td><td></td><td class="n"><b>${money(i.total,2)}</b></td></tr></tbody></table></div></div>`).join('');
+    body+=f.group.map(i=>`<div class="box"><div class="box-h"><span>${esc(i.vendor)} ${esc(i.id)} · ${nice(i.date)}</span><span>${esc(i.source)}</span></div><div class="tbl-wrap"><table><tbody>${i.lines.map(l=>`<tr><td class="mono" style="font-size:12px">${esc(l.desc)}</td><td class="n">${esc(l.qty)} ${esc(l.unit)}</td><td class="n">${money(l.total,2)}</td></tr>`).join('')}<tr><td><b>Total</b></td><td></td><td class="n"><b>${money(i.total,2)}</b></td></tr></tbody></table></div></div>`).join('');
     body+=`<div><div class="eyebrow" style="margin-bottom:8px">Ready to send</div><pre class="draft">${esc(draftFor(f))}</pre></div>`;
     foot=`<button class="btn" data-copy>Copy credit request</button>`;
   }
@@ -826,7 +831,7 @@ function itemCost(k,P){return Object.entries(MENU[k].recipe).reduce((s,[g,q])=>s
 let PAYF='all';
 function renderPayouts(){
   const rows=DB.orders.filter(o=>o.week===CUR&&o.channel!=='In-store');
-  const errBy={};DB.errors.filter(e=>e.week===CUR).forEach(e=>(errBy[e.orderId]=errBy[e.orderId]||[]).push(e));
+  const errBy=Object.create(null);DB.errors.filter(e=>e.week===CUR).forEach(e=>(errBy[e.orderId]=errBy[e.orderId]||[]).push(e));
   const F={all:['All',rows],comm:['Rate above contract',rows.filter(o=>o.rate>CONTRACT[o.channel]+0.002)],promo:['Unapproved promo',rows.filter(o=>o.promo&&!isApproved(o))],err:['Error charges',rows.filter(o=>errBy[o.id])]};
   CHANNELS.slice(0,3).forEach(c=>F['ch:'+c]=[c,rows.filter(o=>o.channel===c)]);
   if(!F[PAYF])PAYF='all';
@@ -835,7 +840,7 @@ function renderPayouts(){
   const list=F[PAYF][1];
   const net=o=>o.subtotal-o.subtotal*o.rate-o.promoAmt-(errBy[o.id]||[]).reduce((s,e)=>s+e.amount,0);
   $('#payoutSub').textContent=`${rows.length} delivery orders, ${weekOf(CUR).label}. Net payout ${money(rows.reduce((s,o)=>s+net(o),0))}.`;
-  $('#payTable').innerHTML=`<thead><tr><th>Order</th><th>Channel</th><th>When</th><th>Items</th><th class="n">Subtotal</th><th class="n">Rate</th><th class="n">Commission</th><th class="n">Promo</th><th class="n">Error charge</th><th class="n">Net</th></tr></thead><tbody>${list.slice(0,400).map(o=>{const bad=o.rate>CONTRACT[o.channel]+0.002||(o.promo&&!isApproved(o))||errBy[o.id];const ec=(errBy[o.id]||[]).reduce((s,e)=>s+e.amount,0);return`<tr class="${bad?'flag':''}"><td class="mono">${o.id}</td><td>${o.channel}</td><td style="white-space:nowrap">${DOW[o.dow]} ${nice(o.date)} ${hh(o.hour)}</td><td style="min-width:200px">${esc(orderItems(o))}</td><td class="n">${money(o.subtotal,2)}</td><td class="n">${(o.rate*100).toFixed(0)}%</td><td class="n">${money(o.subtotal*o.rate,2)}</td><td class="n">${o.promoAmt?money(o.promoAmt,2):'–'}</td><td class="n">${ec?money(ec,2):'–'}</td><td class="n">${money(net(o),2)}</td></tr>`}).join('')}</tbody>`;
+  $('#payTable').innerHTML=`<thead><tr><th>Order</th><th>Channel</th><th>When</th><th>Items</th><th class="n">Subtotal</th><th class="n">Rate</th><th class="n">Commission</th><th class="n">Promo</th><th class="n">Error charge</th><th class="n">Net</th></tr></thead><tbody>${list.slice(0,400).map(o=>{const bad=o.rate>CONTRACT[o.channel]+0.002||(o.promo&&!isApproved(o))||errBy[o.id];const ec=(errBy[o.id]||[]).reduce((s,e)=>s+e.amount,0);return`<tr class="${bad?'flag':''}"><td class="mono">${esc(o.id)}</td><td>${esc(o.channel)}</td><td style="white-space:nowrap">${DOW[o.dow]} ${nice(o.date)} ${hh(o.hour)}</td><td style="min-width:200px">${esc(orderItems(o))}</td><td class="n">${money(o.subtotal,2)}</td><td class="n">${(o.rate*100).toFixed(0)}%</td><td class="n">${money(o.subtotal*o.rate,2)}</td><td class="n">${o.promoAmt?money(o.promoAmt,2):'–'}</td><td class="n">${ec?money(ec,2):'–'}</td><td class="n">${money(net(o),2)}</td></tr>`}).join('')}</tbody>`;
 }
 
 /* ============ invoices ============ */
@@ -882,7 +887,7 @@ function renderImports(){
 async function importFiles(files){
   if(!BACKEND.on){toast('Run server.py to import real files');return}
   const out=[];$('#csvResult').innerHTML='<p class="pad typing" style="padding-top:0">Importing…</p>';
-  for(const f of files){try{const text=await f.text();const r=await fetch('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,filename:f.name})});const j=await r.json();if(j.error)throw new Error(j.error);out.push(`<div class="callout"><b>${esc(f.name)}</b><span>${esc(j.format)}${j.channel?' · '+esc(j.channel):''} · columns mapped by ${esc(j.mapped_by)} · ${j.new_rows} new rows, ${j.duplicates_skipped} already in your books${j.redacted?` · ${j.redacted} personal fields removed`:''}</span>${j.mapped_by!=='known format'?`<span class="mono note" style="font-size:12px">${esc(Object.entries(j.mapping).map(([k,v])=>v+' → '+k).join('   '))}</span>`:''}</div>`)}
+  for(const f of files){try{if(f.size>4*1024*1024)throw new Error('CSV exceeds 4 MiB');const text=await f.text();const r=await apiFetch('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,filename:f.name})});const j=await r.json();if(j.error)throw new Error(j.error);out.push(`<div class="callout"><b>${esc(f.name)}</b><span>${esc(j.format)}${j.channel?' · '+esc(j.channel):''} · columns mapped by ${esc(j.mapped_by)} · ${j.new_rows} new rows, ${j.duplicates_skipped} already in your books${j.redacted?` · ${j.redacted} personal fields removed`:''}</span>${j.mapped_by!=='known format'?`<span class="mono note" style="font-size:12px">${esc(Object.entries(j.mapping).map(([k,v])=>v+' → '+k).join('   '))}</span>`:''}</div>`)}
     catch(e){out.push(`<div class="callout"><b>${esc(f.name)}</b><span>Couldn't import: ${esc(e.message)}</span></div>`)}}
   $('#csvResult').innerHTML=`<div class="pad" style="padding-top:0;display:grid;gap:10px">${out.join('')}</div>`;
   await loadBackend();recompute();go('sources');
@@ -901,7 +906,7 @@ function showReview(x,viaAI){
   PENDING={...x,lines:x.lines.map(l=>({...l}))};const showPage=PENDING.lines.some(l=>(l.page||1)>1)||/\.pdf$/i.test(PENDING.filename||'');
   const opts=g=>`<option value="">Not food (supplies)</option>`+Object.keys(ING).map(k=>`<option value="${k}" ${k===g?'selected':''}>${esc(ING[k].name)} (${ING[k].unit})</option>`).join('');
   $('#review').innerHTML=`<div class="pad" style="padding-top:0;display:grid;gap:12px"><div class="row" style="justify-content:space-between"><div><b>${esc(x.vendor||'Unknown vendor')}</b> <span class="mono note">${esc(x.invoice_number||'')} · ${esc(x.date||'no date')}</span></div><span class="pill ${viaAI?'warn':'mute'}">${viaAI?'Read by AI':'Sample, pre-read'}</span></div>
-  <div class="box"><div class="tbl-wrap"><table class="review"><thead><tr>${showPage?'<th class="n">Page</th>':''}<th>Line on receipt</th><th>Matches ingredient</th><th class="n">Qty</th><th class="n">Unit price</th><th class="n">Confidence</th></tr></thead><tbody>${PENDING.lines.map((l,i)=>`<tr>${showPage?`<td class="n">${l.page||1}</td>`:''}<td class="mono" style="font-size:12px;min-width:160px">${esc(l.description)}</td><td style="min-width:170px"><select id="rv-g-${i}" data-i="${i}" data-f="ingredient">${opts(l.ingredient)}</select></td><td class="n" style="min-width:80px"><input id="rv-q-${i}" data-i="${i}" data-f="qty" type="number" step="any" value="${l.qty}"></td><td class="n" style="min-width:90px"><input id="rv-p-${i}" data-i="${i}" data-f="unit_price" type="number" step="any" value="${l.unit_price}"></td><td class="n"><span class="pill ${l.confidence>=.8?'pos':'warn'}">${Math.round(l.confidence*100)}%</span></td></tr>`).join('')}</tbody></table></div></div>
+  <div class="box"><div class="tbl-wrap"><table class="review"><thead><tr>${showPage?'<th class="n">Page</th>':''}<th>Line on receipt</th><th>Matches ingredient</th><th class="n">Qty</th><th class="n">Unit price</th><th class="n">Confidence</th></tr></thead><tbody>${PENDING.lines.map((l,i)=>`<tr>${showPage?`<td class="n">${esc(l.page||1)}</td>`:''}<td class="mono" style="font-size:12px;min-width:160px">${esc(l.description)}</td><td style="min-width:170px"><select id="rv-g-${i}" data-i="${i}" data-f="ingredient">${opts(l.ingredient)}</select></td><td class="n" style="min-width:80px"><input id="rv-q-${i}" data-i="${i}" data-f="qty" type="number" step="any" value="${esc(l.qty)}"></td><td class="n" style="min-width:90px"><input id="rv-p-${i}" data-i="${i}" data-f="unit_price" type="number" step="any" value="${esc(l.unit_price)}"></td><td class="n"><span class="pill ${l.confidence>=.8?'pos':'warn'}">${Math.round(l.confidence*100)}%</span></td></tr>`).join('')}</tbody></table></div></div>
   <div class="row"><button class="btn" id="addBooks">Add to books</button><button class="btn ghost" id="cancelRv">Discard</button><span class="note">Lines under 80% confidence are worth a glance before adding.</span></div></div>`;
   $$('#review [data-f]').forEach(el=>el.onchange=()=>{const l=PENDING.lines[+el.dataset.i];l[el.dataset.f]=el.dataset.f==='ingredient'?(el.value||null):+el.value});
   $('#cancelRv').onclick=()=>{PENDING=null;$('#review').innerHTML=''};
@@ -910,7 +915,7 @@ function showReview(x,viaAI){
     const wk=WEEKS.find(w=>d>=w.start&&d<=ymd(addDays(pd(w.start),6))).id;
     const lines=PENDING.lines.map(l=>({desc:l.description,ing:l.ingredient,qty:+l.qty,unit:l.unit||(l.ingredient?ING[l.ingredient].unit:'ea'),unitPrice:+l.unit_price,total:+(+l.qty*+l.unit_price).toFixed(2)}));
     if(BACKEND.on){const body={vendor:PENDING.vendor,invoice_number:PENDING.invoice_number,date:d,lines:PENDING.lines,filename:PENDING.filename||''};PENDING=null;$('#review').innerHTML='';
-      fetch('/api/invoices',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.json()).then(async j=>{if(j.error)throw new Error(j.error);await loadBackend();recompute();toast('Saved to your books. Prices, margins and the overview are updated.')}).catch(e=>toast('Couldn\'t save: '+e.message));return}
+      apiFetch('/api/invoices',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.json()).then(async j=>{if(j.error)throw new Error(j.error);await loadBackend();recompute();toast('Saved to your books. Prices, margins and the overview are updated.')}).catch(e=>toast('Couldn\'t save: '+e.message));return}
     DB.invoices.push({id:PENDING.invoice_number||('PHOTO-'+Date.now().toString().slice(-5)),vendor:PENDING.vendor||'Unknown vendor',date:d,week:wk,source:'Receipt photo',ai:true,lines,total:+lines.reduce((s,l)=>s+l.total,0).toFixed(2)});
     PENDING=null;$('#review').innerHTML='';recompute();toast('Added. Prices, margins and the overview are updated.');
   };
@@ -922,10 +927,11 @@ drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over
 drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
 drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');const f=e.dataTransfer.files[0];if(f)readReceipt(f)});
 function readReceipt(file){
+  if(file.size>8*1024*1024||!['image/jpeg','image/png','image/webp','application/pdf'].includes(file.type)){toast('Use a JPEG, PNG, WebP or PDF up to 8 MiB.');return}
   if(!AI.on){$('#review').innerHTML=`<div class="pad" style="padding-top:0"><div class="callout"><b>AI isn't connected in this preview</b><span>Run server.py with your OpenRouter key to read real photos. Meanwhile, the sample receipt shows the same flow.</span></div></div>`;return}
   $('#review').innerHTML=`<div class="pad typing" style="padding-top:0">Reading ${esc(file.name)}${/\.pdf$/i.test(file.name)?', every page':''}…</div>`;
   const fr=new FileReader();fr.onload=async()=>{try{
-    const r=await fetch('/api/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:fr.result,filename:file.name,ingredients:Object.entries(ING).map(([k,v])=>({key:k,name:v.name,unit:v.unit,desc:v.desc}))})});
+    const r=await apiFetch('/api/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:fr.result,filename:file.name,ingredients:Object.entries(ING).map(([k,v])=>({key:k,name:v.name,unit:v.unit,desc:v.desc}))})});
     const j=await r.json();if(!r.ok||j.error)throw new Error(j.error||r.statusText);j.filename=file.name;showReview(j,true)}catch(err){$('#review').innerHTML=`<div class="pad" style="padding-top:0"><div class="callout"><b>Couldn't read that file</b><span>${esc(err.message)}. Try a sharper photo or the sample receipt.</span></div></div>`}};
   fr.readAsDataURL(file);
 }
@@ -1079,7 +1085,7 @@ async function ask(q){
   let text,cites=[],meta='',chart=null,tools=[];
   const local=()=>{const t=q.toLowerCase();if(/what if|raise|increase price|simulat|charge more/.test(t)){const pf=A.findings.find(f=>f.kind==='price');const skus=pf?pf.affected:['marg','pep'];const inc=+((t.match(/\$?(\d+(?:\.\d+)?)/)||[])[1]||0.75);const d=simulate(skus,inc>5?0.75:inc,['DoorDash','Uber Eats','Grubhub','In-store']);chart={type:'sim',data:d};return`Raising ${d.items.join(' and ').toLowerCase()} by ${money(d.increase_per_item,2)} everywhere would bring back about ${money(d.extra_profit_per_week)} a week after app commissions, against a ${money(d.price_increase_leak_per_week)} weekly hit from the price increase${pf?` [${pf.id}]`:''}.\n\nThis assumes order volume holds. Try a smaller increase on delivery only if you're worried about in-store regulars.`}
     if(!/overcharg|commission|fee|twice|duplicate|promo|discount|margin|item|menu|missing|refund|error|fix|first|mozz|cheese|supplier|invoice/.test(t))chart={type:'bridge'};return localAnswer(q)};
-  if(AI.on){try{const pw=prevOf(CUR);const r=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,facts:facts(),history:HISTORY.slice(-6),week:BACKEND.on?CUR:null,prev_week:BACKEND.on?pw:null})});const j=await r.json();if(!r.ok||j.error)throw new Error(j.error);text=j.answer;cites=j.cites||[];tools=j.tools||[];chart=j.chart||null;meta=`Answered by ${AI.model}`}catch(e){text=local();meta='AI call failed: '+String(e.message||e).slice(0,220)+'. Showing the built-in answer instead.'}}
+  if(AI.on){try{const pw=prevOf(CUR);const r=await apiFetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,facts:facts(),history:HISTORY.slice(-6),week:BACKEND.on?CUR:null,prev_week:BACKEND.on?pw:null})});const j=await r.json();if(!r.ok||j.error)throw new Error(j.error);text=j.answer;cites=j.cites||[];tools=j.tools||[];chart=j.chart||null;meta=`Answered by ${AI.model}`}catch(e){text=local();meta='AI call failed: '+String(e.message||e).slice(0,220)+'. Showing the built-in answer instead.'}}
   else{await new Promise(r=>setTimeout(r,350));text=local();meta=BACKEND.on?'AI is off: the server has no OPENROUTER_API_KEY. Set it in the same terminal and restart server.py.':'Preview mode: open http://localhost:8000 with server.py running for the AI agent.'}
   if(chart&&chart.type==='sim'&&chart.data&&chart.data.items)chart.reviewSpec=simulationSpec(chart.data,askedWeek,askedPrices);
   if(!chart){const ids=[...new Set([...(cites||[]),...((text||'').match(/F\d+/g)||[])])];chart={type:'bridge',highlight:ids}}
@@ -1105,15 +1111,16 @@ function recompute(){A=analyze();renderWeekSeg();renderOverview();go(VIEW);if(!H
 
 /* ============ boot ============ */
 async function loadBackend(){
-  const r=await fetch('/api/data',{cache:'no-store'});const d=await r.json();
+  const r=await apiFetch('/api/data',{cache:'no-store'});const d=await r.json();
   if(!d.weeks||!d.weeks.length)throw new Error('no data yet');
   WEEKS=d.weeks;DB={orders:d.orders,errors:d.errors,invoices:d.invoices};Object.keys(MENU).forEach(k=>MENU[k].price=(d.menu_prices&&d.menu_prices[k])?d.menu_prices[k].price:MENU_BASE[k]);BACKEND.imports=d.imports||[];BACKEND.menu=d.menu_prices||{};BACKEND.square=!!(d.square&&d.square.configured);
   if(!WEEKS.some(w=>w.id===CUR)){const counts=WEEKS.map(w=>DB.orders.filter(o=>o.week===w.id&&o.channel!=='In-store').length);const mx=Math.max(...counts);let i=counts.length-1;while(i>0&&counts[i]<mx*.5)i--;CUR=WEEKS[Math.max(1,i)].id}
 }
 (async function boot(){
   let health=null;
-  try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),2500);const r=await fetch('/api/health',{signal:ctl.signal});health=await r.json()}catch(e){}
-  if(health&&health.backend){try{await loadBackend();BACKEND.on=true}catch(e){BACKEND.on=false}}
+  try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),2500);const r=await apiFetch('/api/health',{signal:ctl.signal});
+    if(!r.ok)throw new Error('Health check failed');health=await r.json();await loadBackend();BACKEND.on=true;
+  }catch(e){document.querySelector('main').textContent='Unable to load your live database. Reload to retry. '+e.message;return;}
   AI.on=!!(health&&health.ai);AI.model=(health&&health.model)||'';
   const h0=location.hash.slice(1);VIEW=VIEWS.includes(h0)?h0:'overview';recompute();if(h0==='ask')openAssist();
   $('#aiDot').classList.toggle('on',AI.on);$('#aiText').textContent=AI.on?`AI connected · ${AI.model}`:'AI offline · preview mode';

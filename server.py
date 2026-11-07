@@ -192,23 +192,31 @@ def reset():
 def num(v):
     if v is None:
         return 0.0
+    if isinstance(v, bool) or not isinstance(v, (str, int, float)):
+        raise ValueError("Invalid numeric value")
     s = str(v).strip().replace("$", "").replace(",", "")
     neg = s.startswith("(") and s.endswith(")")
     s = s.strip("()")
     try:
         x = float(s) if s else 0.0
     except ValueError:
-        return 0.0
+        raise ValueError("Invalid numeric value") from None
+    if not math.isfinite(x) or abs(x) > 1e12:
+        raise ValueError("Numeric value must be finite and within range")
     return -x if neg else x
 
 
 def parse_date(s):
+    if s is not None and not isinstance(s, str):
+        raise ValueError("Date must be text")
     s = (s or "").strip()
     for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y", "%d %b %Y", "%b %d, %Y", "%Y/%m/%d"):
         try:
             return datetime.strptime(s, fmt).date().isoformat()
         except ValueError:
             pass
+    if s:
+        raise ValueError("Invalid date")
     return None
 
 
@@ -219,6 +227,8 @@ def parse_time(s):
             return datetime.strptime(s, fmt).strftime("%H:%M")
         except ValueError:
             pass
+    if s:
+        raise ValueError("Invalid time")
     return "12:00"
 
 
@@ -264,6 +274,7 @@ def parse_items(con, text):
             name, qty = m.group(1), int(m.group(2))
         else:
             qty, name = 1, part
+        number(qty, 'item quantity', minimum=1, maximum=1e6, integer=True)
         out.append({"sku": match_sku(con, name), "qty": qty, "name": name.strip()})
     return out
 
@@ -357,11 +368,22 @@ def map_by_ai(headers, sample_rows, filename):
 
 # ---------------------------------------------------------------- import
 def import_csv(text, filename, channel=None, allow_ai=True):
+    validate_payload('/api/import', {'text': text, 'filename': filename, 'channel': channel}, MENU, INGREDIENTS)
     reader = csv.DictReader(io.StringIO(text.lstrip("﻿")))
-    rows = list(reader)
-    headers = [h for h in (reader.fieldnames or []) if h is not None]
-    if not headers:
-        raise ValueError("couldn't find a header row")
+    headers = [h.strip() for h in (reader.fieldnames or [])]
+    if not headers or len(headers) > 100 or any(not h or len(h) > 100 for h in headers) or len(set(headers)) != len(headers):
+        raise ValueError("CSV requires distinct, nonempty headers (up to 100)")
+    reader.fieldnames = headers
+    rows = []
+    try:
+        for row in reader:
+            if len(rows) >= ROW_LIMIT:
+                raise ValueError("CSV exceeds 20000 rows")
+            if None in row or any(v is None or len(v) > 4096 for v in row.values()):
+                raise ValueError("CSV rows must match headers and cells must be at most 4096 characters")
+            rows.append(row)
+    except csv.Error:
+        raise ValueError("Invalid CSV") from None
     headers, rows, redacted, pii_cols = redact(headers, rows)
     fmt = detect_known(headers)
     mapped_by, fmt_name = "known format", None
@@ -399,7 +421,15 @@ def import_csv(text, filename, channel=None, allow_ai=True):
                 inv, vendor = (get(r, "invoice_number") or "").strip(), (get(r, "vendor") or "").strip()
                 d = parse_date(get(r, "date"))
                 if not inv or not d:
-                    continue
+                    raise ValueError("Invoice number and valid date are required")
+                checked_text(inv, 'invoice number', 200, required=True)
+                checked_text(vendor, 'vendor', 200, required=True)
+                unit = (get(r, "unit") or "ea").strip()
+                ingredient = match_ingredient(con, get(r, "description") or "")
+                invoice_line({'description': get(r, "description") or "", 'ingredient': ingredient,
+                              'qty': num(get(r, "qty")), 'unit': unit, 'unit_price': num(get(r, "unit_price")),
+                              'total': num(get(r, "total"))}, INGREDIENTS)
+                number(num(get(r, "line")), 'line', minimum=1, maximum=100000, integer=True)
                 desc = (get(r, "description") or "").strip()
                 cur = con.execute("INSERT OR IGNORE INTO invoice_lines(invoice_number, vendor, date, source, line, description,"
                                   " ingredient, qty, unit, unit_price, total, ai) VALUES(?,?,?,?,?,?,?,?,?,?,?,0)", (
@@ -415,7 +445,8 @@ def import_csv(text, filename, channel=None, allow_ai=True):
                 else:
                     d, t = parse_date(get(r, "date")), parse_time(get(r, "time"))
                 if not oid or not d:
-                    continue
+                    raise ValueError("Order id and valid date are required")
+                checked_text(oid, 'order id', 255, required=True)
                 items = parse_items(con, get(r, "items") or "")
                 cur = con.execute("INSERT OR IGNORE INTO orders VALUES(?,?,?,?,?,?,?,?,?,?)", (
                     ch, oid, d, t, abs(num(get(r, "subtotal"))), abs(num(get(r, "commission"))),
@@ -435,6 +466,7 @@ def import_csv(text, filename, channel=None, allow_ai=True):
 
 
 def save_invoice(p):
+    validate_payload('/api/invoices', p, MENU, INGREDIENTS)
     lines = p.get("lines") or []
     d = parse_date(p.get("date") or "") or datetime.now(TZ).date().isoformat()
     inv = (p.get("invoice_number") or "").strip() or "PHOTO-" + uuid.uuid4().hex[:6].upper()
@@ -998,6 +1030,7 @@ For "what if" questions use simulate_price_change and state its assumption."""
 
 
 def ask(p):
+    validate_payload('/api/ask', p, MENU, INGREDIENTS)
     facts = p.get("facts", {})
     ctx = {"facts": facts, "week": p.get("week") or facts.get("week_start"), "prev_week": p.get("prev_week")}
     msgs = [{"role": "system", "content": AGENT_SYSTEM},
@@ -1027,7 +1060,10 @@ def ask(p):
         for c in calls:
             name = c["function"]["name"]
             try:
-                args = json.loads(c["function"].get("arguments") or "{}")
+                arguments = c['function'].get('arguments') or '{}'
+                checked_text(arguments, 'tool arguments', 8000)
+                args = json.loads(arguments)
+                validate_tool_args(name, args, MENU)
                 res = TOOLS[name][0](ctx, **args) if name in TOOLS else {"error": "unknown tool"}
             except Exception as e:
                 res = {"error": str(e)}
@@ -1040,6 +1076,7 @@ def ask(p):
 
 
 def extract(p):
+    validate_payload('/api/extract', p, MENU, INGREDIENTS)
     image = p.get("image", "")
     if not image.startswith("data:"):
         raise ValueError("send the file as a data URL")
@@ -1054,18 +1091,29 @@ def extract(p):
         {"role": "user", "content": [
             {"type": "text", "text": "INGREDIENTS:\n" + json.dumps(ings) + "\nPREVIOUSLY CONFIRMED MATCHES:\n" + json.dumps(known)},
             part]}], json_mode=True))
+    bounded_json(out)
+    if not isinstance(out, dict) or not isinstance(out.get('lines'), list) or not 1 <= len(out['lines']) <= 500:
+        raise ValueError("Invalid extracted invoice")
     lines = []
-    for l in out.get("lines") or []:
-        try:
-            qty, price = float(l.get("qty") or 0), float(l.get("unit_price") or 0)
-        except (TypeError, ValueError):
-            continue
-        ing = l.get("ingredient")
-        lines.append({"description": str(l.get("description", ""))[:120], "qty": qty, "unit": l.get("unit") or "ea",
-                      "unit_price": price, "total": float(l.get("total") or qty * price),
-                      "ingredient": ing if ing in INGREDIENTS else None,
-                      "confidence": max(0.0, min(1.0, float(l.get("confidence") or 0.5))),
-                      "page": int(l.get("page") or 1) if str(l.get("page") or "1").isdigit() else 1})
+    for raw in out['lines']:
+        if not isinstance(raw, dict):
+            raise ValueError("Invalid extracted invoice line")
+        qty, price = raw.get('qty'), raw.get('unit_price')
+        number(qty, 'qty', minimum=0.000001, maximum=1e6)
+        number(price, 'unit_price', maximum=1e6)
+        line = {"description": raw.get("description", ""), "qty": qty, "unit": raw.get("unit", "ea"),
+                "unit_price": price, "total": raw.get('total', qty * price),
+                "ingredient": raw.get('ingredient'), "confidence": raw.get('confidence', 0.5),
+                "page": raw.get('page', 1)}
+        invoice_line(line, INGREDIENTS)
+        lines.append(line)
+    for field in ('vendor', 'invoice_number'):
+        if out.get(field) is not None:
+            checked_text(out[field], field, 200)
+    if out.get('date') is not None:
+        iso_date(out['date'])
+    if out.get('total') is not None:
+        number(out['total'], 'invoice total')
     return {"vendor": out.get("vendor"), "invoice_number": out.get("invoice_number"), "date": out.get("date"),
             "total": out.get("total"), "lines": lines}
 
@@ -1079,9 +1127,11 @@ PUBLIC_ASSETS = {"/": "index.html", "/index.html": "index.html"}
 class Handler(BaseHTTPRequestHandler):
 
     def _json(self, code, obj):
-        body = json.dumps(obj).encode()
+        body = json.dumps(obj, allow_nan=False).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
+        if code == 429:
+            self.send_header("Retry-After", "60")
         self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
