@@ -53,6 +53,8 @@ def _load_env(path):
 
 
 _load_env(ROOT / ".env")
+# Load auth configuration after .env, without weakening the common input boundary.
+from owner_auth import AUTH_PATH, LOGIN_PAGE, OwnerAuth
 SAMPLES = ROOT / "samples"
 DB_PATH = Path(os.environ.get("BACKHOUSE_DB", ROOT / "backhouse.db"))
 KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
@@ -1155,10 +1157,12 @@ class Handler(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _json(self, code, obj):
+    def _json(self, code, obj, cookie=None):
         body = json.dumps(obj, allow_nan=False).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
+        if cookie:
+            self.send_header("Set-Cookie", cookie)
         if code == 429:
             self.send_header("Retry-After", "60")
         self.send_header("Cache-Control", "no-store")
@@ -1176,18 +1180,31 @@ class Handler(BaseHTTPRequestHandler):
         # Match canonical URL paths only. Do not decode or normalize untrusted
         # paths into filesystem names (including encoded traversal/separators).
         path = self.path.split("?", 1)[0].split("#", 1)[0]
+        auth = self.server.owner_auth
+        token = auth.token_from_cookie(self.headers.get('Cookie'))
+        authenticated = auth.authorized(token)
         if path == "/api/health":
+            if not authenticated:
+                return self._json(200, {'ok': True, 'backend': True})
             return self._json(200, {"ok": True, "ai": bool(KEY), "model": MODEL, "backend": True,
                                     "square": bool(SQUARE_TOKEN)})
+        if path.startswith('/api/') and not authenticated:
+            return self._json(401, {'error': 'Sign in required'})
+        if path == '/api/auth/session':
+            return self._json(200, {'owner': True, 'csrf': auth.csrf(token)})
         if path == "/api/data":
             return self._json(200, app_data())
         asset = PUBLIC_ASSETS.get(path)
-        if asset is not None:
-            target = ROOT / asset
-            # Fail closed if an allowlisted file is replaced with a symlink.
-            if target.is_symlink() or not target.is_file():
-                return self._json(404, {"error": "not found"})
-            page = target.read_text(encoding="utf-8").replace('<script>', '<script nonce="' + self.csp_nonce + '">')
+        if asset is not None or path == '/login':
+            if not authenticated or path == '/login':
+                page = LOGIN_PAGE
+            else:
+                target = ROOT / asset
+                if target.is_symlink() or not target.is_file():
+                    return self._json(404, {'error': 'not found'})
+                page = ('<script>window.PS_CSRF=' + json.dumps(auth.csrf(token)) + ';</script>' +
+                        target.read_text(encoding='utf-8'))
+            page = page.replace('<script>', '<script nonce="' + self.csp_nonce + '">')
             body = ("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
                     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">"
                     "</head><body>" + page + "</body></html>").encode("utf-8")
@@ -1204,10 +1221,17 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self._limited(costly=self.path in EXPENSIVE_ROUTES):
             return
-        if self.path not in POST_ROUTES:
-            return self._json(404, {"error": "unknown route"})
-        if self.headers.get("Origin") != PUBLIC_ORIGIN or self.headers.get("Sec-Fetch-Site") == "cross-site":
+        auth = self.server.owner_auth
+        token = auth.token_from_cookie(self.headers.get('Cookie'))
+        if self.path != '/api/auth/login' and not auth.authorized(token):
+            return self._json(401, {'error': 'Sign in required'})
+        if self.path not in POST_ROUTES | {'/api/auth/login', '/api/auth/logout'}:
+            return self._json(404, {'error': 'unknown route'})
+        if self.headers.get("Origin") != auth.origin or self.headers.get("Sec-Fetch-Site") == "cross-site":
             return self._json(403, {"error": "Invalid request origin"})
+        if self.path != '/api/auth/login' and not hmac.compare_digest(
+                self.headers.get('X-CSRF-Token', '').encode(), auth.csrf(token).encode()):
+            return self._json(403, {'error': 'Invalid CSRF token'})
         if self.headers.get("Content-Type", "").split(';', 1)[0].strip().lower() != "application/json":
             return self._json(415, {"error": "Use application/json"})
         try:
@@ -1233,6 +1257,21 @@ class Handler(BaseHTTPRequestHandler):
                     result[key] = value
                 return result
             p = json.loads(raw or b"{}", parse_constant=reject_constant, object_pairs_hook=distinct_fields)
+            if self.path in ('/api/auth/login', '/api/auth/logout'):
+                bounded_json(p)
+                if not isinstance(p, dict):
+                    raise ValueError('JSON object required')
+                if self.path == '/api/auth/login':
+                    if set(p) - {'password'}:
+                        raise ValueError('Unexpected login field')
+                    session, status = auth.login(p.get('password'), previous=token)
+                    if not session:
+                        return self._json(status, {'error': 'Sign in failed'})
+                    return self._json(200, {'owner': True, 'csrf': auth.csrf(session)}, cookie=auth.cookie(session))
+                if p:
+                    raise ValueError('Logout expects an empty object')
+                auth.logout(token)
+                return self._json(200, {'ok': True}, cookie=auth.cookie(clear=True))
             validate_payload(self.path, p, MENU, INGREDIENTS)
             if self.path == '/api/menu/preview':
                 return self._json(200, preview_menu(p))
@@ -1272,9 +1311,20 @@ class Handler(BaseHTTPRequestHandler):
             super().log_message(fmt, *args)
 
 
+def configured_auth():
+    if AUTH_PATH.resolve() == DB_PATH.resolve():
+        raise ValueError("Authentication and restaurant databases must use separate paths")
+    return OwnerAuth(AUTH_PATH, os.environ.get("PROFITSHIELD_ORIGIN", ""),
+                     local_http=os.environ.get("PROFITSHIELD_LOCAL_HTTP") == "1")
+
+
 if __name__ == "__main__":
+    auth = configured_auth()
+    local_http = os.environ.get('PROFITSHIELD_LOCAL_HTTP') == '1'
     init_db()
     print(f"ProfitShield on http://localhost:{PORT}")
     print(f"  AI: {'on, ' + MODEL if KEY else 'off (set OPENROUTER_API_KEY)'}")
     print(f"  Square: {'on, ' + SQUARE_BASE if SQUARE_TOKEN else 'off (set SQUARE_ACCESS_TOKEN for live POS sync)'}")
-    ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
+    httpd = ThreadingHTTPServer(('127.0.0.1' if local_http else '0.0.0.0', PORT), Handler)
+    httpd.owner_auth = auth
+    httpd.serve_forever()

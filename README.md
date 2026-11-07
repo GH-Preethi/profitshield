@@ -6,19 +6,12 @@ Built for the DoorDash Back House track at NOVA 2026 (ScottyLabs).
 
 ## Run it
 
-Easiest: copy `.env.example` to `.env`, paste your key into it, then `python3 server.py`. Or use exports:
-
-```bash
-export OPENROUTER_API_KEY=sk-or-...               # AI agent + receipt reading
-export OPENROUTER_MODEL=google/gemini-2.5-flash   # optional; must support tool calling + images
-export SQUARE_ACCESS_TOKEN=EAAA...                # optional; free sandbox token, see below
-python3 server.py
-# open http://localhost:8000
-```
-
-Python 3.9+ standard library only. No pip installs. The first run creates `backhouse.db` (SQLite) and imports everything in `samples/` through the same importer you use for real files. Delete `backhouse.db` (or POST /api/reset) to start fresh.
-
-Without keys the app still runs: database, imports, every number, chart and finding work; Ask falls back to built-in rules.
+Authentication is required. Bootstrap the owner before starting the server; see
+**Owner authentication and recovery** below. No pip installs are needed.
+The first run creates `backhouse.db` (SQLite) and imports `samples/`.
+AI and Square are optional; without keys, calculations and imports work and
+Ask uses built-in rules. Real receipt extraction requires an approved privacy
+policy before sending any real documents to an AI provider.
 
 ### Square POS (real API, 3 minutes)
 1. developer.squareup.com → sign in → create an application

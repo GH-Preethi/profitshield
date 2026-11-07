@@ -368,7 +368,7 @@ pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-heigh
   <main class="main"><div class="page">
     <header class="pagehead">
       <div><h1 id="pageTitle">Home</h1><p id="pageSub"></p></div>
-      <div class="actions">
+      <div class="actions"><button class="btn ghost" id="logout">Sign out</button>
         <label class="select" for="weekSel"><svg class="i l"><use href="#i-cal"/></svg><select id="weekSel" aria-label="Week"></select><svg class="i r"><use href="#i-down"/></svg></label>
         <button class="btn ai" data-go="ask"><svg class="i"><use href="#i-spark"/></svg>Ask ProfitShield <kbd>/</kbd></button>
       </div>
@@ -501,8 +501,13 @@ pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-heigh
 <script>
 async function apiFetch(url,options={}){
   const headers=new Headers(options.headers||{});
-  if(options.method==='POST'){headers.set('Content-Type','application/json');if(!options.body)options={...options,body:'{}'};}
-  return fetch(url,{...options,headers,credentials:'same-origin'});
+  if(options.method==='POST'){
+    headers.set('Content-Type','application/json');headers.set('X-CSRF-Token',window.PS_CSRF||'');
+    if(!options.body)options={...options,body:'{}'};
+  }
+  const response=await fetch(url,{...options,headers,credentials:'same-origin'});
+  if(response.status===401){location.replace('/login');throw new Error('Session expired. Sign in again.');}
+  return response;
 }
 /* ============ helpers ============ */
 const $=s=>document.querySelector(s);
@@ -1116,6 +1121,7 @@ async function loadBackend(){
   WEEKS=d.weeks;DB={orders:d.orders,errors:d.errors,invoices:d.invoices};Object.keys(MENU).forEach(k=>MENU[k].price=(d.menu_prices&&d.menu_prices[k])?d.menu_prices[k].price:MENU_BASE[k]);BACKEND.imports=d.imports||[];BACKEND.menu=d.menu_prices||{};BACKEND.square=!!(d.square&&d.square.configured);
   if(!WEEKS.some(w=>w.id===CUR)){const counts=WEEKS.map(w=>DB.orders.filter(o=>o.week===w.id&&o.channel!=='In-store').length);const mx=Math.max(...counts);let i=counts.length-1;while(i>0&&counts[i]<mx*.5)i--;CUR=WEEKS[Math.max(1,i)].id}
 }
+$('#logout').onclick=async()=>{try{await apiFetch('/api/auth/logout',{method:'POST'});location.replace('/login')}catch(e){toast(e.message)}};
 (async function boot(){
   let health=null;
   try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),2500);const r=await apiFetch('/api/health',{signal:ctl.signal});
