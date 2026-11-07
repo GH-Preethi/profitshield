@@ -27,7 +27,8 @@ class PublicAssetTests(unittest.TestCase):
             'other.sqlite3', 'backhouse.db-wal', 'backhouse.db-shm',
             'server.py', 'README.md', '.git/config', '.hidden',
             'samples/orders.csv', 'samples/invoice.pdf', 'samples/receipt.jpg',
-            'future-asset.js', 'nested/index.html',
+            'future-asset.js', 'nested/index.html', 'private/financial-report.pdf',
+            'backups/restaurant.sqlite3', '.env.production', 'backhouse.db-journal',
         ]
         for name in cls.private_paths:
             target = cls.root / name
@@ -86,6 +87,16 @@ class PublicAssetTests(unittest.TestCase):
                         self.assertEqual(status, 404)
                         self.assertNotIn(self.marker, body)
 
+    def test_directory_listing_never_exposes_repository_entries(self):
+        for method in ['GET', 'HEAD']:
+            for path in ['/', '/?list=1', '/samples/', '/private/', '/backups/', '/.git/']:
+                with self.subTest(method=method, path=path):
+                    status, _, body = self.request(method, path)
+                    self.assertEqual(status, 200 if path.startswith('/?') or path == '/' else 404)
+                    self.assertNotIn(b'Directory listing for', body)
+                    self.assertNotIn(b'PRIVATE-FIXTURE', body)
+                    self.assertNotIn(b'href=".env"', body)
+
     def test_encoding_and_traversal_denied(self):
         paths = [
             '/%2eenv', '/backhouse%2edb', '/%73erver.py', '/%2egit/config',
@@ -96,6 +107,8 @@ class PublicAssetTests(unittest.TestCase):
             '/index.html%00.env', '/index.html/.env', '/index.html/',
             '/%69ndex.html', '/./index.html', '/samples/../index.html',
             '/%2findex.html', '/%ZZ', '/index.html;private',
+            '//.env', '//samples/orders.csv', '/%2f.env',
+            '/private%2ffinancial-report.pdf', '/backups/../.env',
             '/api/health/../.env', '/api/data/../../server.py',
         ]
         for method in ['GET', 'HEAD']:
