@@ -1,0 +1,370 @@
+﻿Order,Date,Time,Gross Sales,Itemization
+SQ-48226,2026-10-05,11:02,15.50,1x Soda (2 L); 1x Caesar salad
+SQ-48203,2026-10-05,12:58,14.00,2x Garlic knots
+SQ-48211,2026-10-05,13:19,29.00,1x Pepperoni pizza; 1x Caesar salad
+SQ-48234,2026-10-05,13:42,25.00,1x Garlic knots; 1x Pepperoni pizza
+SQ-48214,2026-10-05,17:38,31.00,1x Buffalo wings (10); 1x Margherita pizza
+SQ-48207,2026-10-05,19:50,9.00,2x Soda (2 L)
+SQ-48236,2026-10-05,19:56,58.00,2x Margherita pizza; 1x Pepperoni pizza; 1x Tiramisu
+SQ-48252,2026-10-05,20:10,15.00,1x Buffalo wings (10)
+SQ-48233,2026-10-05,20:20,34.00,1x Pepperoni pizza; 1x Margherita pizza
+SQ-48239,2026-10-05,20:32,27.00,1x Caesar salad; 1x Margherita pizza
+SQ-48222,2026-10-05,20:43,33.00,1x Pepperoni pizza; 1x Buffalo wings (10)
+SQ-48229,2026-10-05,20:57,20.50,1x Margherita pizza; 1x Soda (2 L)
+SQ-48301,2026-10-06,11:16,30.00,1x Buffalo wings (10); 1x Tiramisu; 1x Garlic knots
+SQ-48311,2026-10-06,11:23,25.00,1x Garlic knots; 1x Pepperoni pizza
+SQ-48314,2026-10-06,11:23,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-48296,2026-10-06,11:24,31.50,1x Margherita pizza; 1x Soda (2 L); 1x Caesar salad
+SQ-48303,2026-10-06,11:31,27.00,1x Margherita pizza; 1x Caesar salad
+SQ-48264,2026-10-06,13:17,8.00,1x Tiramisu
+SQ-48282,2026-10-06,13:18,4.50,1x Soda (2 L)
+SQ-48269,2026-10-06,17:08,7.00,1x Garlic knots
+SQ-48304,2026-10-06,17:31,16.00,1x Margherita pizza
+SQ-48275,2026-10-06,19:33,48.00,2x Buffalo wings (10); 1x Pepperoni pizza
+SQ-48278,2026-10-06,19:58,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-48310,2026-10-06,20:07,18.00,1x Pepperoni pizza
+SQ-48281,2026-10-06,20:23,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-48263,2026-10-06,21:02,9.00,2x Soda (2 L)
+SQ-48272,2026-10-06,21:14,19.50,1x Buffalo wings (10); 1x Soda (2 L)
+SQ-48273,2026-10-06,22:05,18.00,1x Pepperoni pizza
+SQ-48351,2026-10-07,18:18,23.00,1x Margherita pizza; 1x Garlic knots
+SQ-48318,2026-10-07,18:54,20.50,1x Margherita pizza; 1x Soda (2 L)
+SQ-48346,2026-10-07,19:05,50.00,2x Margherita pizza; 1x Pepperoni pizza
+SQ-48335,2026-10-07,19:08,14.00,2x Garlic knots
+SQ-48363,2026-10-07,19:10,18.00,1x Pepperoni pizza
+SQ-48362,2026-10-07,19:13,29.00,1x Caesar salad; 1x Pepperoni pizza
+SQ-48347,2026-10-07,20:07,16.00,1x Margherita pizza
+SQ-48341,2026-10-07,20:35,26.00,1x Tiramisu; 1x Pepperoni pizza
+SQ-48324,2026-10-07,20:40,32.00,2x Margherita pizza
+SQ-48329,2026-10-07,20:41,15.00,1x Buffalo wings (10)
+SQ-48354,2026-10-07,21:00,4.50,1x Soda (2 L)
+SQ-48320,2026-10-07,22:13,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-48405,2026-10-08,11:04,4.50,1x Soda (2 L)
+SQ-48400,2026-10-08,11:23,45.00,1x Caesar salad; 1x Margherita pizza; 1x Pepperoni pizza
+SQ-48395,2026-10-08,12:21,38.50,1x Soda (2 L); 1x Pepperoni pizza; 1x Margherita pizza
+SQ-48378,2026-10-08,13:06,27.00,1x Margherita pizza; 1x Caesar salad
+SQ-48408,2026-10-08,13:13,40.50,2x Pepperoni pizza; 1x Soda (2 L)
+SQ-48415,2026-10-08,13:31,36.00,2x Pepperoni pizza
+SQ-48422,2026-10-08,17:02,15.00,1x Buffalo wings (10)
+SQ-48385,2026-10-08,17:09,39.00,1x Tiramisu; 1x Buffalo wings (10); 1x Margherita pizza
+SQ-48418,2026-10-08,20:19,16.00,1x Margherita pizza
+SQ-48417,2026-10-08,20:49,33.00,1x Pepperoni pizza; 1x Buffalo wings (10)
+SQ-48474,2026-10-09,11:28,54.00,3x Pepperoni pizza
+SQ-48459,2026-10-09,12:06,11.00,1x Caesar salad
+SQ-48436,2026-10-09,12:21,36.00,2x Pepperoni pizza
+SQ-48455,2026-10-09,12:30,19.00,1x Tiramisu; 1x Caesar salad
+SQ-48443,2026-10-09,12:35,7.00,1x Garlic knots
+SQ-48479,2026-10-09,13:07,27.00,2x Soda (2 L); 1x Pepperoni pizza
+SQ-48498,2026-10-09,13:28,16.00,1x Margherita pizza
+SQ-48469,2026-10-09,17:33,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-48501,2026-10-09,17:42,34.00,1x Pepperoni pizza; 1x Margherita pizza
+SQ-48478,2026-10-09,18:23,32.00,2x Margherita pizza
+SQ-48493,2026-10-09,18:59,26.00,1x Tiramisu; 1x Pepperoni pizza
+SQ-48471,2026-10-09,19:12,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-48437,2026-10-09,19:16,36.00,2x Pepperoni pizza
+SQ-48476,2026-10-09,21:20,33.00,1x Pepperoni pizza; 1x Buffalo wings (10)
+SQ-48502,2026-10-09,22:40,4.50,1x Soda (2 L)
+SQ-48560,2026-10-10,11:27,31.00,1x Buffalo wings (10); 1x Margherita pizza
+SQ-48567,2026-10-10,11:44,20.50,1x Soda (2 L); 1x Margherita pizza
+SQ-48514,2026-10-10,12:35,11.50,1x Garlic knots; 1x Soda (2 L)
+SQ-48568,2026-10-10,12:44,32.00,2x Margherita pizza
+SQ-48511,2026-10-10,13:31,22.00,1x Buffalo wings (10); 1x Garlic knots
+SQ-48528,2026-10-10,13:32,32.00,2x Margherita pizza
+SQ-48549,2026-10-10,13:37,18.00,1x Garlic knots; 1x Caesar salad
+SQ-48507,2026-10-10,17:39,36.00,1x Caesar salad; 1x Garlic knots; 1x Pepperoni pizza
+SQ-48506,2026-10-10,18:10,4.50,1x Soda (2 L)
+SQ-48546,2026-10-10,19:23,32.00,2x Margherita pizza
+SQ-48515,2026-10-10,19:33,15.50,1x Soda (2 L); 1x Caesar salad
+SQ-48521,2026-10-10,20:00,18.00,1x Pepperoni pizza
+SQ-48576,2026-10-10,20:20,8.00,1x Tiramisu
+SQ-48555,2026-10-10,20:43,46.00,2x Buffalo wings (10); 1x Margherita pizza
+SQ-48540,2026-10-10,22:03,23.00,1x Margherita pizza; 1x Garlic knots
+SQ-48533,2026-10-10,22:05,11.50,1x Soda (2 L); 1x Garlic knots
+SQ-48618,2026-10-11,11:28,18.00,1x Pepperoni pizza
+SQ-48622,2026-10-11,11:55,20.50,1x Soda (2 L); 1x Margherita pizza
+SQ-48590,2026-10-11,12:11,31.00,1x Buffalo wings (10); 1x Margherita pizza
+SQ-48586,2026-10-11,13:24,7.00,1x Garlic knots
+SQ-48631,2026-10-11,13:50,31.00,1x Margherita pizza; 1x Buffalo wings (10)
+SQ-48635,2026-10-11,17:57,18.00,1x Pepperoni pizza
+SQ-48596,2026-10-11,17:59,44.00,1x Buffalo wings (10); 1x Pepperoni pizza; 1x Caesar salad
+SQ-48617,2026-10-11,19:07,33.00,1x Buffalo wings (10); 1x Pepperoni pizza
+SQ-48607,2026-10-11,19:47,59.00,2x Pepperoni pizza; 1x Margherita pizza; 1x Garlic knots
+SQ-48579,2026-10-11,20:37,18.00,1x Caesar salad; 1x Garlic knots
+SQ-48577,2026-10-11,21:15,11.50,1x Garlic knots; 1x Soda (2 L)
+SQ-48686,2026-10-12,13:19,16.00,1x Margherita pizza
+SQ-48688,2026-10-12,13:22,7.00,1x Garlic knots
+SQ-48641,2026-10-12,13:48,18.00,1x Pepperoni pizza
+SQ-48671,2026-10-12,18:17,31.00,1x Buffalo wings (10); 1x Margherita pizza
+SQ-48674,2026-10-12,19:14,11.50,1x Soda (2 L); 1x Garlic knots
+SQ-48650,2026-10-12,19:26,27.00,2x Soda (2 L); 1x Pepperoni pizza
+SQ-48645,2026-10-12,20:06,33.00,1x Pepperoni pizza; 1x Buffalo wings (10)
+SQ-48690,2026-10-12,20:40,18.00,1x Pepperoni pizza
+SQ-48709,2026-10-13,11:16,20.50,1x Margherita pizza; 1x Soda (2 L)
+SQ-48706,2026-10-13,13:52,7.00,1x Garlic knots
+SQ-48729,2026-10-13,17:12,4.50,1x Soda (2 L)
+SQ-48760,2026-10-13,17:17,56.50,1x Soda (2 L); 2x Pepperoni pizza; 1x Margherita pizza
+SQ-48712,2026-10-13,17:42,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-48738,2026-10-13,17:52,12.50,1x Soda (2 L); 1x Tiramisu
+SQ-48720,2026-10-13,18:05,4.50,1x Soda (2 L)
+SQ-48719,2026-10-13,18:17,16.00,1x Margherita pizza
+SQ-48752,2026-10-13,19:26,32.00,2x Margherita pizza
+SQ-48751,2026-10-13,19:39,43.00,1x Garlic knots; 2x Pepperoni pizza
+SQ-48710,2026-10-13,21:13,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-48793,2026-10-14,11:35,19.50,1x Buffalo wings (10); 1x Soda (2 L)
+SQ-48800,2026-10-14,12:54,8.00,1x Tiramisu
+SQ-48797,2026-10-14,12:55,36.00,2x Pepperoni pizza
+SQ-48814,2026-10-14,13:11,31.00,1x Margherita pizza; 1x Buffalo wings (10)
+SQ-48806,2026-10-14,13:49,36.00,2x Pepperoni pizza
+SQ-48815,2026-10-14,17:30,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-48762,2026-10-14,19:24,11.00,1x Caesar salad
+SQ-48765,2026-10-14,19:45,29.00,1x Caesar salad; 1x Pepperoni pizza
+SQ-48794,2026-10-14,20:18,27.50,1x Soda (2 L); 1x Margherita pizza; 1x Garlic knots
+SQ-48792,2026-10-14,20:29,9.00,2x Soda (2 L)
+SQ-48764,2026-10-14,20:55,29.50,1x Pepperoni pizza; 1x Garlic knots; 1x Soda (2 L)
+SQ-48829,2026-10-15,11:08,25.00,1x Pepperoni pizza; 1x Garlic knots
+SQ-48849,2026-10-15,11:40,33.00,1x Pepperoni pizza; 1x Buffalo wings (10)
+SQ-48859,2026-10-15,12:54,25.00,2x Soda (2 L); 1x Margherita pizza
+SQ-48822,2026-10-15,13:30,8.00,1x Tiramisu
+SQ-48860,2026-10-15,13:31,18.00,1x Pepperoni pizza
+SQ-48865,2026-10-15,17:01,18.00,1x Pepperoni pizza
+SQ-48852,2026-10-15,17:02,32.00,2x Margherita pizza
+SQ-48858,2026-10-15,17:51,18.00,1x Pepperoni pizza
+SQ-48867,2026-10-15,19:11,16.00,1x Margherita pizza
+SQ-48856,2026-10-15,19:35,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-48874,2026-10-15,19:35,26.00,1x Pepperoni pizza; 1x Tiramisu
+SQ-48826,2026-10-15,19:43,29.00,1x Caesar salad; 1x Pepperoni pizza
+SQ-48823,2026-10-15,19:50,18.00,1x Pepperoni pizza
+SQ-48864,2026-10-15,20:14,15.00,1x Buffalo wings (10)
+SQ-48820,2026-10-15,20:16,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-48870,2026-10-15,20:38,16.00,1x Margherita pizza
+SQ-48854,2026-10-15,20:41,11.50,1x Garlic knots; 1x Soda (2 L)
+SQ-48845,2026-10-15,22:43,15.00,1x Tiramisu; 1x Garlic knots
+SQ-48948,2026-10-16,11:26,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-48884,2026-10-16,11:38,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-48885,2026-10-16,11:50,19.50,1x Buffalo wings (10); 1x Soda (2 L)
+SQ-48903,2026-10-16,11:56,20.50,1x Margherita pizza; 1x Soda (2 L)
+SQ-48886,2026-10-16,12:00,26.00,1x Pepperoni pizza; 1x Tiramisu
+SQ-48880,2026-10-16,13:43,15.00,1x Buffalo wings (10)
+SQ-48938,2026-10-16,13:50,19.50,1x Garlic knots; 1x Soda (2 L); 1x Tiramisu
+SQ-48917,2026-10-16,17:25,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-48892,2026-10-16,18:41,37.00,1x Garlic knots; 2x Buffalo wings (10)
+SQ-48944,2026-10-16,18:58,33.00,1x Buffalo wings (10); 1x Pepperoni pizza
+SQ-48920,2026-10-16,19:01,33.00,1x Buffalo wings (10); 1x Pepperoni pizza
+SQ-48936,2026-10-16,19:54,52.00,1x Margherita pizza; 2x Pepperoni pizza
+SQ-48918,2026-10-16,20:10,49.00,1x Pepperoni pizza; 1x Buffalo wings (10); 1x Margherita pizza
+SQ-49006,2026-10-17,13:05,18.00,1x Pepperoni pizza
+SQ-48968,2026-10-17,13:13,23.00,1x Margherita pizza; 1x Garlic knots
+SQ-48952,2026-10-17,13:15,22.50,1x Soda (2 L); 1x Pepperoni pizza
+SQ-48955,2026-10-17,13:39,34.00,1x Pepperoni pizza; 1x Margherita pizza
+SQ-48983,2026-10-17,17:10,33.00,1x Buffalo wings (10); 1x Pepperoni pizza
+SQ-48982,2026-10-17,18:24,32.00,2x Margherita pizza
+SQ-48993,2026-10-17,18:28,34.00,1x Garlic knots; 1x Margherita pizza; 1x Caesar salad
+SQ-48977,2026-10-17,18:41,27.00,1x Caesar salad; 1x Margherita pizza
+SQ-49010,2026-10-17,19:10,22.50,1x Soda (2 L); 1x Pepperoni pizza
+SQ-48989,2026-10-17,19:45,29.00,1x Pepperoni pizza; 1x Caesar salad
+SQ-49015,2026-10-17,20:07,18.00,1x Pepperoni pizza
+SQ-48956,2026-10-17,20:29,45.00,1x Margherita pizza; 1x Pepperoni pizza; 1x Caesar salad
+SQ-48980,2026-10-17,20:58,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-49020,2026-10-18,11:35,4.50,1x Soda (2 L)
+SQ-49079,2026-10-18,11:54,11.00,1x Caesar salad
+SQ-49040,2026-10-18,12:50,18.00,1x Pepperoni pizza
+SQ-49023,2026-10-18,13:01,16.00,1x Margherita pizza
+SQ-49024,2026-10-18,13:01,19.00,1x Tiramisu; 1x Caesar salad
+SQ-49058,2026-10-18,13:08,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-49061,2026-10-18,13:25,15.00,1x Buffalo wings (10)
+SQ-49055,2026-10-18,13:28,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-49042,2026-10-18,17:46,19.50,1x Soda (2 L); 1x Buffalo wings (10)
+SQ-49067,2026-10-18,19:21,18.00,1x Pepperoni pizza
+SQ-49066,2026-10-18,19:26,30.50,1x Pepperoni pizza; 1x Tiramisu; 1x Soda (2 L)
+SQ-49078,2026-10-18,20:00,7.00,1x Garlic knots
+SQ-49028,2026-10-18,20:31,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-49070,2026-10-18,20:56,18.00,1x Pepperoni pizza
+SQ-49064,2026-10-18,21:55,15.00,1x Garlic knots; 1x Tiramisu
+SQ-49132,2026-10-19,11:42,16.00,1x Margherita pizza
+SQ-49089,2026-10-19,13:05,4.50,1x Soda (2 L)
+SQ-49125,2026-10-19,13:49,4.50,1x Soda (2 L)
+SQ-49086,2026-10-19,17:08,14.00,2x Garlic knots
+SQ-49117,2026-10-19,19:07,15.00,1x Buffalo wings (10)
+SQ-49094,2026-10-19,19:08,19.50,1x Soda (2 L); 1x Buffalo wings (10)
+SQ-49133,2026-10-19,19:47,36.00,2x Pepperoni pizza
+SQ-49093,2026-10-19,22:55,50.00,2x Margherita pizza; 1x Pepperoni pizza
+SQ-49182,2026-10-20,11:00,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-49181,2026-10-20,12:22,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-49177,2026-10-20,17:00,8.00,1x Tiramisu
+SQ-49195,2026-10-20,17:53,18.00,1x Pepperoni pizza
+SQ-49146,2026-10-20,17:55,36.00,2x Pepperoni pizza
+SQ-49194,2026-10-20,18:33,18.00,1x Pepperoni pizza
+SQ-49159,2026-10-20,18:49,18.00,1x Pepperoni pizza
+SQ-49187,2026-10-20,18:52,19.00,1x Tiramisu; 1x Caesar salad
+SQ-49139,2026-10-20,19:14,7.00,1x Garlic knots
+SQ-49153,2026-10-20,19:48,11.50,1x Soda (2 L); 1x Garlic knots
+SQ-49167,2026-10-20,19:55,25.00,1x Garlic knots; 1x Pepperoni pizza
+SQ-49174,2026-10-20,20:04,16.00,1x Margherita pizza
+SQ-49165,2026-10-20,20:39,16.00,1x Margherita pizza
+SQ-49155,2026-10-20,22:21,31.00,1x Buffalo wings (10); 1x Margherita pizza
+SQ-49204,2026-10-21,11:45,11.50,1x Garlic knots; 1x Soda (2 L)
+SQ-49211,2026-10-21,17:14,18.00,1x Garlic knots; 1x Caesar salad
+SQ-49251,2026-10-21,17:18,32.00,2x Margherita pizza
+SQ-49205,2026-10-21,17:54,42.00,1x Margherita pizza; 1x Pepperoni pizza; 1x Tiramisu
+SQ-49225,2026-10-21,17:54,15.00,1x Buffalo wings (10)
+SQ-49250,2026-10-21,18:16,26.00,1x Tiramisu; 1x Pepperoni pizza
+SQ-49238,2026-10-21,18:21,18.00,1x Pepperoni pizza
+SQ-49245,2026-10-21,18:36,4.50,1x Soda (2 L)
+SQ-49207,2026-10-21,19:11,68.00,2x Margherita pizza; 2x Pepperoni pizza
+SQ-49199,2026-10-21,19:22,26.50,1x Soda (2 L); 1x Garlic knots; 1x Buffalo wings (10)
+SQ-49241,2026-10-21,20:17,31.00,1x Margherita pizza; 1x Buffalo wings (10)
+SQ-49255,2026-10-22,11:55,42.00,1x Pepperoni pizza; 1x Margherita pizza; 1x Tiramisu
+SQ-49289,2026-10-22,13:08,22.50,1x Soda (2 L); 1x Pepperoni pizza
+SQ-49278,2026-10-22,13:46,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-49258,2026-10-22,17:17,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-49265,2026-10-22,17:56,32.00,2x Margherita pizza
+SQ-49256,2026-10-22,18:51,7.00,1x Garlic knots
+SQ-49254,2026-10-22,19:04,33.00,1x Buffalo wings (10); 1x Pepperoni pizza
+SQ-49267,2026-10-22,19:40,18.00,1x Pepperoni pizza
+SQ-49277,2026-10-22,19:51,22.00,1x Buffalo wings (10); 1x Garlic knots
+SQ-49294,2026-10-22,20:16,33.00,1x Garlic knots; 1x Buffalo wings (10); 1x Caesar salad
+SQ-49287,2026-10-22,20:21,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-49272,2026-10-22,20:41,26.00,1x Caesar salad; 1x Buffalo wings (10)
+SQ-49303,2026-10-22,21:15,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-49326,2026-10-23,11:07,7.00,1x Garlic knots
+SQ-49349,2026-10-23,11:42,16.00,1x Margherita pizza
+SQ-49314,2026-10-23,13:04,48.00,2x Buffalo wings (10); 1x Pepperoni pizza
+SQ-49350,2026-10-23,13:06,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-49357,2026-10-23,13:50,52.00,2x Pepperoni pizza; 1x Margherita pizza
+SQ-49335,2026-10-23,17:07,22.00,1x Buffalo wings (10); 1x Garlic knots
+SQ-49313,2026-10-23,18:13,31.00,1x Buffalo wings (10); 1x Margherita pizza
+SQ-49330,2026-10-23,18:13,29.50,1x Soda (2 L); 1x Garlic knots; 1x Pepperoni pizza
+SQ-49331,2026-10-23,18:15,25.00,1x Pepperoni pizza; 1x Garlic knots
+SQ-49366,2026-10-23,19:38,29.00,1x Caesar salad; 1x Pepperoni pizza
+SQ-49373,2026-10-23,19:45,4.50,1x Soda (2 L)
+SQ-49319,2026-10-23,19:56,49.00,1x Margherita pizza; 1x Pepperoni pizza; 1x Buffalo wings (10)
+SQ-49316,2026-10-23,20:26,16.00,1x Margherita pizza
+SQ-49369,2026-10-23,20:53,11.00,1x Caesar salad
+SQ-49343,2026-10-23,21:11,52.00,2x Pepperoni pizza; 1x Margherita pizza
+SQ-49413,2026-10-24,11:31,27.50,1x Soda (2 L); 1x Garlic knots; 1x Margherita pizza
+SQ-49423,2026-10-24,11:31,18.00,1x Pepperoni pizza
+SQ-49433,2026-10-24,12:00,11.50,1x Garlic knots; 1x Soda (2 L)
+SQ-49385,2026-10-24,12:38,36.00,2x Pepperoni pizza
+SQ-49383,2026-10-24,13:14,12.50,1x Tiramisu; 1x Soda (2 L)
+SQ-49388,2026-10-24,13:35,52.00,2x Pepperoni pizza; 1x Margherita pizza
+SQ-49429,2026-10-24,18:03,11.50,1x Soda (2 L); 1x Garlic knots
+SQ-49430,2026-10-24,18:19,15.50,1x Caesar salad; 1x Soda (2 L)
+SQ-49393,2026-10-24,18:26,29.00,1x Pepperoni pizza; 1x Caesar salad
+SQ-49427,2026-10-24,18:49,30.00,2x Buffalo wings (10)
+SQ-49396,2026-10-24,19:16,34.00,1x Pepperoni pizza; 1x Margherita pizza
+SQ-49420,2026-10-24,19:27,18.00,1x Pepperoni pizza
+SQ-49425,2026-10-24,19:57,33.50,1x Soda (2 L); 1x Pepperoni pizza; 1x Caesar salad
+SQ-49378,2026-10-24,20:41,30.00,2x Buffalo wings (10)
+SQ-49419,2026-10-24,21:56,25.00,1x Garlic knots; 1x Pepperoni pizza
+SQ-49402,2026-10-24,22:17,54.00,3x Pepperoni pizza
+SQ-49447,2026-10-25,11:42,34.00,1x Pepperoni pizza; 1x Margherita pizza
+SQ-49504,2026-10-25,11:57,32.00,2x Margherita pizza
+SQ-49468,2026-10-25,17:20,15.00,1x Buffalo wings (10)
+SQ-49464,2026-10-25,18:21,33.00,1x Pepperoni pizza; 1x Buffalo wings (10)
+SQ-49459,2026-10-25,18:44,11.00,1x Caesar salad
+SQ-49463,2026-10-25,19:07,26.00,1x Buffalo wings (10); 1x Caesar salad
+SQ-49493,2026-10-25,19:08,18.00,1x Pepperoni pizza
+SQ-49455,2026-10-25,19:19,20.50,1x Soda (2 L); 2x Tiramisu
+SQ-49499,2026-10-25,19:21,29.00,1x Caesar salad; 1x Pepperoni pizza
+SQ-49485,2026-10-25,20:33,7.00,1x Garlic knots
+SQ-49460,2026-10-25,20:35,15.00,1x Tiramisu; 1x Garlic knots
+SQ-49492,2026-10-25,21:00,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-49453,2026-10-25,22:43,4.50,1x Soda (2 L)
+SQ-49541,2026-10-26,11:36,38.50,1x Margherita pizza; 1x Pepperoni pizza; 1x Soda (2 L)
+SQ-49546,2026-10-26,12:08,25.00,1x Margherita pizza; 2x Soda (2 L)
+SQ-49532,2026-10-26,13:19,15.00,1x Buffalo wings (10)
+SQ-49558,2026-10-26,13:38,20.00,2x Soda (2 L); 1x Caesar salad
+SQ-49538,2026-10-26,17:15,4.50,1x Soda (2 L)
+SQ-49563,2026-10-26,17:49,42.00,1x Margherita pizza; 1x Pepperoni pizza; 1x Tiramisu
+SQ-49542,2026-10-26,17:51,15.00,1x Tiramisu; 1x Garlic knots
+SQ-49513,2026-10-26,18:24,27.00,1x Margherita pizza; 1x Caesar salad
+SQ-49565,2026-10-26,19:28,33.50,1x Caesar salad; 1x Pepperoni pizza; 1x Soda (2 L)
+SQ-49516,2026-10-26,19:56,4.50,1x Soda (2 L)
+SQ-49523,2026-10-26,20:18,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-49556,2026-10-26,20:33,31.00,1x Buffalo wings (10); 1x Margherita pizza
+SQ-49545,2026-10-26,22:36,4.50,1x Soda (2 L)
+SQ-49615,2026-10-27,12:03,8.00,1x Tiramisu
+SQ-49582,2026-10-27,12:57,31.00,1x Margherita pizza; 1x Buffalo wings (10)
+SQ-49607,2026-10-27,13:07,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-49587,2026-10-27,13:12,4.50,1x Soda (2 L)
+SQ-49604,2026-10-27,13:39,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-49616,2026-10-27,13:44,48.00,3x Margherita pizza
+SQ-49577,2026-10-27,17:45,32.00,2x Margherita pizza
+SQ-49611,2026-10-27,18:18,36.00,2x Pepperoni pizza
+SQ-49589,2026-10-27,18:43,19.50,1x Soda (2 L); 1x Buffalo wings (10)
+SQ-49600,2026-10-27,19:19,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-49613,2026-10-27,19:20,41.00,1x Margherita pizza; 1x Garlic knots; 1x Pepperoni pizza
+SQ-49618,2026-10-27,19:33,50.00,1x Pepperoni pizza; 2x Margherita pizza
+SQ-49606,2026-10-27,21:57,49.00,1x Buffalo wings (10); 1x Margherita pizza; 1x Pepperoni pizza
+SQ-49571,2026-10-27,22:26,34.00,1x Pepperoni pizza; 1x Margherita pizza
+SQ-49666,2026-10-28,11:26,24.00,1x Tiramisu; 1x Margherita pizza
+SQ-49675,2026-10-28,11:52,11.50,1x Soda (2 L); 1x Garlic knots
+SQ-49683,2026-10-28,13:02,25.00,1x Garlic knots; 1x Pepperoni pizza
+SQ-49627,2026-10-28,13:09,20.50,1x Margherita pizza; 1x Soda (2 L)
+SQ-49670,2026-10-28,13:09,50.00,2x Margherita pizza; 1x Pepperoni pizza
+SQ-49637,2026-10-28,13:27,4.50,1x Soda (2 L)
+SQ-49631,2026-10-28,13:32,18.00,1x Pepperoni pizza
+SQ-49668,2026-10-28,13:37,18.00,1x Pepperoni pizza
+SQ-49679,2026-10-28,17:29,25.00,1x Garlic knots; 1x Pepperoni pizza
+SQ-49626,2026-10-28,18:47,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-49673,2026-10-28,19:47,4.50,1x Soda (2 L)
+SQ-49650,2026-10-28,20:57,50.00,2x Margherita pizza; 1x Pepperoni pizza
+SQ-49651,2026-10-28,21:15,18.00,1x Pepperoni pizza
+SQ-49701,2026-10-29,11:37,16.00,1x Margherita pizza
+SQ-49708,2026-10-29,11:52,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-49688,2026-10-29,13:02,27.00,1x Margherita pizza; 1x Caesar salad
+SQ-49696,2026-10-29,17:27,25.00,1x Garlic knots; 1x Pepperoni pizza
+SQ-49742,2026-10-29,17:36,23.00,1x Margherita pizza; 1x Garlic knots
+SQ-49733,2026-10-29,18:59,22.00,1x Garlic knots; 1x Buffalo wings (10)
+SQ-49713,2026-10-29,19:35,11.50,1x Soda (2 L); 1x Garlic knots
+SQ-49784,2026-10-30,12:35,11.00,1x Caesar salad
+SQ-49806,2026-10-30,13:06,40.50,1x Soda (2 L); 2x Pepperoni pizza
+SQ-49764,2026-10-30,13:14,31.00,1x Buffalo wings (10); 1x Margherita pizza
+SQ-49816,2026-10-30,17:14,25.00,1x Garlic knots; 1x Pepperoni pizza
+SQ-49768,2026-10-30,17:59,18.00,1x Pepperoni pizza
+SQ-49774,2026-10-30,18:04,16.00,1x Margherita pizza
+SQ-49792,2026-10-30,18:34,34.00,1x Pepperoni pizza; 1x Margherita pizza
+SQ-49799,2026-10-30,19:08,32.00,2x Margherita pizza
+SQ-49767,2026-10-30,19:41,32.00,2x Margherita pizza
+SQ-49815,2026-10-30,19:50,31.00,1x Margherita pizza; 1x Buffalo wings (10)
+SQ-49763,2026-10-30,20:32,22.50,1x Pepperoni pizza; 1x Soda (2 L)
+SQ-49789,2026-10-30,20:50,16.00,1x Margherita pizza
+SQ-49804,2026-10-30,21:21,45.00,1x Pepperoni pizza; 1x Caesar salad; 1x Margherita pizza
+SQ-49865,2026-10-31,11:17,29.00,1x Caesar salad; 1x Pepperoni pizza
+SQ-49887,2026-10-31,11:38,20.50,1x Soda (2 L); 1x Margherita pizza
+SQ-49842,2026-10-31,11:57,23.00,1x Garlic knots; 1x Margherita pizza
+SQ-49846,2026-10-31,12:00,16.00,1x Margherita pizza
+SQ-49889,2026-10-31,12:45,38.50,1x Soda (2 L); 1x Margherita pizza; 1x Pepperoni pizza
+SQ-49906,2026-10-31,13:05,18.00,1x Pepperoni pizza
+SQ-49908,2026-10-31,17:00,11.00,1x Caesar salad
+SQ-49825,2026-10-31,17:52,14.00,2x Garlic knots
+SQ-49901,2026-10-31,18:04,14.00,2x Garlic knots
+SQ-49905,2026-10-31,18:36,34.00,1x Pepperoni pizza; 1x Margherita pizza
+SQ-49852,2026-10-31,18:46,19.50,1x Buffalo wings (10); 1x Soda (2 L)
+SQ-49866,2026-10-31,18:54,20.50,1x Margherita pizza; 1x Soda (2 L)
+SQ-49876,2026-10-31,19:06,16.00,1x Margherita pizza
+SQ-49868,2026-10-31,19:33,23.00,1x Margherita pizza; 1x Garlic knots
+SQ-49890,2026-10-31,19:50,67.00,2x Pepperoni pizza; 1x Buffalo wings (10); 1x Margherita pizza
+SQ-49824,2026-10-31,20:00,15.00,1x Buffalo wings (10)
+SQ-49897,2026-10-31,20:03,4.50,1x Soda (2 L)
+SQ-49828,2026-10-31,20:14,18.00,1x Pepperoni pizza
+SQ-49851,2026-10-31,20:42,26.00,1x Caesar salad; 1x Buffalo wings (10)
+SQ-49821,2026-10-31,20:49,27.50,1x Margherita pizza; 1x Soda (2 L); 1x Garlic knots
+SQ-49826,2026-10-31,20:49,18.00,1x Caesar salad; 1x Garlic knots
+SQ-49892,2026-10-31,22:41,22.50,1x Soda (2 L); 1x Pepperoni pizza
+SQ-49948,2026-11-01,12:41,25.00,1x Pepperoni pizza; 1x Garlic knots
+SQ-49933,2026-11-01,12:55,29.00,1x Pepperoni pizza; 1x Caesar salad
+SQ-49925,2026-11-01,17:14,36.00,2x Pepperoni pizza
+SQ-49941,2026-11-01,17:17,34.00,1x Margherita pizza; 1x Pepperoni pizza
+SQ-49968,2026-11-01,17:37,36.50,2x Margherita pizza; 1x Soda (2 L)
+SQ-49924,2026-11-01,18:10,11.00,1x Caesar salad
+SQ-49918,2026-11-01,18:23,36.00,2x Pepperoni pizza
+SQ-49921,2026-11-01,18:53,16.00,1x Margherita pizza
+SQ-49912,2026-11-01,19:09,7.00,1x Garlic knots
+SQ-49954,2026-11-01,19:44,32.00,2x Margherita pizza
+SQ-49911,2026-11-01,20:10,20.50,1x Margherita pizza; 1x Soda (2 L)
+SQ-49955,2026-11-01,20:19,36.00,2x Pepperoni pizza
+SQ-49930,2026-11-01,20:57,36.00,2x Pepperoni pizza
+SQ-49956,2026-11-01,21:24,15.00,1x Buffalo wings (10)
+SQ-49972,2026-11-01,22:38,33.00,1x Buffalo wings (10); 1x Pepperoni pizza
+SQ-49962,2026-11-01,22:48,31.00,1x Margherita pizza; 1x Buffalo wings (10)

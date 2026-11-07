@@ -1,0 +1,782 @@
+﻿DoorDash Order ID,Order Date,Order Time,Subtotal,Commission,Merchant Funded Promotion,Promotion Name,Error Charges,Error Reason,Error Item,Items,Net Payout
+DD-48230,2026-10-05,11:33,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-48240,2026-10-05,11:47,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48242,2026-10-05,12:04,29.00,5.80,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza,23.20
+DD-48206,2026-10-05,12:21,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48220,2026-10-05,13:42,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-48257,2026-10-05,13:45,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48204,2026-10-05,17:11,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48215,2026-10-05,17:48,34.00,6.80,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,20.20
+DD-48250,2026-10-05,17:54,38.50,7.70,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza; 1x Soda (2 L),30.80
+DD-48223,2026-10-05,18:10,36.00,7.20,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza,21.80
+DD-48219,2026-10-05,18:12,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48256,2026-10-05,18:39,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48225,2026-10-05,18:47,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-48213,2026-10-05,19:17,31.00,6.20,0.00,,0.00,,,1x Margherita pizza; 1x Buffalo wings (10),24.80
+DD-48231,2026-10-05,19:58,15.00,3.00,0.00,,0.00,,,1x Garlic knots; 1x Tiramisu,12.00
+DD-48228,2026-10-05,20:14,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48243,2026-10-05,20:26,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48244,2026-10-05,20:39,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-48246,2026-10-05,20:49,36.00,7.20,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza,21.80
+DD-48227,2026-10-05,20:55,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48232,2026-10-05,21:24,31.00,6.20,7.00,Free garlic knots on $30+,0.00,,,1x Buffalo wings (10); 1x Margherita pizza,17.80
+DD-48212,2026-10-05,21:52,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48224,2026-10-05,22:21,15.50,3.10,0.00,,0.00,,,1x Caesar salad; 1x Soda (2 L),12.40
+DD-48265,2026-10-06,11:05,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48290,2026-10-06,11:15,25.00,5.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,20.00
+DD-48268,2026-10-06,11:36,39.00,7.80,0.00,,0.00,,,2x Margherita pizza; 1x Garlic knots,31.20
+DD-48276,2026-10-06,11:54,47.00,9.40,0.00,,0.00,,,2x Margherita pizza; 1x Buffalo wings (10),37.60
+DD-48313,2026-10-06,11:58,35.50,7.10,0.00,,0.00,,,1x Buffalo wings (10); 1x Margherita pizza; 1x Soda (2 L),28.40
+DD-48271,2026-10-06,12:07,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-48283,2026-10-06,12:10,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48309,2026-10-06,12:19,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-48312,2026-10-06,12:54,33.00,6.60,7.00,Free garlic knots on $30+,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza,19.40
+DD-48279,2026-10-06,13:50,36.00,7.20,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza,21.80
+DD-48280,2026-10-06,17:27,25.00,5.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,20.00
+DD-48300,2026-10-06,17:33,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48274,2026-10-06,17:39,40.00,8.00,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10); 1x Pepperoni pizza,32.00
+DD-48288,2026-10-06,17:40,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48298,2026-10-06,17:51,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-48294,2026-10-06,17:52,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots; 1x Tiramisu,26.40
+DD-48297,2026-10-06,18:39,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-48299,2026-10-06,18:49,30.50,6.10,0.00,,0.00,,,1x Soda (2 L); 1x Buffalo wings (10); 1x Caesar salad,24.40
+DD-48270,2026-10-06,19:08,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-48305,2026-10-06,19:20,11.50,2.30,0.00,,0.00,,,1x Soda (2 L); 1x Garlic knots,9.20
+DD-48293,2026-10-06,19:32,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48286,2026-10-06,19:46,40.50,8.10,0.00,,0.00,,,2x Pepperoni pizza; 1x Soda (2 L),32.40
+DD-48260,2026-10-06,21:05,46.00,9.20,7.00,Free garlic knots on $30+,0.00,,,2x Buffalo wings (10); 1x Margherita pizza,29.80
+DD-48285,2026-10-06,21:14,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-48262,2026-10-06,21:48,15.50,3.10,0.00,,0.00,,,1x Soda (2 L); 1x Caesar salad,12.40
+DD-48292,2026-10-06,22:06,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48306,2026-10-06,22:30,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-48322,2026-10-07,11:31,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48333,2026-10-07,11:50,26.00,5.20,0.00,,0.00,,,1x Tiramisu; 1x Pepperoni pizza,20.80
+DD-48326,2026-10-07,12:28,32.00,6.40,0.00,,0.00,,,2x Garlic knots; 1x Pepperoni pizza,25.60
+DD-48367,2026-10-07,12:38,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48334,2026-10-07,13:31,37.50,7.50,0.00,,0.00,,,1x Soda (2 L); 1x Buffalo wings (10); 1x Pepperoni pizza,30.00
+DD-48366,2026-10-07,17:00,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-48344,2026-10-07,17:31,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),26.40
+DD-48355,2026-10-07,17:46,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-48342,2026-10-07,18:07,33.00,6.60,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),19.40
+DD-48316,2026-10-07,18:08,24.00,4.80,0.00,,0.00,,,1x Margherita pizza; 1x Tiramisu,19.20
+DD-48352,2026-10-07,18:17,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48356,2026-10-07,18:17,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-48338,2026-10-07,19:17,38.50,7.70,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L); 1x Margherita pizza,30.80
+DD-48340,2026-10-07,19:24,32.00,6.40,0.00,,0.00,,,1x Pepperoni pizza; 2x Garlic knots,25.60
+DD-48330,2026-10-07,19:31,27.50,5.50,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L); 1x Margherita pizza,22.00
+DD-48325,2026-10-07,19:52,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-48349,2026-10-07,19:55,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-48339,2026-10-07,20:28,29.50,5.90,0.00,,0.00,,,1x Soda (2 L); 1x Garlic knots; 1x Pepperoni pizza,23.60
+DD-48361,2026-10-07,20:36,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48328,2026-10-07,22:03,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48336,2026-10-07,22:55,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-48377,2026-10-08,11:08,36.00,7.20,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza; 1x Caesar salad,28.80
+DD-48423,2026-10-08,11:26,29.00,5.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Caesar salad,23.20
+DD-48383,2026-10-08,11:43,37.50,7.50,7.00,Free garlic knots on $30+,0.00,,,1x Garlic knots; 1x Tiramisu; 1x Pepperoni pizza; 1x Soda (2 L),23.00
+DD-48384,2026-10-08,11:52,26.50,5.30,0.00,,0.00,,,1x Buffalo wings (10); 1x Garlic knots; 1x Soda (2 L),21.20
+DD-48406,2026-10-08,12:06,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),26.40
+DD-48427,2026-10-08,12:06,26.50,5.30,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10); 1x Soda (2 L),21.20
+DD-48398,2026-10-08,12:13,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-48369,2026-10-08,12:32,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-48391,2026-10-08,12:37,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-48403,2026-10-08,12:48,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-48387,2026-10-08,13:50,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48379,2026-10-08,17:20,41.00,8.20,7.00,Free garlic knots on $30+,0.00,,,2x Soda (2 L); 2x Margherita pizza,25.80
+DD-48389,2026-10-08,17:31,31.00,6.20,0.00,,0.00,,,1x Buffalo wings (10); 1x Margherita pizza,24.80
+DD-48409,2026-10-08,17:59,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48416,2026-10-08,18:07,49.00,9.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10); 1x Margherita pizza,39.20
+DD-48401,2026-10-08,18:34,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48380,2026-10-08,18:43,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-48393,2026-10-08,18:49,19.50,3.90,0.00,,0.00,,,1x Soda (2 L); 1x Buffalo wings (10),15.60
+DD-48374,2026-10-08,19:05,27.00,5.40,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza,21.60
+DD-48397,2026-10-08,19:12,46.00,9.20,0.00,,0.00,,,2x Buffalo wings (10); 1x Margherita pizza,36.80
+DD-48411,2026-10-08,19:34,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48412,2026-10-08,20:02,26.00,5.20,0.00,,0.00,,,1x Caesar salad; 1x Buffalo wings (10),20.80
+DD-48382,2026-10-08,20:23,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48414,2026-10-08,20:33,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48371,2026-10-08,20:36,38.00,7.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots; 1x Buffalo wings (10),30.40
+DD-48428,2026-10-08,21:03,30.50,6.10,0.00,,0.00,,,1x Caesar salad; 1x Buffalo wings (10); 1x Soda (2 L),24.40
+DD-48426,2026-10-08,21:46,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48399,2026-10-08,22:25,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48420,2026-10-08,22:45,52.00,10.40,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza; 1x Margherita pizza,34.60
+DD-48468,2026-10-09,11:17,36.00,7.20,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza,21.80
+DD-48438,2026-10-09,11:19,29.50,5.90,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots; 1x Soda (2 L),23.60
+DD-48495,2026-10-09,11:19,28.50,5.70,0.00,,0.00,,,1x Soda (2 L); 1x Tiramisu; 1x Margherita pizza,22.80
+DD-48494,2026-10-09,11:23,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48491,2026-10-09,11:47,49.00,9.80,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Margherita pizza; 1x Buffalo wings (10),32.20
+DD-48470,2026-10-09,12:02,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-48503,2026-10-09,12:09,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48434,2026-10-09,12:21,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48446,2026-10-09,12:25,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-48430,2026-10-09,12:30,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48440,2026-10-09,12:35,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48490,2026-10-09,12:52,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48448,2026-10-09,13:12,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48453,2026-10-09,17:05,49.00,9.80,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza; 1x Margherita pizza,39.20
+DD-48447,2026-10-09,17:11,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48497,2026-10-09,17:17,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48484,2026-10-09,17:34,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-48433,2026-10-09,18:13,38.00,7.60,0.00,,0.00,,,1x Buffalo wings (10); 1x Garlic knots; 1x Margherita pizza,30.40
+DD-48449,2026-10-09,18:42,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48486,2026-10-09,18:43,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48450,2026-10-09,18:45,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-48451,2026-10-09,18:58,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48461,2026-10-09,19:13,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48485,2026-10-09,19:47,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-48435,2026-10-09,20:16,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48487,2026-10-09,20:30,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48456,2026-10-09,22:05,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-48483,2026-10-09,22:16,25.00,5.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,20.00
+DD-48473,2026-10-09,22:31,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-48466,2026-10-09,22:35,16.00,3.20,0.00,,0.00,,,2x Soda (2 L); 1x Garlic knots,12.80
+DD-48452,2026-10-09,22:45,24.00,4.80,0.00,,0.00,,,1x Tiramisu; 1x Margherita pizza,19.20
+DD-48543,2026-10-10,11:09,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48547,2026-10-10,11:20,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-48509,2026-10-10,12:30,33.00,6.60,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza,26.40
+DD-48531,2026-10-10,12:32,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48519,2026-10-10,12:37,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-48513,2026-10-10,12:55,27.50,5.50,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots; 1x Soda (2 L),22.00
+DD-48558,2026-10-10,12:58,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-48523,2026-10-10,13:42,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48570,2026-10-10,17:18,11.50,2.30,0.00,,0.00,,,1x Soda (2 L); 1x Garlic knots,9.20
+DD-48565,2026-10-10,17:22,26.00,5.20,0.00,,0.00,,,1x Pepperoni pizza; 1x Tiramisu,20.80
+DD-48552,2026-10-10,17:57,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48563,2026-10-10,18:13,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-48573,2026-10-10,18:24,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48548,2026-10-10,18:25,40.00,8.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10); 1x Garlic knots,32.00
+DD-48564,2026-10-10,18:35,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48572,2026-10-10,18:47,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-48553,2026-10-10,18:59,24.00,4.80,0.00,,0.00,,,1x Tiramisu; 1x Margherita pizza,19.20
+DD-48559,2026-10-10,19:22,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48544,2026-10-10,19:30,11.50,2.30,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L),9.20
+DD-48569,2026-10-10,19:30,34.00,6.80,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,20.20
+DD-48512,2026-10-10,19:45,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-48550,2026-10-10,19:52,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48526,2026-10-10,20:05,11.50,2.30,0.00,,0.00,,,1x Soda (2 L); 1x Garlic knots,9.20
+DD-48535,2026-10-10,20:08,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-48525,2026-10-10,20:15,36.50,7.30,0.00,,0.00,,,2x Margherita pizza; 1x Soda (2 L),29.20
+DD-48561,2026-10-10,20:18,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48566,2026-10-10,20:44,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48575,2026-10-10,20:44,14.00,2.80,0.00,,0.00,,,2x Garlic knots,11.20
+DD-48538,2026-10-10,20:45,11.50,2.30,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L),9.20
+DD-48541,2026-10-10,20:56,34.00,6.80,0.00,,0.00,,,1x Caesar salad; 1x Garlic knots; 1x Margherita pizza,27.20
+DD-48508,2026-10-10,21:00,50.00,10.00,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 2x Margherita pizza,33.00
+DD-48532,2026-10-10,21:55,12.50,2.50,0.00,,0.00,,,1x Tiramisu; 1x Soda (2 L),10.00
+DD-48594,2026-10-11,12:13,29.00,5.80,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza,23.20
+DD-48578,2026-10-11,12:55,52.00,10.40,0.00,,0.00,,,1x Margherita pizza; 2x Pepperoni pizza,41.60
+DD-48603,2026-10-11,13:16,44.00,8.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Caesar salad; 1x Buffalo wings (10),35.20
+DD-48633,2026-10-11,13:20,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48624,2026-10-11,17:01,36.00,7.20,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza,21.80
+DD-48591,2026-10-11,17:24,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-48637,2026-10-11,17:26,29.50,5.90,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza; 1x Garlic knots,23.60
+DD-48582,2026-10-11,17:57,41.00,8.20,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza; 1x Garlic knots,32.80
+DD-48612,2026-10-11,18:24,49.00,9.80,0.00,,0.00,,,1x Margherita pizza; 1x Buffalo wings (10); 1x Pepperoni pizza,39.20
+DD-48600,2026-10-11,18:25,25.00,5.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,20.00
+DD-48639,2026-10-11,19:33,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48599,2026-10-11,19:50,57.00,11.40,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza; 2x Margherita pizza,45.60
+DD-48597,2026-10-11,20:10,46.00,9.20,0.00,,0.00,,,2x Buffalo wings (10); 1x Margherita pizza,36.80
+DD-48610,2026-10-11,20:20,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48619,2026-10-11,20:22,31.00,6.20,0.00,,0.00,,,1x Margherita pizza; 1x Buffalo wings (10),24.80
+DD-48611,2026-10-11,20:38,25.00,5.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,20.00
+DD-48609,2026-10-11,20:39,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48623,2026-10-11,21:10,45.00,9.00,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza; 1x Pepperoni pizza,36.00
+DD-48616,2026-10-11,21:47,24.00,4.80,0.00,,0.00,,,1x Margherita pizza; 1x Tiramisu,19.20
+DD-48592,2026-10-11,22:10,26.00,5.20,0.00,,0.00,,,1x Pepperoni pizza; 1x Tiramisu,20.80
+DD-48589,2026-10-11,22:36,32.00,6.40,0.00,,0.00,,,2x Garlic knots; 1x Pepperoni pizza,25.60
+DD-48668,2026-10-12,11:16,52.00,10.40,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 2x Pepperoni pizza,34.60
+DD-48678,2026-10-12,11:18,40.00,8.00,7.00,Free garlic knots on $30+,0.00,,,2x Caesar salad; 1x Pepperoni pizza,25.00
+DD-48652,2026-10-12,11:30,33.00,6.60,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza,26.40
+DD-48694,2026-10-12,11:59,26.00,5.20,0.00,,0.00,,,1x Tiramisu; 1x Pepperoni pizza,20.80
+DD-48658,2026-10-12,12:19,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48667,2026-10-12,12:21,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48689,2026-10-12,13:01,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48680,2026-10-12,13:05,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-48663,2026-10-12,13:58,19.50,3.90,0.00,,0.00,,,1x Buffalo wings (10); 1x Soda (2 L),15.60
+DD-48661,2026-10-12,17:04,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48687,2026-10-12,17:16,18.00,3.60,0.00,,0.00,,,1x Caesar salad; 1x Garlic knots,14.40
+DD-48665,2026-10-12,17:25,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48692,2026-10-12,17:37,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48669,2026-10-12,18:57,22.50,4.50,0.00,,0.00,,,1x Garlic knots; 1x Caesar salad; 1x Soda (2 L),18.00
+DD-48693,2026-10-12,19:02,41.00,8.20,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza; 1x Garlic knots,32.80
+DD-48698,2026-10-12,19:14,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-48675,2026-10-12,19:17,50.00,10.00,0.00,,0.00,,,2x Margherita pizza; 1x Pepperoni pizza,40.00
+DD-48684,2026-10-12,19:19,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48657,2026-10-12,19:31,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48662,2026-10-12,19:36,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48696,2026-10-12,19:46,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-48670,2026-10-12,20:04,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-48699,2026-10-12,20:07,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48666,2026-10-12,20:28,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48648,2026-10-12,20:30,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),26.40
+DD-48664,2026-10-12,20:31,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-48681,2026-10-12,20:32,29.00,5.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Caesar salad,23.20
+DD-48647,2026-10-12,20:34,29.00,5.80,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza,23.20
+DD-48685,2026-10-12,21:39,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-48655,2026-10-12,22:57,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48708,2026-10-13,12:17,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48743,2026-10-13,12:27,38.50,7.70,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza; 1x Margherita pizza,30.80
+DD-48724,2026-10-13,12:59,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-48728,2026-10-13,12:59,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48758,2026-10-13,13:06,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-48759,2026-10-13,13:06,16.00,3.20,0.00,,0.00,,,1x Garlic knots; 2x Soda (2 L),12.80
+DD-48740,2026-10-13,13:08,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48749,2026-10-13,13:13,36.50,7.30,0.00,,0.00,,,2x Margherita pizza; 1x Soda (2 L),29.20
+DD-48726,2026-10-13,13:22,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-48733,2026-10-13,13:23,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-48718,2026-10-13,17:35,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-48747,2026-10-13,17:49,15.00,3.00,0.00,,0.00,,,1x Garlic knots; 1x Tiramisu,12.00
+DD-48753,2026-10-13,18:13,31.00,6.20,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Buffalo wings (10),17.80
+DD-48746,2026-10-13,18:19,25.00,5.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,20.00
+DD-48736,2026-10-13,19:05,33.00,6.60,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),19.40
+DD-48716,2026-10-13,19:18,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48754,2026-10-13,19:30,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-48723,2026-10-13,20:08,30.00,6.00,0.00,,0.00,,,2x Buffalo wings (10),24.00
+DD-48755,2026-10-13,20:13,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48756,2026-10-13,21:52,9.00,1.80,0.00,,0.00,,,2x Soda (2 L),7.20
+DD-48730,2026-10-13,22:06,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48705,2026-10-13,22:57,31.00,6.20,0.00,,0.00,,,1x Buffalo wings (10); 1x Margherita pizza,24.80
+DD-48773,2026-10-14,11:06,9.00,1.80,0.00,,0.00,,,2x Soda (2 L),7.20
+DD-48807,2026-10-14,12:07,31.00,6.20,0.00,,0.00,,,1x Margherita pizza; 1x Buffalo wings (10),24.80
+DD-48810,2026-10-14,13:47,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48802,2026-10-14,13:51,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48782,2026-10-14,17:12,48.00,9.60,0.00,,0.00,,,3x Margherita pizza,38.40
+DD-48796,2026-10-14,17:28,9.00,1.80,0.00,,0.00,,,2x Soda (2 L),7.20
+DD-48789,2026-10-14,17:30,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-48808,2026-10-14,17:56,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-48791,2026-10-14,17:57,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-48784,2026-10-14,19:07,44.00,8.80,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza; 1x Tiramisu,28.20
+DD-48777,2026-10-14,19:11,24.00,4.80,0.00,,0.00,,,1x Margherita pizza; 1x Tiramisu,19.20
+DD-48816,2026-10-14,19:29,31.00,6.20,0.00,,0.00,,,1x Margherita pizza; 1x Buffalo wings (10),24.80
+DD-48809,2026-10-14,19:40,23.00,4.60,0.00,,0.00,,,1x Tiramisu; 1x Buffalo wings (10),18.40
+DD-48795,2026-10-14,19:47,11.50,2.30,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L),9.20
+DD-48786,2026-10-14,19:48,44.00,8.80,0.00,,0.00,,,1x Caesar salad; 1x Buffalo wings (10); 1x Pepperoni pizza,35.20
+DD-48778,2026-10-14,20:33,24.00,4.80,0.00,,0.00,,,1x Tiramisu; 1x Margherita pizza,19.20
+DD-48781,2026-10-14,20:35,41.00,8.20,0.00,,0.00,,,2x Margherita pizza; 2x Soda (2 L),32.80
+DD-48812,2026-10-14,20:41,11.50,2.30,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L),9.20
+DD-48805,2026-10-14,20:43,12.50,2.50,0.00,,0.00,,,1x Soda (2 L); 1x Tiramisu,10.00
+DD-48767,2026-10-14,20:47,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48775,2026-10-14,20:49,39.00,7.80,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza; 1x Garlic knots,24.20
+DD-48768,2026-10-14,20:56,12.50,2.50,0.00,,0.00,,,1x Soda (2 L); 1x Tiramisu,10.00
+DD-48783,2026-10-14,21:02,15.00,3.00,0.00,,0.00,,,1x Tiramisu; 1x Garlic knots,12.00
+DD-48811,2026-10-14,21:29,29.50,5.90,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza; 1x Garlic knots,23.60
+DD-48840,2026-10-15,11:07,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48851,2026-10-15,11:29,30.00,6.00,7.00,Free garlic knots on $30+,0.00,,,1x Garlic knots; 1x Tiramisu; 1x Buffalo wings (10),17.00
+DD-48843,2026-10-15,11:57,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48872,2026-10-15,12:08,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48834,2026-10-15,12:10,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-48832,2026-10-15,12:49,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-48844,2026-10-15,12:55,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48839,2026-10-15,13:00,52.00,10.40,0.00,,0.00,,,2x Pepperoni pizza; 1x Margherita pizza,41.60
+DD-48866,2026-10-15,13:20,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-48819,2026-10-15,13:43,22.50,4.50,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L); 1x Caesar salad,18.00
+DD-48862,2026-10-15,17:45,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48838,2026-10-15,17:52,31.00,6.20,0.00,,0.00,,,1x Buffalo wings (10); 1x Margherita pizza,24.80
+DD-48861,2026-10-15,18:24,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48863,2026-10-15,18:25,40.50,8.10,0.00,,0.00,,,1x Soda (2 L); 2x Pepperoni pizza,32.40
+DD-48842,2026-10-15,18:45,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-48869,2026-10-15,18:49,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-48846,2026-10-15,19:23,29.00,5.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Caesar salad,23.20
+DD-48835,2026-10-15,19:45,34.00,6.80,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,20.20
+DD-48853,2026-10-15,20:04,38.50,7.70,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza; 1x Soda (2 L),30.80
+DD-48850,2026-10-15,22:51,11.50,2.30,0.00,,0.00,,,1x Soda (2 L); 1x Garlic knots,9.20
+DD-48928,2026-10-16,11:08,29.00,5.80,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza,23.20
+DD-48896,2026-10-16,11:17,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-48926,2026-10-16,11:42,26.50,5.30,0.00,,0.00,,,1x Buffalo wings (10); 1x Garlic knots; 1x Soda (2 L),21.20
+DD-48930,2026-10-16,11:49,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-48906,2026-10-16,12:02,27.00,5.40,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza,21.60
+DD-48900,2026-10-16,12:26,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48887,2026-10-16,12:29,26.00,5.20,0.00,,0.00,,,1x Buffalo wings (10); 1x Caesar salad,20.80
+DD-48947,2026-10-16,12:42,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-48897,2026-10-16,13:20,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48881,2026-10-16,17:08,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-48904,2026-10-16,18:07,26.50,5.30,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10); 1x Soda (2 L),21.20
+DD-48931,2026-10-16,18:16,33.00,6.60,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),19.40
+DD-48901,2026-10-16,18:18,29.50,5.90,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots; 1x Soda (2 L),23.60
+DD-48891,2026-10-16,18:42,12.50,2.50,0.00,,0.00,,,1x Soda (2 L); 1x Tiramisu,10.00
+DD-48899,2026-10-16,18:42,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-48907,2026-10-16,18:54,22.00,4.40,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10),17.60
+DD-48922,2026-10-16,18:54,23.00,4.60,0.00,,0.00,,,1x Buffalo wings (10); 1x Tiramisu,18.40
+DD-48934,2026-10-16,19:18,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-48933,2026-10-16,19:22,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48914,2026-10-16,19:39,18.00,3.60,0.00,,0.00,,,1x Caesar salad; 1x Garlic knots,14.40
+DD-48902,2026-10-16,19:46,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48921,2026-10-16,19:49,47.00,9.40,0.00,,0.00,,,1x Buffalo wings (10); 2x Margherita pizza,37.60
+DD-48877,2026-10-16,19:57,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48919,2026-10-16,20:02,12.50,2.50,0.00,,0.00,,,1x Soda (2 L); 1x Tiramisu,10.00
+DD-48943,2026-10-16,20:04,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48916,2026-10-16,20:22,33.00,6.60,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza,26.40
+DD-48941,2026-10-16,20:24,22.00,4.40,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10),17.60
+DD-48925,2026-10-16,20:27,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-48890,2026-10-16,20:32,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48876,2026-10-16,20:37,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48910,2026-10-16,20:49,50.00,10.00,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 2x Margherita pizza,33.00
+DD-48924,2026-10-16,20:54,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-48911,2026-10-16,21:14,30.50,6.10,0.00,,0.00,,,1x Pepperoni pizza; 1x Tiramisu; 1x Soda (2 L),24.40
+DD-48932,2026-10-16,21:33,50.00,10.00,0.00,,0.00,,,2x Margherita pizza; 1x Pepperoni pizza,40.00
+DD-48927,2026-10-16,22:01,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-48878,2026-10-16,22:15,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-48942,2026-10-16,22:47,15.50,3.10,0.00,,0.00,,,1x Caesar salad; 1x Soda (2 L),12.40
+DD-48984,2026-10-17,11:14,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48976,2026-10-17,12:00,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49004,2026-10-17,12:28,34.00,6.80,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza; 1x Caesar salad,27.20
+DD-48979,2026-10-17,13:23,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-48973,2026-10-17,13:34,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-49005,2026-10-17,13:46,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-48961,2026-10-17,17:12,44.50,8.90,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots; 1x Buffalo wings (10); 1x Soda (2 L),35.60
+DD-49016,2026-10-17,17:30,51.00,10.20,0.00,,0.00,,,2x Pepperoni pizza; 1x Buffalo wings (10),40.80
+DD-49014,2026-10-17,17:31,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48988,2026-10-17,17:33,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49018,2026-10-17,17:34,31.50,6.30,0.00,,0.00,,,1x Margherita pizza; 1x Caesar salad; 1x Soda (2 L),25.20
+DD-48969,2026-10-17,17:43,27.50,5.50,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza; 1x Soda (2 L),22.00
+DD-49002,2026-10-17,17:45,30.00,6.00,0.00,,0.00,,,2x Buffalo wings (10),24.00
+DD-49017,2026-10-17,17:52,15.50,3.10,0.00,,0.00,,,1x Caesar salad; 1x Soda (2 L),12.40
+DD-48990,2026-10-17,17:57,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49008,2026-10-17,18:00,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48974,2026-10-17,18:06,28.50,5.70,0.00,,0.00,,,1x Tiramisu; 1x Margherita pizza; 1x Soda (2 L),22.80
+DD-48985,2026-10-17,18:12,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-48995,2026-10-17,18:44,33.00,6.60,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza,26.40
+DD-48994,2026-10-17,18:56,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-48981,2026-10-17,19:10,19.50,3.90,0.00,,15.00,Missing item,Buffalo wings (10),1x Soda (2 L); 1x Buffalo wings (10),0.60
+DD-48971,2026-10-17,19:15,40.00,8.00,0.00,,0.00,,,2x Margherita pizza; 1x Tiramisu,32.00
+DD-48965,2026-10-17,19:40,19.00,3.80,0.00,,0.00,,,1x Caesar salad; 1x Tiramisu,15.20
+DD-48957,2026-10-17,19:54,31.00,6.20,0.00,,0.00,,,1x Buffalo wings (10); 1x Margherita pizza,24.80
+DD-48964,2026-10-17,20:07,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49013,2026-10-17,20:27,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),26.40
+DD-48951,2026-10-17,20:38,27.00,5.40,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza,21.60
+DD-48962,2026-10-17,21:15,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-48966,2026-10-17,21:18,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-48986,2026-10-17,21:42,33.00,6.60,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza,26.40
+DD-48975,2026-10-17,21:44,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49001,2026-10-17,22:25,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-48996,2026-10-17,22:45,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49080,2026-10-18,11:15,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49034,2026-10-18,11:18,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49075,2026-10-18,11:22,32.00,6.40,0.00,,0.00,,,1x Pepperoni pizza; 2x Garlic knots,25.60
+DD-49073,2026-10-18,11:23,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-49049,2026-10-18,11:28,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49054,2026-10-18,12:05,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49069,2026-10-18,12:13,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49033,2026-10-18,12:17,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49026,2026-10-18,12:31,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49072,2026-10-18,12:33,13.50,2.70,0.00,,0.00,,,3x Soda (2 L),10.80
+DD-49030,2026-10-18,13:03,26.00,5.20,0.00,,0.00,,,1x Tiramisu; 1x Pepperoni pizza,20.80
+DD-49029,2026-10-18,13:17,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49060,2026-10-18,13:40,25.00,5.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,20.00
+DD-49022,2026-10-18,17:37,34.00,6.80,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza; 1x Caesar salad,27.20
+DD-49038,2026-10-18,18:09,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49044,2026-10-18,18:38,9.00,1.80,0.00,,0.00,,,2x Soda (2 L),7.20
+DD-49045,2026-10-18,19:08,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-49053,2026-10-18,19:09,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-49025,2026-10-18,19:54,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49052,2026-10-18,20:12,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49062,2026-10-18,20:15,27.50,5.50,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots; 1x Soda (2 L),22.00
+DD-49056,2026-10-18,20:17,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49031,2026-10-18,20:18,15.00,3.00,0.00,,0.00,,,1x Garlic knots; 1x Tiramisu,12.00
+DD-49063,2026-10-18,20:59,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49027,2026-10-18,22:15,23.00,4.60,0.00,,0.00,,,1x Tiramisu; 1x Buffalo wings (10),18.40
+DD-49071,2026-10-18,22:46,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49082,2026-10-19,11:04,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-49110,2026-10-19,11:25,33.00,6.60,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),19.40
+DD-49114,2026-10-19,11:44,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49124,2026-10-19,12:05,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-49126,2026-10-19,12:30,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-49100,2026-10-19,13:06,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49091,2026-10-19,17:08,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49131,2026-10-19,17:09,49.00,9.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10); 1x Margherita pizza,39.20
+DD-49136,2026-10-19,17:14,18.00,3.60,0.00,,0.00,,,1x Garlic knots; 1x Caesar salad,14.40
+DD-49112,2026-10-19,17:20,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49120,2026-10-19,17:35,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-49106,2026-10-19,17:58,15.00,3.00,0.00,,0.00,,,1x Tiramisu; 1x Garlic knots,12.00
+DD-49108,2026-10-19,18:00,38.50,7.70,7.00,Free garlic knots on $30+,0.00,,,1x Soda (2 L); 1x Margherita pizza; 1x Pepperoni pizza,23.80
+DD-49084,2026-10-19,18:02,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),26.40
+DD-49087,2026-10-19,18:14,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49116,2026-10-19,18:39,31.00,6.20,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Buffalo wings (10),17.80
+DD-49088,2026-10-19,18:47,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-49090,2026-10-19,18:48,19.50,3.90,0.00,,0.00,,,1x Buffalo wings (10); 1x Soda (2 L),15.60
+DD-49109,2026-10-19,18:53,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-49135,2026-10-19,18:55,18.00,3.60,0.00,,0.00,,,1x Caesar salad; 1x Garlic knots,14.40
+DD-49097,2026-10-19,18:57,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49127,2026-10-19,19:28,46.00,9.20,0.00,,0.00,,,2x Buffalo wings (10); 1x Margherita pizza,36.80
+DD-49118,2026-10-19,20:00,30.00,6.00,0.00,,0.00,,,2x Buffalo wings (10),24.00
+DD-49111,2026-10-19,20:08,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-49098,2026-10-19,20:14,15.50,3.10,0.00,,0.00,,,1x Caesar salad; 1x Soda (2 L),12.40
+DD-49092,2026-10-19,20:23,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-49095,2026-10-19,20:37,33.50,6.70,0.00,,0.00,,,1x Caesar salad; 1x Soda (2 L); 1x Pepperoni pizza,26.80
+DD-49129,2026-10-19,20:59,11.50,2.30,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L),9.20
+DD-49134,2026-10-19,22:12,15.50,3.10,0.00,,0.00,,,1x Soda (2 L); 1x Caesar salad,12.40
+DD-49171,2026-10-20,11:19,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49150,2026-10-20,11:41,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49193,2026-10-20,11:44,49.00,9.80,7.00,Free garlic knots on $30+,0.00,,,1x Buffalo wings (10); 1x Margherita pizza; 1x Pepperoni pizza,32.20
+DD-49168,2026-10-20,12:15,49.00,9.80,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Margherita pizza; 1x Buffalo wings (10),32.20
+DD-49164,2026-10-20,12:18,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-49170,2026-10-20,12:49,26.50,5.30,0.00,,0.00,,,1x Soda (2 L); 2x Caesar salad,21.20
+DD-49151,2026-10-20,13:22,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-49183,2026-10-20,13:53,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49178,2026-10-20,17:04,26.00,5.20,0.00,,0.00,,,1x Pepperoni pizza; 1x Tiramisu,20.80
+DD-49143,2026-10-20,17:14,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-49162,2026-10-20,17:20,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-49163,2026-10-20,17:57,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49140,2026-10-20,17:58,52.00,10.40,0.00,,0.00,,,2x Pepperoni pizza; 1x Margherita pizza,41.60
+DD-49145,2026-10-20,19:01,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-49138,2026-10-20,19:05,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-49172,2026-10-20,19:08,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49173,2026-10-20,19:20,36.00,7.20,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza,21.80
+DD-49137,2026-10-20,19:23,19.00,3.80,0.00,,11.00,Missing item,Caesar salad,1x Tiramisu; 1x Caesar salad,4.20
+DD-49175,2026-10-20,19:27,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49148,2026-10-20,19:34,47.00,9.40,0.00,,0.00,,,2x Pepperoni pizza; 1x Caesar salad,37.60
+DD-49152,2026-10-20,19:59,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49186,2026-10-20,20:33,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-49157,2026-10-20,21:16,43.00,8.60,0.00,,0.00,,,2x Margherita pizza; 1x Caesar salad,34.40
+DD-49176,2026-10-20,21:47,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-49161,2026-10-20,22:30,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49147,2026-10-20,22:56,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49233,2026-10-21,11:16,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-49236,2026-10-21,11:55,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49210,2026-10-21,12:28,19.00,3.80,0.00,,0.00,,,1x Tiramisu; 1x Caesar salad,15.20
+DD-49202,2026-10-21,13:01,24.00,4.80,0.00,,0.00,,,1x Tiramisu; 1x Margherita pizza,19.20
+DD-49237,2026-10-21,13:01,54.00,10.80,0.00,,0.00,,,3x Pepperoni pizza,43.20
+DD-49242,2026-10-21,13:24,20.00,4.00,0.00,,0.00,,,1x Caesar salad; 2x Soda (2 L),16.00
+DD-49229,2026-10-21,13:38,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49203,2026-10-21,17:24,50.00,10.00,0.00,,0.00,,,1x Pepperoni pizza; 2x Margherita pizza,40.00
+DD-49230,2026-10-21,17:50,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-49240,2026-10-21,17:55,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49216,2026-10-21,18:01,38.00,7.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots; 1x Buffalo wings (10),30.40
+DD-49198,2026-10-21,18:07,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49214,2026-10-21,18:17,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49243,2026-10-21,18:19,25.00,5.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,20.00
+DD-49221,2026-10-21,18:43,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49247,2026-10-21,19:24,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-49249,2026-10-21,19:27,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49239,2026-10-21,19:31,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-49224,2026-10-21,19:34,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49248,2026-10-21,19:34,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-49220,2026-10-21,19:41,19.50,3.90,0.00,,0.00,,,1x Soda (2 L); 1x Buffalo wings (10),15.60
+DD-49223,2026-10-21,20:18,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49200,2026-10-21,20:51,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49215,2026-10-21,21:08,27.00,5.40,0.00,,4.50,Missing item,Soda (2 L),1x Pepperoni pizza; 2x Soda (2 L),17.10
+DD-49228,2026-10-21,21:51,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49235,2026-10-21,22:06,45.00,9.00,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza; 1x Caesar salad,36.00
+DD-49212,2026-10-21,22:13,15.00,3.00,0.00,,0.00,,,1x Tiramisu; 1x Garlic knots,12.00
+DD-49276,2026-10-22,11:11,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49304,2026-10-22,11:18,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-49259,2026-10-22,11:22,33.00,6.60,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),19.40
+DD-49275,2026-10-22,11:35,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49270,2026-10-22,12:03,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49288,2026-10-22,12:22,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-49269,2026-10-22,13:14,22.00,4.40,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10),17.60
+DD-49280,2026-10-22,13:24,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49260,2026-10-22,13:49,33.00,6.60,0.00,,0.00,,,1x Garlic knots; 1x Caesar salad; 1x Buffalo wings (10),26.40
+DD-49290,2026-10-22,17:51,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49307,2026-10-22,17:59,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-49257,2026-10-22,18:21,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49261,2026-10-22,18:21,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49281,2026-10-22,19:00,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-49262,2026-10-22,19:01,30.50,6.10,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Tiramisu; 1x Soda (2 L),17.40
+DD-49271,2026-10-22,19:45,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49273,2026-10-22,20:08,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-49301,2026-10-22,20:10,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-49305,2026-10-22,20:23,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-49268,2026-10-22,21:09,50.00,10.00,0.00,,0.00,,,1x Pepperoni pizza; 2x Margherita pizza,40.00
+DD-49296,2026-10-22,21:31,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-49293,2026-10-22,21:59,22.00,4.40,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10),17.60
+DD-49264,2026-10-22,22:00,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49282,2026-10-22,22:23,14.00,2.80,0.00,,0.00,,,2x Garlic knots,11.20
+DD-49266,2026-10-22,22:24,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-49279,2026-10-22,22:48,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-49263,2026-10-22,22:50,29.00,5.80,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza,23.20
+DD-49342,2026-10-23,11:15,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49322,2026-10-23,11:25,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49324,2026-10-23,11:36,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-49361,2026-10-23,11:50,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49370,2026-10-23,11:58,27.00,5.40,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza,21.60
+DD-49353,2026-10-23,12:11,26.00,5.20,0.00,,0.00,,,1x Pepperoni pizza; 1x Tiramisu,20.80
+DD-49348,2026-10-23,12:21,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49365,2026-10-23,12:35,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-49340,2026-10-23,13:19,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-49315,2026-10-23,13:51,8.00,1.60,0.00,,0.00,,,1x Tiramisu,6.40
+DD-49311,2026-10-23,17:05,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49329,2026-10-23,17:09,42.00,8.40,0.00,,0.00,,,1x Pepperoni pizza; 1x Tiramisu; 1x Margherita pizza,33.60
+DD-49328,2026-10-23,17:29,29.50,5.90,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L); 1x Garlic knots,23.60
+DD-49362,2026-10-23,17:31,29.00,5.80,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza,23.20
+DD-49318,2026-10-23,17:45,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49375,2026-10-23,17:45,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-49376,2026-10-23,17:54,20.00,4.00,0.00,,0.00,,,1x Caesar salad; 2x Soda (2 L),16.00
+DD-49355,2026-10-23,18:57,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,16.40
+DD-49327,2026-10-23,19:09,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49360,2026-10-23,19:11,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49320,2026-10-23,19:20,36.00,7.20,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza,21.80
+DD-49367,2026-10-23,19:23,50.00,10.00,0.00,,0.00,,,2x Margherita pizza; 1x Pepperoni pizza,40.00
+DD-49356,2026-10-23,19:24,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49321,2026-10-23,19:41,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49344,2026-10-23,19:45,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49341,2026-10-23,20:16,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49333,2026-10-23,20:26,24.00,4.80,0.00,,0.00,,,1x Margherita pizza; 1x Tiramisu,19.20
+DD-49346,2026-10-23,20:28,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-49339,2026-10-23,20:36,48.00,9.60,0.00,,0.00,,,2x Garlic knots; 1x Margherita pizza; 1x Pepperoni pizza,38.40
+DD-49332,2026-10-23,20:45,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49351,2026-10-23,22:50,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-49323,2026-10-23,22:58,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49444,2026-10-24,11:15,15.50,3.10,0.00,,0.00,,,1x Caesar salad; 1x Soda (2 L),12.40
+DD-49440,2026-10-24,11:28,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49438,2026-10-24,11:30,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49414,2026-10-24,11:59,33.00,6.60,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza,26.40
+DD-49390,2026-10-24,12:10,41.00,8.20,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots; 1x Margherita pizza,32.80
+DD-49421,2026-10-24,12:13,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49384,2026-10-24,12:17,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-49424,2026-10-24,12:46,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49379,2026-10-24,12:53,48.00,9.60,0.00,,0.00,,,3x Margherita pizza,38.40
+DD-49409,2026-10-24,12:55,47.00,9.40,0.00,,0.00,,,2x Pepperoni pizza; 1x Caesar salad,37.60
+DD-49398,2026-10-24,12:57,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49442,2026-10-24,13:08,22.00,4.40,0.00,,0.00,,,2x Caesar salad,17.60
+DD-49381,2026-10-24,13:48,34.00,6.80,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,20.20
+DD-49418,2026-10-24,17:09,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49407,2026-10-24,17:13,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49387,2026-10-24,17:35,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-49386,2026-10-24,17:52,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49435,2026-10-24,18:01,18.00,3.60,0.00,,0.00,,,1x Caesar salad; 1x Garlic knots,14.40
+DD-49426,2026-10-24,18:10,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49431,2026-10-24,18:26,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49395,2026-10-24,18:54,25.00,5.00,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,20.00
+DD-49443,2026-10-24,18:56,19.50,3.90,0.00,,0.00,,,1x Buffalo wings (10); 1x Soda (2 L),15.60
+DD-49428,2026-10-24,19:15,16.00,3.20,0.00,,0.00,,,1x Garlic knots; 2x Soda (2 L),12.80
+DD-49445,2026-10-24,19:30,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49397,2026-10-24,19:36,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49446,2026-10-24,20:14,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49408,2026-10-24,20:17,9.00,1.80,0.00,,0.00,,,2x Soda (2 L),7.20
+DD-49403,2026-10-24,20:35,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49400,2026-10-24,20:51,27.00,5.40,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza,21.60
+DD-49436,2026-10-24,21:40,50.00,10.00,0.00,,0.00,,,1x Pepperoni pizza; 2x Margherita pizza,40.00
+DD-49482,2026-10-25,11:33,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49457,2026-10-25,11:37,15.00,3.00,0.00,,7.00,Missing item,Garlic knots,1x Garlic knots; 1x Tiramisu,5.00
+DD-49503,2026-10-25,11:45,26.00,5.20,0.00,,0.00,,,1x Buffalo wings (10); 1x Caesar salad,20.80
+DD-49474,2026-10-25,11:51,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-49477,2026-10-25,12:00,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-49450,2026-10-25,13:20,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49476,2026-10-25,13:21,42.00,8.40,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Pepperoni pizza; 1x Tiramisu,26.60
+DD-49470,2026-10-25,17:17,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49505,2026-10-25,17:18,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49479,2026-10-25,17:21,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49486,2026-10-25,17:40,11.50,2.30,0.00,,0.00,,,1x Soda (2 L); 1x Garlic knots,9.20
+DD-49498,2026-10-25,18:04,29.00,5.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Caesar salad,23.20
+DD-49500,2026-10-25,18:12,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49475,2026-10-25,18:25,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-49454,2026-10-25,18:45,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-49483,2026-10-25,18:47,31.50,6.30,0.00,,0.00,,,1x Soda (2 L); 1x Caesar salad; 1x Margherita pizza,25.20
+DD-49451,2026-10-25,19:35,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-49494,2026-10-25,20:04,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49448,2026-10-25,21:42,29.00,5.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Caesar salad,23.20
+DD-49466,2026-10-25,22:04,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49490,2026-10-25,22:37,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49550,2026-10-26,11:00,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49507,2026-10-26,11:04,27.00,5.40,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza,21.60
+DD-49517,2026-10-26,11:24,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),26.40
+DD-49520,2026-10-26,12:03,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49534,2026-10-26,13:11,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-49515,2026-10-26,13:58,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),26.40
+DD-49544,2026-10-26,17:17,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49524,2026-10-26,17:40,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49547,2026-10-26,17:42,29.50,5.90,0.00,,7.00,Missing item,Garlic knots,1x Pepperoni pizza; 1x Garlic knots; 1x Soda (2 L),16.60
+DD-49564,2026-10-26,17:59,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49555,2026-10-26,18:04,19.50,3.90,0.00,,7.00,Missing item,Garlic knots,1x Soda (2 L); 1x Garlic knots; 1x Tiramisu,8.60
+DD-49521,2026-10-26,18:09,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49549,2026-10-26,18:24,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49531,2026-10-26,18:25,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49508,2026-10-26,18:32,29.00,5.80,0.00,,0.00,,,2x Garlic knots; 1x Buffalo wings (10),23.20
+DD-49535,2026-10-26,19:10,23.00,4.60,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,18.40
+DD-49529,2026-10-26,19:15,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49525,2026-10-26,19:31,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-49540,2026-10-26,19:37,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49530,2026-10-26,19:56,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49553,2026-10-26,20:12,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-49537,2026-10-26,20:19,31.00,6.20,7.00,Free garlic knots on $30+,0.00,,,1x Buffalo wings (10); 1x Margherita pizza,17.80
+DD-49560,2026-10-26,20:20,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-49522,2026-10-26,20:28,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),26.40
+DD-49514,2026-10-26,20:38,29.00,5.80,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza,23.20
+DD-49528,2026-10-26,20:52,11.50,2.30,0.00,,0.00,,,1x Soda (2 L); 1x Garlic knots,9.20
+DD-49509,2026-10-26,21:12,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49597,2026-10-27,11:11,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49588,2026-10-27,11:52,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49591,2026-10-27,12:03,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49599,2026-10-27,12:08,35.50,7.10,0.00,,0.00,,,1x Buffalo wings (10); 1x Soda (2 L); 1x Margherita pizza,28.40
+DD-49566,2026-10-27,12:13,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-49572,2026-10-27,12:14,68.00,13.60,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza; 2x Pepperoni pizza,47.40
+DD-49603,2026-10-27,13:40,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49567,2026-10-27,17:32,20.50,4.10,0.00,,0.00,,,1x Soda (2 L); 2x Tiramisu,16.40
+DD-49586,2026-10-27,17:42,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-49595,2026-10-27,18:06,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49570,2026-10-27,18:14,34.00,6.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,27.20
+DD-49602,2026-10-27,18:21,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49569,2026-10-27,18:44,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-49581,2026-10-27,19:05,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49601,2026-10-27,19:10,11.00,2.20,0.00,,0.00,,,1x Caesar salad,8.80
+DD-49583,2026-10-27,19:40,31.00,6.20,0.00,,0.00,,,1x Buffalo wings (10); 1x Margherita pizza,24.80
+DD-49621,2026-10-27,20:07,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49585,2026-10-27,20:18,11.50,2.30,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L),9.20
+DD-49620,2026-10-27,20:20,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49605,2026-10-27,20:31,37.00,7.40,0.00,,0.00,,,2x Buffalo wings (10); 1x Garlic knots,29.60
+DD-49594,2026-10-27,20:42,27.00,5.40,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza,21.60
+DD-49622,2026-10-27,20:46,26.00,5.20,0.00,,0.00,,,1x Pepperoni pizza; 1x Tiramisu,20.80
+DD-49579,2026-10-27,20:57,31.00,6.20,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza; 1x Tiramisu,24.80
+DD-49608,2026-10-27,21:27,24.00,4.80,0.00,,0.00,,,1x Buffalo wings (10); 2x Soda (2 L),19.20
+DD-49573,2026-10-27,21:45,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49568,2026-10-27,22:20,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-49610,2026-10-27,22:22,52.00,10.40,0.00,,0.00,,,2x Pepperoni pizza; 1x Margherita pizza,41.60
+DD-49593,2026-10-27,22:30,36.00,7.20,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza; 1x Caesar salad,28.80
+DD-49664,2026-10-28,11:16,37.00,7.40,0.00,,0.00,,,1x Caesar salad; 1x Tiramisu; 1x Pepperoni pizza,29.60
+DD-49646,2026-10-28,12:26,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-49667,2026-10-28,12:34,22.00,4.40,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10),17.60
+DD-49672,2026-10-28,13:11,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49642,2026-10-28,13:23,32.00,6.40,0.00,,0.00,,,2x Margherita pizza,25.60
+DD-49674,2026-10-28,13:45,23.00,4.60,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,18.40
+DD-49625,2026-10-28,13:50,11.50,2.30,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L),9.20
+DD-49655,2026-10-28,17:24,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-49676,2026-10-28,17:58,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-49635,2026-10-28,18:02,33.00,6.60,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),26.40
+DD-49653,2026-10-28,18:14,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49661,2026-10-28,19:12,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20
+DD-49645,2026-10-28,19:27,48.00,9.60,0.00,,0.00,,,3x Margherita pizza,38.40
+DD-49628,2026-10-28,19:53,36.00,7.20,0.00,,0.00,,,2x Pepperoni pizza,28.80
+DD-49633,2026-10-28,20:29,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49662,2026-10-28,20:56,19.50,3.90,0.00,,0.00,,,1x Soda (2 L); 1x Buffalo wings (10),15.60
+DD-49678,2026-10-28,21:30,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49677,2026-10-28,22:44,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49680,2026-10-28,22:47,47.00,9.40,0.00,,0.00,,,2x Margherita pizza; 1x Buffalo wings (10),37.60
+DD-49728,2026-10-29,11:04,4.50,1.13,0.00,,0.00,,,1x Soda (2 L),3.38
+DD-49737,2026-10-29,12:49,15.00,3.75,0.00,,0.00,,,1x Buffalo wings (10),11.25
+DD-49736,2026-10-29,12:54,7.00,1.75,0.00,,0.00,,,1x Garlic knots,5.25
+DD-49689,2026-10-29,13:15,23.00,5.75,0.00,,0.00,,,1x Margherita pizza; 1x Garlic knots,17.25
+DD-49739,2026-10-29,13:23,49.00,12.25,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10); 1x Margherita pizza,36.75
+DD-49719,2026-10-29,17:16,52.00,13.00,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 2x Pepperoni pizza,32.00
+DD-49731,2026-10-29,17:17,32.00,8.00,0.00,,0.00,,,2x Margherita pizza,24.00
+DD-49709,2026-10-29,17:19,34.00,8.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,25.50
+DD-49712,2026-10-29,17:46,26.00,6.50,0.00,,0.00,,,1x Tiramisu; 1x Pepperoni pizza,19.50
+DD-49726,2026-10-29,18:11,31.50,7.88,0.00,,0.00,,,1x Soda (2 L); 1x Caesar salad; 1x Margherita pizza,23.63
+DD-49695,2026-10-29,18:15,34.00,8.50,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,25.50
+DD-49729,2026-10-29,18:22,35.50,8.88,0.00,,0.00,,,1x Soda (2 L); 1x Buffalo wings (10); 1x Margherita pizza,26.63
+DD-49741,2026-10-29,18:22,20.50,5.13,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),15.38
+DD-49738,2026-10-29,18:30,24.00,6.00,0.00,,0.00,,,1x Margherita pizza; 1x Tiramisu,18.00
+DD-49730,2026-10-29,18:40,20.50,5.13,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),15.38
+DD-49686,2026-10-29,18:47,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49687,2026-10-29,18:56,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49690,2026-10-29,19:03,32.00,8.00,0.00,,0.00,,,1x Pepperoni pizza; 2x Garlic knots,24.00
+DD-49717,2026-10-29,19:03,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49732,2026-10-29,19:08,14.00,3.50,0.00,,0.00,,,2x Garlic knots,10.50
+DD-49727,2026-10-29,19:29,22.50,5.63,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),16.88
+DD-49735,2026-10-29,19:41,23.00,5.75,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,17.25
+DD-49694,2026-10-29,20:06,18.00,4.50,0.00,,0.00,,,1x Garlic knots; 1x Caesar salad,13.50
+DD-49716,2026-10-29,20:11,12.50,3.13,0.00,,0.00,,,1x Soda (2 L); 1x Tiramisu,9.38
+DD-49705,2026-10-29,20:21,11.00,2.75,0.00,,0.00,,,1x Caesar salad,8.25
+DD-49718,2026-10-29,20:22,34.00,8.50,0.00,,0.00,,,1x Garlic knots; 2x Soda (2 L); 1x Pepperoni pizza,25.50
+DD-49723,2026-10-29,20:22,26.00,6.50,0.00,,0.00,,,1x Buffalo wings (10); 1x Caesar salad,19.50
+DD-49700,2026-10-29,20:47,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49734,2026-10-29,20:58,33.50,8.38,0.00,,0.00,,,1x Pepperoni pizza; 1x Caesar salad; 1x Soda (2 L),25.13
+DD-49692,2026-10-29,20:59,36.00,9.00,7.00,Free garlic knots on $30+,0.00,,,2x Pepperoni pizza,20.00
+DD-49710,2026-10-29,21:19,16.00,4.00,0.00,,0.00,,,1x Margherita pizza,12.00
+DD-49743,2026-10-29,21:40,16.00,4.00,0.00,,0.00,,,1x Margherita pizza,12.00
+DD-49691,2026-10-29,22:27,11.50,2.88,0.00,,0.00,,,1x Soda (2 L); 1x Garlic knots,8.63
+DD-49697,2026-10-29,22:31,7.00,1.75,0.00,,0.00,,,1x Garlic knots,5.25
+DD-49699,2026-10-29,22:53,31.50,7.88,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L); 1x Caesar salad,23.63
+DD-49744,2026-10-30,12:27,34.00,8.50,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,18.50
+DD-49812,2026-10-30,13:28,31.00,7.75,7.00,Free garlic knots on $30+,0.00,,,1x Buffalo wings (10); 1x Margherita pizza,16.25
+DD-49766,2026-10-30,13:41,31.00,7.75,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Buffalo wings (10),16.25
+DD-49785,2026-10-30,17:05,33.00,8.25,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10),17.75
+DD-49757,2026-10-30,17:28,11.00,2.75,0.00,,0.00,,,1x Caesar salad,8.25
+DD-49761,2026-10-30,17:40,8.00,2.00,0.00,,0.00,,,1x Tiramisu,6.00
+DD-49810,2026-10-30,17:42,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49814,2026-10-30,18:01,12.50,3.13,0.00,,4.50,Missing item,Soda (2 L),1x Tiramisu; 1x Soda (2 L),4.88
+DD-49790,2026-10-30,18:02,15.00,3.75,0.00,,0.00,,,1x Buffalo wings (10),11.25
+DD-49745,2026-10-30,18:16,15.00,3.75,0.00,,0.00,,,1x Buffalo wings (10),11.25
+DD-49787,2026-10-30,18:16,34.00,8.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,25.50
+DD-49809,2026-10-30,18:26,38.50,9.63,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L); 1x Margherita pizza,28.88
+DD-49807,2026-10-30,18:28,22.50,5.63,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),16.88
+DD-49749,2026-10-30,18:36,39.00,9.75,0.00,,0.00,,,2x Margherita pizza; 1x Garlic knots,29.25
+DD-49779,2026-10-30,19:24,34.00,8.50,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Caesar salad; 1x Garlic knots,18.50
+DD-49747,2026-10-30,19:25,34.00,8.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,25.50
+DD-49782,2026-10-30,19:45,32.00,8.00,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,17.00
+DD-49796,2026-10-30,19:47,25.00,6.25,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,18.75
+DD-49777,2026-10-30,19:52,4.50,1.13,0.00,,0.00,,,1x Soda (2 L),3.38
+DD-49803,2026-10-30,19:54,25.00,6.25,0.00,,4.50,Missing item,Soda (2 L),1x Margherita pizza; 2x Soda (2 L),14.25
+DD-49753,2026-10-30,19:58,11.50,2.88,0.00,,0.00,,,1x Soda (2 L); 1x Garlic knots,8.63
+DD-49788,2026-10-30,20:01,4.50,1.13,0.00,,0.00,,,1x Soda (2 L),3.38
+DD-49758,2026-10-30,20:03,4.50,1.13,0.00,,4.50,Missing item,Soda (2 L),1x Soda (2 L),-1.13
+DD-49751,2026-10-30,20:35,16.00,4.00,0.00,,0.00,,,1x Margherita pizza,12.00
+DD-49783,2026-10-30,20:49,32.00,8.00,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,17.00
+DD-49805,2026-10-30,21:09,20.50,5.13,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),15.38
+DD-49817,2026-10-30,21:29,23.00,5.75,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,17.25
+DD-49801,2026-10-30,21:38,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49765,2026-10-30,21:43,19.50,4.88,0.00,,0.00,,,1x Tiramisu; 1x Soda (2 L); 1x Garlic knots,14.63
+DD-49894,2026-10-31,11:02,29.00,7.25,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza,21.75
+DD-49888,2026-10-31,11:10,36.00,9.00,0.00,,0.00,,,2x Pepperoni pizza,27.00
+DD-49822,2026-10-31,11:41,31.00,7.75,0.00,,0.00,,,1x Margherita pizza; 1x Buffalo wings (10),23.25
+DD-49863,2026-10-31,11:41,16.00,4.00,0.00,,0.00,,,1x Margherita pizza,12.00
+DD-49872,2026-10-31,12:06,32.00,8.00,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,17.00
+DD-49884,2026-10-31,12:20,22.50,5.63,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),16.88
+DD-49875,2026-10-31,12:29,9.00,2.25,0.00,,0.00,,,2x Soda (2 L),6.75
+DD-49882,2026-10-31,12:44,33.50,8.38,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza; 1x Soda (2 L),25.13
+DD-49850,2026-10-31,13:00,7.00,1.75,0.00,,0.00,,,1x Garlic knots,5.25
+DD-49843,2026-10-31,13:02,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49877,2026-10-31,13:02,34.00,8.50,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,18.50
+DD-49891,2026-10-31,13:24,34.00,8.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,25.50
+DD-49869,2026-10-31,13:25,22.50,5.63,0.00,,0.00,,,1x Caesar salad; 1x Soda (2 L); 1x Garlic knots,16.88
+DD-49818,2026-10-31,13:38,19.50,4.88,0.00,,0.00,,,1x Soda (2 L); 1x Buffalo wings (10),14.63
+DD-49904,2026-10-31,13:38,11.00,2.75,0.00,,0.00,,,1x Caesar salad,8.25
+DD-49835,2026-10-31,13:40,25.00,6.25,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,18.75
+DD-49844,2026-10-31,13:54,22.00,5.50,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10),16.50
+DD-49840,2026-10-31,13:59,16.00,4.00,0.00,,0.00,,,2x Soda (2 L); 1x Garlic knots,12.00
+DD-49847,2026-10-31,17:01,25.00,6.25,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,18.75
+DD-49871,2026-10-31,17:09,25.00,6.25,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,18.75
+DD-49899,2026-10-31,17:09,22.50,5.63,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,16.88
+DD-49836,2026-10-31,17:14,48.00,12.00,0.00,,0.00,,,3x Margherita pizza,36.00
+DD-49838,2026-10-31,17:33,23.00,5.75,0.00,,0.00,,,1x Garlic knots; 1x Margherita pizza,17.25
+DD-49878,2026-10-31,17:51,4.50,1.13,0.00,,0.00,,,1x Soda (2 L),3.38
+DD-49881,2026-10-31,18:02,29.00,7.25,0.00,,0.00,,,1x Caesar salad; 1x Pepperoni pizza,21.75
+DD-49827,2026-10-31,18:13,33.00,8.25,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza,24.75
+DD-49880,2026-10-31,18:19,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49898,2026-10-31,18:19,45.50,11.38,7.00,Free garlic knots on $30+,0.00,,,1x Soda (2 L); 1x Pepperoni pizza; 1x Garlic knots; 1x Margherita pizza,27.13
+DD-49873,2026-10-31,18:36,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49886,2026-10-31,18:37,36.00,9.00,0.00,,0.00,,,2x Pepperoni pizza,27.00
+DD-49900,2026-10-31,18:42,51.00,12.75,0.00,,0.00,,,1x Tiramisu; 2x Margherita pizza; 1x Caesar salad,38.25
+DD-49848,2026-10-31,18:59,7.00,1.75,0.00,,0.00,,,1x Garlic knots,5.25
+DD-49867,2026-10-31,19:04,20.50,5.13,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,15.38
+DD-49870,2026-10-31,19:04,38.50,9.63,0.00,,38.50,Wrong order,,1x Soda (2 L); 1x Pepperoni pizza; 1x Margherita pizza,-9.63
+DD-49893,2026-10-31,19:27,15.00,3.75,0.00,,0.00,,,1x Buffalo wings (10),11.25
+DD-49837,2026-10-31,19:31,34.00,8.50,7.00,Free garlic knots on $30+,0.00,,,1x Pepperoni pizza; 1x Margherita pizza,18.50
+DD-49841,2026-10-31,19:33,20.50,5.13,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,15.38
+DD-49860,2026-10-31,19:53,52.00,13.00,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 2x Pepperoni pizza,32.00
+DD-49864,2026-10-31,19:55,38.50,9.63,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza; 1x Pepperoni pizza,28.88
+DD-49862,2026-10-31,19:56,25.00,6.25,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,18.75
+DD-49857,2026-10-31,19:59,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49834,2026-10-31,20:09,19.50,4.88,0.00,,4.50,Missing item,Soda (2 L),1x Soda (2 L); 1x Buffalo wings (10),10.13
+DD-49895,2026-10-31,20:16,20.50,5.13,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza,15.38
+DD-49874,2026-10-31,20:25,16.00,4.00,0.00,,0.00,,,1x Margherita pizza,12.00
+DD-49855,2026-10-31,20:27,36.00,9.00,0.00,,0.00,,,2x Pepperoni pizza,27.00
+DD-49854,2026-10-31,21:10,44.00,11.00,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza; 1x Caesar salad,33.00
+DD-49832,2026-10-31,21:55,25.00,6.25,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots,18.75
+DD-49885,2026-10-31,22:47,18.00,4.50,0.00,,0.00,,,1x Pepperoni pizza,13.50
+DD-49946,2026-11-01,11:05,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49927,2026-11-01,11:13,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49928,2026-11-01,11:48,52.00,10.40,0.00,,0.00,,,1x Margherita pizza; 2x Pepperoni pizza,41.60
+DD-49947,2026-11-01,11:59,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-49920,2026-11-01,12:24,32.00,6.40,7.00,Free garlic knots on $30+,0.00,,,2x Margherita pizza,18.60
+DD-49913,2026-11-01,12:26,25.00,5.00,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza,20.00
+DD-49931,2026-11-01,12:34,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49919,2026-11-01,12:50,4.50,0.90,0.00,,0.00,,,1x Soda (2 L),3.60
+DD-49949,2026-11-01,13:04,27.00,5.40,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza,21.60
+DD-49951,2026-11-01,17:16,22.50,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L),18.00
+DD-49971,2026-11-01,17:16,7.00,1.40,0.00,,0.00,,,1x Garlic knots,5.60
+DD-49914,2026-11-01,17:17,32.00,6.40,0.00,,0.00,,,2x Garlic knots; 1x Pepperoni pizza,25.60
+DD-49975,2026-11-01,17:47,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49937,2026-11-01,17:50,47.00,9.40,0.00,,0.00,,,2x Pepperoni pizza; 1x Caesar salad,37.60
+DD-49964,2026-11-01,17:59,31.00,6.20,7.00,Free garlic knots on $30+,0.00,,,1x Margherita pizza; 1x Buffalo wings (10),17.80
+DD-49965,2026-11-01,18:29,18.00,3.60,0.00,,0.00,,,1x Pepperoni pizza,14.40
+DD-49945,2026-11-01,18:43,33.00,6.60,0.00,,0.00,,,1x Buffalo wings (10); 1x Caesar salad; 1x Garlic knots,26.40
+DD-49939,2026-11-01,19:04,31.50,6.30,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza; 1x Soda (2 L),25.20
+DD-49969,2026-11-01,19:24,22.50,4.50,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza,18.00
+DD-49973,2026-11-01,19:24,15.00,3.00,0.00,,0.00,,,1x Buffalo wings (10),12.00
+DD-49967,2026-11-01,19:32,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49976,2026-11-01,19:50,29.00,5.80,0.00,,0.00,,,1x Pepperoni pizza; 1x Caesar salad,23.20
+DD-49938,2026-11-01,20:06,16.00,3.20,0.00,,0.00,,,1x Margherita pizza,12.80
+DD-49950,2026-11-01,20:08,20.50,4.10,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L),16.40
+DD-49922,2026-11-01,20:09,23.00,4.60,0.00,,0.00,,,2x Soda (2 L); 2x Garlic knots,18.40
+DD-49932,2026-11-01,20:32,22.00,4.40,0.00,,0.00,,,1x Garlic knots; 1x Buffalo wings (10),17.60
+DD-49923,2026-11-01,21:48,34.00,6.80,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza,27.20

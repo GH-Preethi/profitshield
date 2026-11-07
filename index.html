@@ -1,0 +1,1009 @@
+<title>ProfitShield</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: merchant-console shell (Stripe/Ramp pattern). Grouped left rail, page header with week picker,
+   overview reads top-down: what slipped away -> the numbers -> why -> by channel. AI lives in a right panel on every page. */
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --sunk:#F0F1F4; --hover:#F3F4F6; --ink:#101114; --ink2:#2B2D33; --muted:#646873; --faint:#9A9EA8; --line:#E5E7EB; --line2:#EEF0F3;
+  --brand:#E8412C; --brand-weak:#FDECE9;
+  --neg:#C9372C; --neg-weak:#FCEBE9; --pos:#147A4D; --pos-weak:#E3F3EA; --warn:#965F06; --warn-weak:#FBF0DA; --info:#2F5BD3; --info-weak:#E9EFFD;
+  --btn:#101114; --btn-ink:#FFFFFF; --focus:#3B6BE0; --scrim:rgba(16,17,20,.28);
+  --shadow:0 1px 2px rgba(16,17,20,.04),0 1px 1px rgba(16,17,20,.03); --shadow-lg:0 12px 40px rgba(16,17,20,.16),0 2px 6px rgba(16,17,20,.06);
+  --display:"Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --body:"Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0D0E10; --surface:#151619; --sunk:#1B1C20; --hover:#1E2024; --ink:#EDEEF1; --ink2:#D6D8DE; --muted:#9EA2AC; --faint:#6C707A; --line:#26282D; --line2:#202226;
+  --brand:#F2573F; --brand-weak:#3A1D18;
+  --neg:#F27D6C; --neg-weak:#3A1D1A; --pos:#4CC38A; --pos-weak:#14301F; --warn:#E5AA4E; --warn-weak:#33270F; --info:#8AAAF7; --info-weak:#1A2440;
+  --btn:#EDEEF1; --btn-ink:#101114; --focus:#86A7F7; --scrim:rgba(0,0,0,.5);
+  --shadow:none; --shadow-lg:0 12px 40px rgba(0,0,0,.5); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0D0E10; --surface:#151619; --sunk:#1B1C20; --hover:#1E2024; --ink:#EDEEF1; --ink2:#D6D8DE; --muted:#9EA2AC; --faint:#6C707A; --line:#26282D; --line2:#202226;
+  --brand:#F2573F; --brand-weak:#3A1D18;
+  --neg:#F27D6C; --neg-weak:#3A1D1A; --pos:#4CC38A; --pos-weak:#14301F; --warn:#E5AA4E; --warn-weak:#33270F; --info:#8AAAF7; --info-weak:#1A2440;
+  --btn:#EDEEF1; --btn-ink:#101114; --focus:#86A7F7; --scrim:rgba(0,0,0,.5);
+  --shadow:none; --shadow-lg:0 12px 40px rgba(0,0,0,.5); color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:6px}
+.num,td.n,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.015em;text-wrap:balance;margin:0}
+p{margin:0}
+svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* shell */
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100%}
+.side{background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:18px;padding-block:16px;padding-left:max(14px, env(safe-area-inset-left, 0px));padding-right:14px;overflow:auto}
+.brand{display:flex;align-items:center;gap:9px;padding:2px 6px}
+.brand b{font-family:var(--display);font-size:18px;letter-spacing:-.02em}
+.store{all:unset;cursor:default;display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px}
+.avatar{width:28px;height:28px;border-radius:8px;background:var(--sunk);display:grid;place-items:center;font-weight:700;font-size:12px;color:var(--ink2);flex:none}
+.store-t{display:grid;line-height:1.25;min-width:0}
+.store-t span{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-t small{color:var(--muted);font-size:11.5px}
+.navgroup{display:grid;gap:1px}
+.navlabel{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);font-weight:600;padding:0 10px 6px}
+.nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;color:var(--muted);font-weight:500;font-size:13.5px}
+.nav button:hover{background:var(--hover);color:var(--ink)}
+.nav button[aria-current="page"]{background:var(--sunk);color:var(--ink)}
+.nav button[aria-current="page"] svg{color:var(--ink)}
+.nav .count{margin-left:auto;font-family:var(--mono);font-size:11px;background:var(--neg-weak);color:var(--neg);padding:0 7px;border-radius:99px;line-height:18px}
+.side-foot{margin-top:auto;display:grid;gap:6px;font-size:12px;color:var(--muted);padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.stat{display:flex;align-items:center;gap:8px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+.dot.on{background:var(--pos);box-shadow:0 0 0 3px var(--pos-weak)}
+
+.main{min-width:0;padding-block:20px 72px;padding-left:32px;padding-right:max(32px, env(safe-area-inset-right, 0px))}
+.page{max-width:1240px;margin:0 auto;display:grid;gap:20px}
+.pagehead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+.pagehead h1{font-size:26px;line-height:1.15}
+.pagehead p{color:var(--muted);margin-top:4px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.select{position:relative;display:inline-flex}
+.select select{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:7px 32px 7px 32px;font-size:13px;font-weight:500;cursor:pointer;box-shadow:var(--shadow)}
+.select .i{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted)}
+.select .i.l{left:10px}.select .i.r{right:10px}
+.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:7px 13px;border-radius:9px;background:var(--btn);color:var(--btn-ink);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap}
+.btn:hover{opacity:.9}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
+.btn.ghost:hover{background:var(--hover);opacity:1}
+.btn.ai{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
+.btn.ai svg{color:var(--brand)}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.btn.link{background:none;color:var(--ink);padding:4px 0;font-weight:600}
+.btn.link:hover{text-decoration:underline}
+kbd{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--bg)}
+
+.view{display:none}
+.view.active{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);min-width:0}
+.card-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:16px 20px 4px}
+.card-h h2{font-size:16px}
+.card-h p,.sub{color:var(--muted);font-size:12.5px}
+.pad{padding:16px 20px 20px}
+.eyebrow{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.note{font-size:12.5px;color:var(--muted)}
+.typing{color:var(--muted);font-size:13px}
+
+/* recovery banner */
+.banner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;padding:20px 22px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);position:relative;overflow:hidden}
+.banner::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--brand)}
+.banner h2{font-size:21px;line-height:1.25}
+.banner h2 em{font-style:normal;color:var(--neg)}
+.banner p{color:var(--muted);margin-top:6px;max-width:70ch}
+.progress{display:grid;gap:6px;min-width:240px}
+.progress .track{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.progress .track i{display:block;height:100%;background:var(--pos);border-radius:99px;transition:width .4s}
+.progress .lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.progress .lbl b{color:var(--ink);font-family:var(--mono);font-weight:500}
+
+/* KPI cards */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.kpi{padding:14px 16px 12px;display:grid;gap:4px}
+.kpi-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.kpi small{color:var(--muted);font-size:12.5px;font-weight:500}
+.kpi .v{font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.kpi .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.kpi .foot .note{font-size:11.5px}
+.delta{font-family:var(--mono);font-size:11.5px;padding:1px 7px;border-radius:99px;white-space:nowrap}
+.delta.pos{background:var(--pos-weak);color:var(--pos)} .delta.neg{background:var(--neg-weak);color:var(--neg)}
+.spark{width:96px;height:30px;flex:none}
+
+.grid2{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:20px;align-items:start}
+.wf-wrap{overflow-x:auto;padding:4px 12px 12px}
+.wf{display:block;width:100%;min-width:620px;height:auto}
+.wf .bar{cursor:pointer}
+.wf .bar:hover rect:not([fill="transparent"]){opacity:.82}
+.wf text{fill:var(--muted);font-family:var(--body);font-size:12.5px}
+.wf text.val{fill:var(--ink);font-family:var(--mono);font-size:12.5px}
+.wf .grid{stroke:var(--line2)}
+
+/* leak list (compact, overview) */
+.leaks{display:grid}
+.leak{all:unset;cursor:pointer;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 20px;border-top:1px solid var(--line2)}
+.leak:hover{background:var(--hover)}
+.lic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center}
+.lic.neg{background:var(--neg-weak);color:var(--neg)} .lic.warn{background:var(--warn-weak);color:var(--warn)} .lic.info{background:var(--info-weak);color:var(--info)}
+.lt{display:grid;min-width:0}
+.lt b{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lt span{color:var(--muted);font-size:12px}
+.lv{font-family:var(--mono);font-size:13.5px;color:var(--neg);text-align:right}
+.lv.done{color:var(--pos)}
+
+/* findings inbox */
+.tabs{display:flex;gap:4px;padding:6px 20px 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{all:unset;cursor:pointer;padding:9px 10px;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-weight:500}
+.tab[aria-selected="true"]{color:var(--ink);border-color:var(--ink)}
+.tab .num{margin-left:6px;font-size:11.5px;color:var(--faint)}
+.findings{display:grid}
+.finding{display:grid;grid-template-columns:36px minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:16px 20px;border-top:1px solid var(--line2);text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;width:100%;cursor:pointer}
+.finding:first-child{border-top:0}
+.finding:hover{background:var(--hover)}
+.ft{display:grid;gap:3px;min-width:0}
+.ft b{font-weight:600;font-size:14px}
+.ft span{color:var(--muted);font-size:12.5px}
+.fimp{text-align:right;display:grid;gap:1px;min-width:92px}
+.fimp .num{font-size:15px;color:var(--neg)}
+.fimp .num.pos{color:var(--pos)}
+.fimp small{color:var(--muted);font-size:11px;font-family:var(--mono)}
+.fstat{display:flex;gap:6px;align-items:center;justify-content:flex-end;min-width:140px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:99px;white-space:nowrap;line-height:19px}
+.pill.neg{background:var(--neg-weak);color:var(--neg)} .pill.warn{background:var(--warn-weak);color:var(--warn)} .pill.pos{background:var(--pos-weak);color:var(--pos)} .pill.mute{background:var(--sunk);color:var(--muted)} .pill.info{background:var(--info-weak);color:var(--info)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.fid{display:none}
+
+/* tables */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;text-align:left;padding:10px 16px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface);position:sticky;top:0;z-index:1}
+td{padding:10px 16px;border-bottom:1px solid var(--line2);vertical-align:top}
+td.n,th.n{text-align:right;white-space:nowrap}
+tbody tr:hover td{background:var(--hover)}
+tr.flag td{background:var(--neg-weak)}
+tr.flag:hover td{background:var(--neg-weak)}
+tr.flag td:first-child{box-shadow:inset 3px 0 0 var(--neg)}
+tbody tr:last-child td{border-bottom:0}
+.chan{display:flex;align-items:center;gap:9px;font-weight:600}
+.chan i{width:9px;height:9px;border-radius:3px;display:inline-block;flex:none}
+.share{display:flex;align-items:center;gap:8px;min-width:130px}
+.share .t{flex:1;height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}
+.share .t i{display:block;height:100%;border-radius:3px}
+.filters{display:flex;flex-wrap:wrap;gap:6px;padding:4px 20px 14px}
+.chip{all:unset;cursor:pointer;font-size:12.5px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--muted);background:var(--surface)}
+.chip:hover{color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);font-weight:600}
+.chip .num{margin-left:5px;font-size:11.5px}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:50}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:51;display:grid;grid-template-rows:auto minmax(0,1fr) auto;box-shadow:var(--shadow-lg);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.drawer-h{display:flex;justify-content:space-between;gap:12px;align-items:start;padding:20px 22px 16px;border-bottom:1px solid var(--line)}
+.drawer-h h3{font-size:19px;line-height:1.25}
+.drawer-b{overflow:auto;padding:18px 22px;display:grid;gap:16px;align-content:start}
+.drawer-f{border-top:1px solid var(--line);padding:12px 22px;display:flex;flex-wrap:wrap;gap:8px;background:var(--bg)}
+.x{all:unset;cursor:pointer;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--muted);flex:none}
+.x:hover{background:var(--hover);color:var(--ink)}
+.callout{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:4px;font-size:13px}
+.callout b{font-weight:600}
+.box{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.box-h{padding:9px 14px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--bg)}
+pre.draft{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-height:1.6;margin:0;padding:12px 14px;background:var(--bg);border:1px solid var(--line);border-radius:10px;max-height:260px;overflow:auto}
+
+/* assistant panel */
+.assist{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:40;display:grid;grid-template-rows:auto minmax(0,1fr) auto;box-shadow:var(--shadow-lg);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.assist-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.assist-h b{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:15px}
+.assist-h b svg{color:var(--brand)}
+.msgs{padding:16px;display:grid;gap:14px;align-content:start;overflow:auto}
+.msg{display:grid;gap:6px;max-width:100%}
+.msg.me{justify-self:end;background:var(--ink);color:var(--surface);padding:9px 13px;border-radius:14px 14px 4px 14px;max-width:85%}
+.msg.bot{font-size:13.5px}
+.msg.bot p+p{margin-top:8px}
+.msg .src{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.cite{all:unset;cursor:pointer;font-family:var(--mono);font-size:11px;padding:0 6px;border-radius:5px;border:1px solid var(--line);background:var(--bg);color:var(--ink);line-height:18px}
+.cite:hover{border-color:var(--ink)}
+.msg small{color:var(--faint);font-size:11px}
+.tools{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.assist-f{border-top:1px solid var(--line);padding:10px 12px 12px;display:grid;gap:8px}
+.sugg{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.sugg button{all:unset;cursor:pointer;padding:5px 10px;border:1px solid var(--line);border-radius:99px;background:var(--surface);font-size:12px;white-space:nowrap;color:var(--ink2)}
+.sugg button:hover{border-color:var(--ink)}
+.composer{display:flex;gap:8px;border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 12px;background:var(--bg)}
+.composer:focus-within{border-color:var(--ink)}
+.composer input{flex:1;min-width:0;border:0;background:none;outline:none;padding:4px 0}
+.minichart{display:grid;gap:5px;margin-top:4px;padding:10px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+.mc-row{display:grid;grid-template-columns:104px minmax(0,1fr) 70px;gap:8px;align-items:center;font-size:12px}
+.mc-row.click{cursor:pointer}.mc-row.click:hover .mc-l{text-decoration:underline}
+.mc-l{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc-track{height:9px;position:relative}
+.mc-track i{position:absolute;top:0;bottom:0;border-radius:3px}
+.mc-v{text-align:right;font-family:var(--mono)}
+.sim{display:grid;gap:12px}
+.sim-in{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.sim-in label{display:flex;gap:6px;align-items:center;font-size:13px}
+.sim-in input[type=range]{width:150px}
+.sim-out{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sim-out div{border:1px solid var(--line);border-radius:9px;padding:8px 10px;display:grid;gap:1px;background:var(--surface)}
+.sim-out small{color:var(--muted);font-size:11px}
+.sim-out b{font-family:var(--mono);font-weight:500;font-size:15px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* connections */
+.src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;padding:8px 20px 20px}
+.src{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:6px;align-content:start;background:var(--surface)}
+.src-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.src b{font-weight:600}
+.src p{color:var(--muted);font-size:12.5px}
+.src .meta{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line)}
+.rung{padding:14px 18px;display:grid;gap:4px;border-right:1px solid var(--line);align-content:start}
+.rung:last-child{border-right:0}
+.rung .eyebrow{color:var(--ink)}
+.rung p{color:var(--muted);font-size:12.5px}
+.rung .num{font-size:20px}
+.drop{border:1.5px dashed var(--line);border-radius:10px;padding:20px;display:grid;gap:8px;justify-items:start;margin:4px 20px 20px;background:var(--bg);cursor:pointer}
+.drop:hover,.drop.over{border-color:var(--ink)}
+.drop p{color:var(--muted);font-size:12.5px;max-width:64ch}
+.review input,.review select{border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:var(--bg);width:100%;min-width:70px}
+.bar-cell{display:flex;align-items:center;gap:8px;min-width:140px}
+.mbar{height:6px;border-radius:3px;background:var(--sunk);flex:1;position:relative;overflow:hidden}
+.mbar i{position:absolute;left:0;top:0;bottom:0;background:var(--ink);border-radius:3px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:13px;z-index:60;max-width:calc(100% - 32px);box-shadow:var(--shadow-lg)}
+
+@media (max-width: 1100px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} .grid2{grid-template-columns:minmax(0,1fr)} }
+@media (max-width: 900px){ .ladder{grid-template-columns:1fr 1fr} .rung:nth-child(2){border-right:0} .rung:nth-child(-n+2){border-bottom:1px solid var(--line)} .banner{grid-template-columns:minmax(0,1fr)} .progress{min-width:0} }
+@media (max-width: 820px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side,.main{min-width:0}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding-right:max(14px, env(safe-area-inset-right, 0px));gap:10px;overflow:visible}
+  .store,.side-foot,.navlabel{display:none}
+  .navwrap{display:flex;overflow-x:auto;gap:2px}
+  .navgroup{display:flex;gap:2px}
+  .nav button{white-space:nowrap}
+  .main{padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+  .finding{grid-template-columns:minmax(0,1fr) auto;padding:14px 16px}
+  .finding .lic,.fstat{display:none}
+  .card-h,.pad,.tabs,.filters,.leak{padding-left:16px;padding-right:16px}
+  .src-grid{padding-left:16px;padding-right:16px}
+  .drop{margin-left:16px;margin-right:16px}
+}
+@media (max-width: 480px){ .kpis{grid-template-columns:minmax(0,1fr)} .ladder{grid-template-columns:1fr} .rung{border-right:0;border-bottom:1px solid var(--line)} .spark{width:80px} }
+@media (prefers-reduced-motion: no-preference){
+  .drawer,.assist{animation:slide .2s ease-out}
+  @keyframes slide{from{transform:translateX(20px);opacity:.5}to{transform:none;opacity:1}}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-leak" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+  <symbol id="i-pay" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></symbol>
+  <symbol id="i-inv" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 12h7M9 16h7"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M7 3v8a2 2 0 0 0 4 0V3"/><path d="M9 11v10"/><path d="M17 3c-1.7 0-3 2-3 5s1.3 4 3 4v9"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 7V3M15 7V3"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v4"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/></symbol>
+  <symbol id="i-pct" viewBox="0 0 24 24"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.2"/><circle cx="17" cy="17" r="2.2"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></symbol>
+</svg>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="7" fill="var(--brand)"/><path d="M14 6.5 8 9v5c0 3.6 2.5 6.6 6 7.5 3.5-.9 6-3.9 6-7.5V9z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="m11 14 2.2 2.2L17.3 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <b>ProfitShield</b>
+    </div>
+    <div class="store"><span class="avatar">FA</span><span class="store-t"><span id="storeName">Forbes Ave Slice Co.</span><small>Pittsburgh · 4 channels</small></span></div>
+    <nav class="nav navwrap" aria-label="Sections">
+      <div class="navgroup">
+        <button data-go="overview"><svg class="i"><use href="#i-home"/></svg>Home</button>
+        <button data-go="leaks"><svg class="i"><use href="#i-leak"/></svg>Money leaks<span class="count" id="navCount"></span></button>
+        <button data-go="ask"><svg class="i"><use href="#i-spark"/></svg>Ask ProfitShield</button>
+      </div>
+      <div class="navgroup" style="margin-top:14px">
+        <div class="navlabel">Books</div>
+        <button data-go="payouts"><svg class="i"><use href="#i-pay"/></svg>Payouts</button>
+        <button data-go="invoices"><svg class="i"><use href="#i-inv"/></svg>Invoices</button>
+        <button data-go="margins"><svg class="i"><use href="#i-menu"/></svg>Menu & margins</button>
+      </div>
+      <div class="navgroup" style="margin-top:14px">
+        <div class="navlabel">Setup</div>
+        <button data-go="sources"><svg class="i"><use href="#i-plug"/></svg>Connections</button>
+      </div>
+    </nav>
+    <div class="side-foot">
+      <div class="stat"><span class="dot" id="aiDot"></span><span id="aiText">Checking AI…</span></div>
+      <div class="stat"><span class="dot on" id="dataDot"></span><span id="dataText">Loading…</span></div>
+    </div>
+  </aside>
+
+  <main class="main"><div class="page">
+    <header class="pagehead">
+      <div><h1 id="pageTitle">Home</h1><p id="pageSub"></p></div>
+      <div class="actions">
+        <label class="select" for="weekSel"><svg class="i l"><use href="#i-cal"/></svg><select id="weekSel" aria-label="Week"></select><svg class="i r"><use href="#i-down"/></svg></label>
+        <button class="btn ai" data-go="ask"><svg class="i"><use href="#i-spark"/></svg>Ask ProfitShield <kbd>/</kbd></button>
+      </div>
+    </header>
+
+    <!-- HOME -->
+    <section class="view" id="v-overview">
+      <div class="banner">
+        <div><h2 id="bannerTitle"></h2><p id="bannerSub"></p><div class="row" style="margin-top:12px"><button class="btn" id="openTop">Review leaks</button><button class="btn ghost" id="askWhy"><svg class="i" style="color:var(--brand)"><use href="#i-spark"/></svg>Explain this week</button></div></div>
+        <div class="progress"><div class="lbl"><span>Recovered</span><b id="recLbl">$0 of $0</b></div><div class="track"><i id="recBar" style="width:0"></i></div><span class="note" id="recNote"></span></div>
+      </div>
+      <div class="kpis" id="kpis"></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-h"><h2>Why profit changed</h2><p>Last week's profit to this week's. Click a bar for the receipts.</p></div>
+          <div class="wf-wrap"><svg class="wf" id="wf" viewBox="0 0 760 300" role="img" aria-label="Profit bridge"></svg></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Top leaks</h2><button class="btn link" data-go="leaks">See all</button></div>
+          <div class="leaks" id="topLeaks" style="margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>By channel</h2><p>What each app really pays you after fees, promotions and error charges.</p></div>
+        <div class="tbl-wrap" style="margin-top:6px"><table id="chanTable"></table></div>
+      </div>
+    </section>
+
+    <!-- LEAKS -->
+    <section class="view" id="v-leaks">
+      <div class="card">
+        <div class="tabs" id="leakTabs" role="tablist"></div>
+        <div class="findings" id="findings"></div>
+      </div>
+    </section>
+
+    <!-- ASK (full-page fallback, panel is primary) -->
+    <section class="view" id="v-ask"></section>
+
+    <!-- PAYOUTS -->
+    <section class="view" id="v-payouts">
+      <div class="card">
+        <div class="card-h"><h2>Delivery payouts</h2><p id="payoutSub"></p></div>
+        <div class="filters" id="payFilters"></div>
+        <div class="tbl-wrap" style="max-height:70vh"><table id="payTable"></table></div>
+      </div>
+    </section>
+
+    <!-- INVOICES -->
+    <section class="view" id="v-invoices">
+      <div class="card">
+        <div class="card-h"><h2>Supplier invoices</h2><p>Every line, matched to the ingredient it buys.</p></div>
+        <div class="tbl-wrap"><table id="invTable"></table></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>Ingredient prices</h2><p>Average price paid per unit, by week.</p></div>
+        <div class="tbl-wrap"><table id="priceTable"></table></div>
+      </div>
+    </section>
+
+    <!-- MARGINS -->
+    <section class="view" id="v-margins">
+      <div class="card">
+        <div class="card-h"><h2>Menu margins</h2><p>Food cost at this week's invoice prices. Delivery margin uses your DoorDash contract rate.</p></div>
+        <div class="tbl-wrap"><table id="marginTable"></table></div>
+      </div>
+    </section>
+
+    <!-- CONNECTIONS -->
+    <section class="view" id="v-sources">
+      <div class="card">
+        <div class="card-h"><h2>Connected sources</h2><p>Everything ProfitShield reads, and how it gets here.</p></div>
+        <div class="src-grid" id="srcGrid"></div>
+        <div class="ladder" id="ladder"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>Import reports</h2><p>Re-importing the same file never double counts.</p></div>
+        <label class="drop" id="csvDrop" for="csvFile">
+          <b>Drop payout or invoice CSVs here</b>
+          <p>DoorDash, Uber Eats, Grubhub, Square, Sysco and US Foods exports import instantly. Unfamiliar columns are mapped by AI. Names, emails and phone numbers are removed before anything is stored.</p>
+          <div class="row"><span class="btn ghost sm">Choose CSV files</span><span class="note" id="csvNote"></span></div>
+          <input type="file" id="csvFile" accept=".csv,text/csv" multiple hidden>
+        </label>
+        <div id="csvResult"></div>
+        <div class="tbl-wrap"><table id="importTable"></table></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>Square POS</h2><p>Live connection through the Square API.</p></div>
+        <div class="pad" style="padding-top:8px;display:grid;gap:12px" id="squareBox"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>Add a receipt or invoice</h2><p>Photo or PDF. AI reads it, you confirm, the books update.</p></div>
+        <label class="drop" id="drop" for="file">
+          <b>Drop a receipt photo or invoice PDF here</b>
+          <p>Each line is matched to an ingredient with a confidence score. Anything uncertain waits for you, and your confirmations are remembered.</p>
+          <div class="row"><span class="btn ghost sm">Choose file</span><button class="btn sm" type="button" id="sampleBtn">Use sample receipt</button></div>
+          <input type="file" id="file" accept="image/*,application/pdf" hidden>
+        </label>
+        <div id="review"></div>
+      </div>
+    </section>
+  </div></main>
+</div>
+
+<aside class="assist" id="assist" hidden aria-label="Ask ProfitShield">
+  <div class="assist-h"><b><svg class="i"><use href="#i-spark"/></svg>Ask ProfitShield</b><button class="x" id="assistClose" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="msgs" id="msgs" aria-live="polite"></div>
+  <div class="assist-f">
+    <div class="sugg" id="sugg"></div>
+    <form class="composer" id="askForm"><input id="askInput" autocomplete="off" placeholder="Ask about your orders, payouts or invoices" aria-label="Question"><button class="btn sm" type="submit" aria-label="Send"><svg class="i"><use href="#i-send"/></svg></button></form>
+    <span class="note" style="font-size:11px">Numbers come from your records, calculated by code. Every claim links to its rows.</span>
+  </div>
+</aside>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-modal="true" role="dialog" aria-labelledby="dTitle">
+  <div class="drawer-h"><div style="display:grid;gap:6px"><div class="eyebrow" id="dEyebrow"></div><h3 id="dTitle"></h3></div><button class="x" id="dClose" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="drawer-b" id="dBody"></div>
+  <div class="drawer-f" id="dFoot"></div>
+</aside>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ============ helpers ============ */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=(n,d=0)=>(n<0?'−':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const signed=(n,d=0)=>(n>0?'+':'')+money(n,d);
+const pct=(n,d=1)=>(n>0?'+':'')+(n*100).toFixed(d)+'%';
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function wpick(R,pairs){const tot=pairs.reduce((s,p)=>s+p[1],0);let x=R()*tot;for(const p of pairs){x-=p[1];if(x<=0)return p[0]}return pairs[pairs.length-1][0]}
+const pd=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const nice=s=>{const d=pd(s);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})};
+const hh=h=>{const ap=h>=12?'pm':'am';const x=h%12||12;return x+ap};
+function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2600)}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('Copied')}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Copied')}catch(_){toast('Select the text and copy it')}ta.remove()}}
+
+/* ============ store setup (example data) ============ */
+let WEEKS=[
+  {id:'W1',start:'2026-10-05',label:'Oct 5–11'},
+  {id:'W2',start:'2026-10-12',label:'Oct 12–18'},
+  {id:'W3',start:'2026-10-19',label:'Oct 19–25'},
+  {id:'W4',start:'2026-10-26',label:'Oct 26 – Nov 1'}];
+const MENU={
+  marg:{name:'Margherita pizza',price:16,w:28,recipe:{dough:1,mozz:.375,sauce:.25,basil:.2}},
+  pep:{name:'Pepperoni pizza',price:18,w:30,recipe:{dough:1,mozz:.375,sauce:.25,pepperoni:.1875}},
+  knots:{name:'Garlic knots',price:7,w:16,recipe:{dough:.5,gbutter:.0625,parm:.03}},
+  caesar:{name:'Caesar salad',price:11,w:8,recipe:{romaine:.3125,parm:.0625,dressing:.125,croutons:.0625}},
+  wings:{name:'Buffalo wings (10)',price:15,w:12,recipe:{wings:1.1,buffalo:.1875}},
+  soda:{name:'Soda (2 L)',price:4.5,w:18,recipe:{soda:1}},
+  tira:{name:'Tiramisu',price:8,w:5,recipe:{tira:1}}};
+const MENU_BASE=Object.fromEntries(Object.entries(MENU).map(([k,v])=>[k,v.price]));
+const ING={
+  dough:{name:'Dough balls',unit:'ea',vendor:'Sysco',p:.55,desc:'DOUGH BALL 16OZ FRZ'},
+  mozz:{name:'Mozzarella',unit:'lb',vendor:'Sysco',p:4.10,desc:'CHEESE MOZZ WM SHRD 4/5LB'},
+  sauce:{name:'Pizza sauce',unit:'lb',vendor:'Sysco',p:1.20,desc:'SAUCE PIZZA FCY #10'},
+  pepperoni:{name:'Pepperoni',unit:'lb',vendor:'Sysco',p:5.40,desc:'PEPPERONI SLCD 14-16CT'},
+  basil:{name:'Fresh basil',unit:'oz',vendor:'Sysco',p:.45,desc:'HERB BASIL FRESH'},
+  parm:{name:'Parmesan',unit:'lb',vendor:'Sysco',p:9.50,desc:'CHEESE PARM GRTD'},
+  romaine:{name:'Romaine',unit:'lb',vendor:'Sysco',p:1.90,desc:'LETTUCE ROMAINE HRTS'},
+  gbutter:{name:'Garlic butter',unit:'lb',vendor:'US Foods',p:3.80,desc:'BUTTER GARLIC BLEND'},
+  dressing:{name:'Caesar dressing',unit:'lb',vendor:'US Foods',p:3.20,desc:'DRSG CAESAR CREAMY'},
+  croutons:{name:'Croutons',unit:'lb',vendor:'US Foods',p:2.80,desc:'CROUTON SEASONED'},
+  wings:{name:'Chicken wings',unit:'lb',vendor:'US Foods',p:3.10,desc:'CHIX WING JMBO 1&2 JT'},
+  buffalo:{name:'Buffalo sauce',unit:'lb',vendor:'US Foods',p:2.40,desc:'SAUCE BUFFALO WING'},
+  soda:{name:'Soda 2 L',unit:'ea',vendor:'US Foods',p:1.35,desc:'SODA 2L ASST 8CT'},
+  tira:{name:'Tiramisu portion',unit:'ea',vendor:'US Foods',p:2.60,desc:'DSSRT TIRAMISU IND'}};
+const PRICE_WEEK={W4:{mozz:5.60,romaine:2.05,wings:3.00}};
+const CHANNELS=['DoorDash','Uber Eats','Grubhub','In-store'];
+const CONTRACT={'DoorDash':.20,'Uber Eats':.22,'Grubhub':.18,'In-store':0};
+const APPROVED_PROMOS=[{channel:'DoorDash',name:'Free garlic knots on $30+'}];
+const PREFIX={'DoorDash':'DD','Uber Eats':'UE','Grubhub':'GH','In-store':'SQ'};
+
+function genData(){
+  const R=rng(20261107);const orders=[];let n=1;
+  WEEKS.forEach((wk,wi)=>{for(let d=0;d<7;d++){
+    const date=addDays(pd(wk.start),d);const ds=ymd(date);
+    let count=54+(d===4||d===5?14:0)+(d===6?6:0)+Math.floor(R()*8)+(wi===3?3:0);
+    if(ds==='2026-10-31')count+=16;
+    for(let i=0;i<count;i++){
+      const u=R();const hour=u<.3?11+Math.floor(R()*3):u<.9?17+Math.floor(R()*4):21+Math.floor(R()*2);
+      const minute=Math.floor(R()*60);
+      const ch=wpick(R,[['DoorDash',.44],['Uber Eats',.24],['Grubhub',.10],['In-store',.22]]);
+      const items=[];const lines=1+(R()<.55)+(R()<.25)+(R()<.08);
+      for(let l=0;l<lines;l++){const sku=wpick(R,Object.entries(MENU).map(([k,v])=>[k,v.w]));const ex=items.find(x=>x.sku===sku);if(ex)ex.qty++;else items.push({sku,qty:1})}
+      const subtotal=items.reduce((s,x)=>s+MENU[x.sku].price*x.qty,0);
+      orders.push({id:PREFIX[ch]+'-'+(48200+n++),channel:ch,week:wk.id,date:ds,dow:d,hour,minute,items,subtotal,rate:CONTRACT[ch],promo:null,promoAmt:0});
+    }}});
+  orders.sort((a,b)=>(a.date+String(a.hour).padStart(2,'0')+String(a.minute).padStart(2,'0')).localeCompare(b.date+String(b.hour).padStart(2,'0')+String(b.minute).padStart(2,'0')));
+  // approved promo, every week
+  orders.forEach(o=>{if(o.channel==='DoorDash'&&o.subtotal>=30&&R()<.22){o.promo='Free garlic knots on $30+';o.promoAmt=7}});
+  // planted: Uber Eats merchant-funded promo nobody approved
+  orders.forEach(o=>{if(o.week==='W4'&&o.channel==='Uber Eats'&&o.date>='2026-10-28'&&o.subtotal>=25){o.promo='Spend $25, save $5';o.promoAmt=5}});
+  // planted: DoorDash commission billed at 25% Thu to Sat
+  orders.forEach(o=>{if(o.week==='W4'&&o.channel==='DoorDash'&&o.date>='2026-10-29'&&o.date<='2026-10-31')o.rate=.25});
+  // error charges
+  const errors=[];let en=1;
+  const addErr=(o,sku,reason,amount)=>errors.push({id:'EC-'+(7100+en++),orderId:o.id,channel:o.channel,week:o.week,date:o.date,dow:o.dow,hour:o.hour,sku,reason,amount});
+  const deliv=w=>orders.filter(o=>o.week===w&&(o.channel==='DoorDash'||o.channel==='Uber Eats'));
+  [['W1',2],['W2',3],['W3',3]].forEach(([w,k])=>{const pool=deliv(w);for(let i=0;i<k;i++){const o=pool[Math.floor(R()*pool.length)];const it=o.items[Math.floor(R()*o.items.length)];addErr(o,it.sku,'Missing item',MENU[it.sku].price)}});
+  const w4=deliv('W4');
+  w4.filter(o=>(o.dow===4||o.dow===5)&&o.hour>=18&&o.hour<=20&&o.items.some(i=>i.sku==='soda')).filter((_,i)=>i%3===0).slice(0,8).forEach(o=>addErr(o,'soda','Missing item',MENU.soda.price));
+  w4.filter(o=>o.items.some(i=>i.sku==='knots')&&o.dow<4).slice(5,7).forEach(o=>addErr(o,'knots','Missing item',MENU.knots.price));
+  const wrong=w4.find(o=>o.dow===5&&o.hour===19&&o.subtotal>=38);if(wrong)addErr(wrong,null,'Wrong order',wrong.subtotal);
+  // invoices from usage
+  const invoices=[];
+  WEEKS.forEach((wk,wi)=>{
+    const Q={};orders.filter(o=>o.week===wk.id).forEach(o=>o.items.forEach(it=>{for(const [g,q] of Object.entries(MENU[it.sku].recipe))Q[g]=(Q[g]||0)+q*it.qty}));
+    const price=g=>(PRICE_WEEK[wk.id]&&PRICE_WEEK[wk.id][g])||ING[g].p;
+    const mk=(vendor,num,dayOff,source)=>{const lines=Object.keys(ING).filter(g=>ING[g].vendor===vendor).map(g=>{const qty=Math.ceil((Q[g]||0)*1.04);return{desc:ING[g].desc,ing:g,qty,unit:ING[g].unit,unitPrice:price(g),total:+(qty*price(g)).toFixed(2)}});
+      return{id:num,vendor,date:ymd(addDays(pd(wk.start),dayOff)),week:wk.id,source,lines,total:+lines.reduce((s,l)=>s+l.total,0).toFixed(2)}};
+    invoices.push(mk('Sysco','SY-882'+(10+wi),0,'Supplier portal export'));
+    invoices.push(mk('US Foods','INV-5510'+(wi),3,'Emailed PDF'));
+  });
+  const dupSrc=invoices.find(i=>i.id==='INV-55103');
+  invoices.push({...dupSrc,source:'Receipt photo',copy:true,lines:dupSrc.lines.map(l=>({...l}))});
+  return{orders,errors,invoices};
+}
+
+/* ============ engine ============ */
+let DB=genData();
+let CUR='W4';
+const BACKEND={on:false,square:false,imports:[]};
+const prevOf=w=>WEEKS[Math.max(0,WEEKS.findIndex(x=>x.id===w)-1)].id;
+const weekOf=w=>WEEKS.find(x=>x.id===w);
+const isApproved=o=>APPROVED_PROMOS.some(p=>p.channel===o.channel&&p.name===o.promo);
+
+function dupGroups(){const g={};DB.invoices.forEach(i=>{const k=i.vendor+'|'+i.id;(g[k]=g[k]||[]).push(i)});return Object.values(g).filter(a=>a.length>1)}
+function priceTable(){
+  const P={};let last={};Object.keys(ING).forEach(g=>last[g]=ING[g].p);
+  WEEKS.forEach(wk=>{const acc={};const seen=new Set();
+    DB.invoices.filter(i=>i.week===wk.id).forEach(i=>{const key=i.vendor+'|'+i.id;if(seen.has(key))return;seen.add(key);i.lines.forEach(l=>{if(!l.ing)return;(acc[l.ing]=acc[l.ing]||{q:0,c:0});acc[l.ing].q+=l.qty;acc[l.ing].c+=l.qty*l.unitPrice})});
+    P[wk.id]={};Object.keys(ING).forEach(g=>{if(acc[g]&&acc[g].q>0)last[g]=acc[g].c/acc[g].q;P[wk.id][g]=last[g]})});
+  return P;
+}
+function metrics(w,PT){
+  const os=DB.orders.filter(o=>o.week===w);
+  const m={w,orders:os.length,gross:0,contractComm:0,over:0,apprPromo:0,unappPromo:0,err:0,dup:0,Q:{},food:0,byCh:{}};
+  CHANNELS.forEach(c=>m.byCh[c]={orders:0,gross:0});
+  os.forEach(o=>{const c=CONTRACT[o.channel];m.gross+=o.subtotal;m.contractComm+=o.subtotal*c;m.over+=o.subtotal*(o.rate-c);
+    if(o.promo){if(isApproved(o))m.apprPromo+=o.promoAmt;else m.unappPromo+=o.promoAmt}
+    m.byCh[o.channel].orders++;m.byCh[o.channel].gross+=o.subtotal;
+    o.items.forEach(it=>{const rec=(MENU[it.sku]||{}).recipe||{};for(const [g,q] of Object.entries(rec))m.Q[g]=(m.Q[g]||0)+q*it.qty})});
+  m.err=DB.errors.filter(e=>e.week===w).reduce((s,e)=>s+e.amount,0);
+  m.errN=DB.errors.filter(e=>e.week===w).length;
+  dupGroups().forEach(g=>g.slice(1).forEach(i=>{if(i.week===w)m.dup+=i.total}));
+  m.P=PT[w];m.food=Object.keys(m.Q).reduce((s,g)=>s+m.Q[g]*m.P[g],0);
+  m.profit=m.gross-m.contractComm-m.over-m.apprPromo-m.unappPromo-m.err-m.food-m.dup;
+  return m;
+}
+
+function analyze(){
+  const PT=priceTable();
+  const M={};WEEKS.forEach(wk=>M[wk.id]=metrics(wk.id,PT));
+  const c=M[CUR],p=M[prevOf(CUR)];
+  const findings=[];
+  // price jumps
+  const pchg=Object.keys(ING).map(g=>({g,from:p.P[g],to:c.P[g],ch:(c.P[g]-p.P[g])/p.P[g],impact:-(c.Q[g]||0)*(c.P[g]-p.P[g])})).filter(x=>Math.abs(x.ch)>1e-9);
+  pchg.filter(x=>x.ch>.10).forEach(x=>{
+    const affected=Object.entries(MENU).filter(([k,v])=>v.recipe[x.g]).map(([k])=>k);
+    findings.push({kind:'price',g:x.g,impact:x.impact,title:`${ING[x.g].name} up ${(x.ch*100).toFixed(0)}% at ${ING[x.g].vendor}`,
+      sub:`${money(x.from,2)} → ${money(x.to,2)} per ${ING[x.g].unit}. Hits ${affected.map(k=>MENU[k].name).join(', ')}.`,tags:[['neg','Food cost'],['mute',ING[x.g].vendor]],affected});
+  });
+  // commission overcharge
+  const over=DB.orders.filter(o=>o.week===CUR&&o.rate>CONTRACT[o.channel]+0.002);
+  const overBy={};over.forEach(o=>(overBy[o.channel]=overBy[o.channel]||[]).push(o));
+  Object.entries(overBy).forEach(([ch,os])=>{const amt=os.reduce((s,o)=>s+o.subtotal*(o.rate-CONTRACT[ch]),0);const rate=os[0].rate;
+    const days=[...new Set(os.map(o=>o.date))];
+    findings.push({kind:'comm',ch,orders:os,impact:-amt,title:`${ch} charged ${(rate*100).toFixed(0)}% on ${os.length} orders`,
+      sub:`Your contract rate is ${(CONTRACT[ch]*100).toFixed(0)}%. Happened ${nice(days[0])} to ${nice(days[days.length-1])}.`,tags:[['neg','Overcharge'],['mute','Disputable']]})});
+  // unapproved promos
+  const unp=DB.orders.filter(o=>o.week===CUR&&o.promo&&!isApproved(o));
+  const unpBy={};unp.forEach(o=>{const k=o.channel+'|'+o.promo;(unpBy[k]=unpBy[k]||[]).push(o)});
+  Object.entries(unpBy).forEach(([k,os])=>{const [ch,name]=k.split('|');const amt=os.reduce((s,o)=>s+o.promoAmt,0);
+    findings.push({kind:'promo',ch,name,orders:os,impact:-amt,title:`${ch} ran “${name}” on ${os.length} orders`,
+      sub:`You paid for it, and it isn't in your approved promotions.`,tags:[['warn','Promotion'],['mute','Not approved']]})});
+  // error charges spike
+  const prevWeeks=WEEKS.slice(0,WEEKS.findIndex(x=>x.id===CUR)).map(x=>x.id);
+  const baseN=prevWeeks.length?prevWeeks.reduce((s,w)=>s+M[w].errN,0)/prevWeeks.length:0;
+  const errs=DB.errors.filter(e=>e.week===CUR);
+  if(errs.length>Math.max(3,baseN*1.5)){
+    const byItem={};errs.forEach(e=>{const k=(e.sku&&MENU[e.sku])?e.sku:'whole';byItem[k]=(byItem[k]||0)+1});
+    const top=Object.entries(byItem).sort((a,b)=>b[1]-a[1])[0];
+    const peak=errs.filter(e=>(e.dow===4||e.dow===5)&&e.hour>=18&&e.hour<=20).length;
+    findings.push({kind:'err',errs,impact:-(c.err-p.err),title:`Missing-item charges jumped to ${errs.length}`,
+      sub:`Usually about ${Math.round(baseN)} a week. ${top[1]} of ${errs.length} were ${top[0]==='whole'?'whole orders':MENU[top[0]].name.toLowerCase()}, ${peak} landed Fri–Sat 6–9pm.`,tags:[['neg','Error charges'],['mute','Packing']],topItem:top[0],peak,baseN});
+  }
+  // duplicates
+  dupGroups().forEach(g=>{const extra=g.slice(1).filter(i=>i.week===CUR);if(!extra.length)return;
+    findings.push({kind:'dup',group:g,impact:-extra.reduce((s,i)=>s+i.total,0),title:`${g[0].vendor} invoice ${g[0].id} recorded twice`,
+      sub:`Once from ${g[0].source.toLowerCase()}, again from a ${g[1].source.toLowerCase()}. Same total, same date.`,tags:[['neg','Double payment'],['mute',g[0].vendor]]})});
+  findings.sort((a,b)=>a.impact-b.impact);
+  findings.forEach((f,i)=>f.id='F'+(i+1));
+
+  // bridge
+  const volume=(c.gross-c.contractComm-c.apprPromo)-(p.gross-p.contractComm-p.apprPromo)-Object.keys(ING).reduce((s,g)=>s+((c.Q[g]||0)-(p.Q[g]||0))*p.P[g],0);
+  const priceF=findings.filter(f=>f.kind==='price');
+  const otherPrice=pchg.filter(x=>!priceF.some(f=>f.g===x.g)).reduce((s,x)=>s+x.impact,0);
+  const steps=[{label:'Last week',value:p.profit,total:true}];
+  steps.push({label:'Sales & mix',value:volume,note:'More orders, more food used'});
+  priceF.forEach(f=>steps.push({label:ING[f.g].name+' price',value:f.impact,fid:f.id}));
+  if(Math.abs(otherPrice)>.5)steps.push({label:'Other prices',value:otherPrice});
+  const fk=k=>findings.find(f=>f.kind===k);
+  [['comm','Commission',c.over-p.over],['promo','Promotions',c.unappPromo-p.unappPromo],['err','Error charges',c.err-p.err],['dup','Paid twice',c.dup-p.dup]].forEach(([k,l,d])=>{if(Math.abs(d)>.5)steps.push({label:l,value:-d,fid:fk(k)&&fk(k).id})});
+  steps.push({label:'This week',value:c.profit,total:true});
+  const check=steps.slice(1,-1).reduce((s,x)=>s+x.value,p.profit);
+  return{PT,M,c,p,findings,steps,check};
+}
+let A=analyze();
+
+/* ============ rendering ============ */
+const CH_COLOR={'DoorDash':'#E8412C','Uber Eats':'#1F9D55','Grubhub':'#F28C28','In-store':'#5B6472'};
+let STATUS={};try{STATUS=JSON.parse(localStorage.getItem('ps-status')||'{}')}catch(e){STATUS={}}
+const skey=f=>CUR+'|'+f.kind+'|'+(f.g||f.ch||'')+'|'+(f.name||'');
+const statusOf=f=>STATUS[skey(f)]||'open';
+function setStatus(f,s){STATUS[skey(f)]=s;try{localStorage.setItem('ps-status',JSON.stringify(STATUS))}catch(e){}renderOverview();if($('#v-leaks').classList.contains('active'))renderLeaks()}
+const ICON={price:['i-tag','warn'],comm:['i-pct','neg'],promo:['i-tag','warn'],err:['i-box','info'],dup:['i-inv','neg']};
+const STAT_PILL={open:['Open','neg'],disputed:['In dispute','warn'],resolved:['Resolved','pos']};
+const ACTION_WORD={price:'Ask supplier',comm:'Dispute',promo:'Request credit',err:'Fix packing',dup:'Request credit'};
+function renderWeekSeg(){
+  const sel=$('#weekSel');sel.innerHTML=WEEKS.slice(1).map(w=>`<option value="${w.id}" ${w.id===CUR?'selected':''}>Week of ${w.label}</option>`).join('');
+  sel.onchange=()=>{CUR=sel.value;recompute()};
+}
+function spark(vals,color){const W=96,H=30,mx=Math.max(...vals),mn=Math.min(...vals),rg=(mx-mn)||1;const pts=vals.map((v,i)=>[i*(W-4)/(vals.length-1||1)+2,H-4-(v-mn)/rg*(H-10)]);
+  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');const last=pts[pts.length-1];
+  return`<svg class="spark" viewBox="0 0 ${W} ${H}" aria-hidden="true"><path d="${d} L${last[0]} ${H} L2 ${H} Z" fill="${color}" opacity=".1"/><path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="2.6" fill="${color}"/></svg>`}
+function renderOverview(){
+  const {c,p,findings}=A;const upto=WEEKS.slice(0,WEEKS.findIndex(w=>w.id===CUR)+1).map(w=>A.M[w.id]);
+  const leak=-findings.filter(f=>f.impact<0).reduce((s,f)=>s+f.impact,0);
+  const recoverable=-findings.filter(f=>['comm','promo','dup'].includes(f.kind)).reduce((s,f)=>s+f.impact,0);
+  const recovered=-findings.filter(f=>statusOf(f)==='resolved').reduce((s,f)=>s+f.impact,0);
+  const salesCh=(c.gross-p.gross)/p.gross,profCh=c.profit-p.profit;
+  $('#bannerTitle').innerHTML=findings.length?`<em>${money(leak)}</em> slipped away last week. ${money(recoverable)} of it you can get back.`:'Nothing slipped through last week.';
+  $('#bannerSub').textContent=`Sales were ${salesCh>=0?'up':'down'} ${Math.abs(salesCh*100).toFixed(1)}% but profit was ${profCh>=0?'up':'down'} ${money(Math.abs(profCh))}. ProfitShield checked ${c.orders.toLocaleString()} orders, every payout line and ${new Set(DB.invoices.filter(i=>i.week===CUR).map(i=>i.vendor+i.id)).size} invoices, and found ${findings.length} leaks worth about ${money(leak*52)} a year.`;
+  $('#recLbl').textContent=`${money(recovered)} of ${money(leak)}`;$('#recBar').style.width=(leak?Math.min(100,recovered/leak*100):0)+'%';
+  const done=findings.filter(f=>statusOf(f)!=='open').length;$('#recNote').textContent=`${done} of ${findings.length} leaks handled`;
+  const fees=m=>m.contractComm+m.over+m.apprPromo+m.unappPromo+m.err;
+  const K=[['Net sales',m=>m.gross,'#5B6472',false,v=>money(v)],['Profit',m=>m.profit,'var(--ink)',false,v=>money(v)],['Food cost',m=>m.food/m.gross,'#965F06',true,v=>(v*100).toFixed(1)+'%'],['App fees & charges',m=>fees(m)/m.gross,'#C9372C',true,v=>(v*100).toFixed(1)+'%']];
+  $('#kpis').innerHTML=K.map(([l,f,col,inv,fmt])=>{const v=f(c),pv=f(p);const d=v-pv;const good=inv?d<=0:d>=0;const dTxt=fmt===K[0][4]||l==='Profit'?signed(d):((d>0?'+':'')+(d*100).toFixed(1)+' pts');
+    return`<div class="card kpi"><div class="kpi-top"><small>${l}</small><span class="delta ${good?'pos':'neg'}">${dTxt}</span></div><div class="foot"><div class="v">${fmt(v)}</div>${spark(upto.map(f),col)}</div><span class="note">vs ${fmt(pv)} the week before</span></div>`}).join('');
+  renderWaterfall();
+  $('#topLeaks').innerHTML=findings.slice(0,5).map(f=>{const st=statusOf(f);const [ic,tone]=ICON[f.kind]||['i-leak','neg'];return`<button class="leak" data-f="${f.id}"><span class="lic ${tone}"><svg class="i"><use href="#${ic}"/></svg></span><span class="lt"><b>${esc(f.title)}</b><span>${st==='open'?esc(f.tags[0][1])+' · '+ACTION_WORD[f.kind]:STAT_PILL[st][0]}</span></span><span class="lv ${st==='resolved'?'done':''}">${st==='resolved'?'✓ ':''}${signed(f.impact)}</span></button>`}).join('')||'<p class="pad note">No leaks this week.</p>';
+  $$('#topLeaks .leak').forEach(b=>b.onclick=()=>openFinding(b.dataset.f));
+  // channels
+  const os=DB.orders.filter(o=>o.week===CUR);const errBy={};DB.errors.filter(e=>e.week===CUR).forEach(e=>errBy[e.orderId]=(errBy[e.orderId]||0)+e.amount);
+  const rows=CHANNELS.map(ch=>{const r=os.filter(o=>o.channel===ch);const g=r.reduce((s,o)=>s+o.subtotal,0);const fee=r.reduce((s,o)=>s+o.subtotal*o.rate,0);const pr=r.reduce((s,o)=>s+o.promoAmt,0);const er=r.reduce((s,o)=>s+(errBy[o.id]||0),0);const net=g-fee-pr-er;const over=r.filter(o=>o.rate>CONTRACT[ch]+0.002).length;const un=r.filter(o=>o.promo&&!isApproved(o)).length;return{ch,n:r.length,g,fee,pr,er,net,keep:g?net/g:0,over,un}});
+  const tot=rows.reduce((s,r)=>s+r.g,0);
+  $('#chanTable').innerHTML=`<thead><tr><th>Channel</th><th class="n">Orders</th><th>Share of sales</th><th class="n">Sales</th><th class="n">Fees</th><th class="n">Promos</th><th class="n">Error charges</th><th class="n">You keep</th><th>Flags</th></tr></thead><tbody>${rows.map(r=>`<tr><td><span class="chan"><i style="background:${CH_COLOR[r.ch]}"></i>${esc(r.ch)}</span></td><td class="n">${r.n}</td><td><div class="share"><span class="t"><i style="width:${(r.g/tot*100).toFixed(1)}%;background:${CH_COLOR[r.ch]}"></i></span><span class="num note">${(r.g/tot*100).toFixed(0)}%</span></div></td><td class="n">${money(r.g)}</td><td class="n">${r.fee?money(r.fee):'–'}</td><td class="n">${r.pr?money(r.pr):'–'}</td><td class="n">${r.er?money(r.er):'–'}</td><td class="n"><b>${money(r.net)}</b> <span class="note">${(r.keep*100).toFixed(0)}%</span></td><td>${r.over?`<span class="pill neg">${r.over} over contract</span> `:''}${r.un?`<span class="pill warn">${r.un} unapproved promo</span>`:''}${!r.over&&!r.un?'<span class="pill pos">Clean</span>':''}</td></tr>`).join('')}</tbody>`;
+  $('#navCount').textContent=findings.filter(f=>statusOf(f)==='open').length||'';
+  $('#openTop').onclick=()=>go('leaks');
+  $('#askWhy').onclick=()=>{openAssist();ask('Why did my profit drop this week?')};
+}
+let LEAKTAB='open';
+function renderLeaks(){
+  const F=A.findings;const groups={open:F.filter(f=>statusOf(f)==='open'),disputed:F.filter(f=>statusOf(f)==='disputed'),resolved:F.filter(f=>statusOf(f)==='resolved'),all:F};
+  $('#leakTabs').innerHTML=[['open','Open'],['disputed','In dispute'],['resolved','Resolved'],['all','All']].map(([k,l])=>`<button class="tab" role="tab" aria-selected="${k===LEAKTAB}" data-t="${k}">${l}<span class="num">${groups[k].length}</span></button>`).join('');
+  $$('#leakTabs .tab').forEach(b=>b.onclick=()=>{LEAKTAB=b.dataset.t;renderLeaks()});
+  const list=groups[LEAKTAB];
+  $('#findings').innerHTML=list.map(f=>{const st=statusOf(f);const [ic,tone]=ICON[f.kind]||['i-leak','neg'];return`<div class="finding" role="button" tabindex="0" data-f="${f.id}"><span class="lic ${tone}"><svg class="i"><use href="#${ic}"/></svg></span><span class="ft"><b>${esc(f.title)}</b><span>${esc(f.sub)}</span><span class="tags">${f.tags.map(([t,l])=>`<span class="pill ${t}">${esc(l)}</span>`).join('')}</span></span><span class="fstat"><span class="pill ${STAT_PILL[st][1]}">${STAT_PILL[st][0]}</span>${st==='open'?`<button class="btn ghost sm" data-act="${f.kind==='price'||f.kind==='err'?'resolved':'disputed'}">${f.kind==='price'||f.kind==='err'?'Mark handled':'Mark disputed'}</button>`:st==='disputed'?`<button class="btn ghost sm" data-act="resolved">Credit received</button>`:`<button class="btn ghost sm" data-act="open">Reopen</button>`}</span><span class="fimp"><span class="num ${st==='resolved'?'pos':''}">${signed(f.impact)}</span><small>${signed(f.impact*52)}/yr</small></span></div>`}).join('')||`<p class="pad note">${LEAKTAB==='open'?'Nothing open. Nice work.':'Nothing here yet.'}</p>`;
+  $$('#findings .finding').forEach(el=>{el.onclick=e=>{const a=e.target.closest('[data-act]');const f=A.findings.find(x=>x.id===el.dataset.f);if(a){e.stopPropagation();setStatus(f,a.dataset.act);toast(a.dataset.act==='resolved'?'Marked as recovered':a.dataset.act==='disputed'?'Marked as in dispute':'Reopened');return}openFinding(el.dataset.f)};el.onkeydown=e=>{if(e.key==='Enter')openFinding(el.dataset.f)}});
+}
+function openAssist(){$('#assist').hidden=false;setTimeout(()=>$('#askInput').focus(),50)}
+function closeAssist(){$('#assist').hidden=true}
+function renderWaterfall(){
+  const S=A.steps;const W=760,H=300,L=58,Rr=12,T=26,B=46;
+  let run=0;const bars=S.map((s,i)=>{let y0,y1;if(s.total){y0=0;y1=s.value;run=s.value}else{y0=run;y1=run+s.value;run=y1}return{...s,y0,y1}});
+  const vals=bars.flatMap(b=>b.total?[b.y1]:[b.y0,b.y1]);
+  const lo=Math.floor((Math.min(...vals)-250)/500)*500,hi=Math.ceil((Math.max(...vals)+150)/500)*500;
+  const y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  const n=bars.length,slot=(W-L-Rr)/n,bw=Math.min(56,slot*.62);
+  let g='';for(let v=lo;v<=hi;v+=500){g+=`<line class="grid" x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${(v/1000).toFixed(1)}k</text>`}
+  g+=`<text x="${L}" y="14" style="font-size:11px">Axis starts at ${money(lo)}</text>`;
+  bars.forEach((b,i)=>{const x=L+slot*i+(slot-bw)/2;const top=b.total?y(b.y1):y(Math.max(b.y0,b.y1));const bot=b.total?y(lo):y(Math.min(b.y0,b.y1));const h=Math.max(2,bot-top);
+    const fill=b.total?'var(--ink)':b.value>=0?'var(--pos)':'var(--neg)';
+    if(i<n-1){const nx=L+slot*(i+1)+(slot-bw)/2;const yy=y(b.total?b.y1:b.y1);g+=`<line x1="${x+bw}" x2="${nx}" y1="${yy}" y2="${yy}" stroke="var(--faint)" stroke-dasharray="3 3"/>`}
+    const lbl=b.label.length>13?b.label.split(' ').reduce((a,w)=>{const l=a[a.length-1];if((l+' '+w).trim().length<=12)a[a.length-1]=(l+' '+w).trim();else a.push(w);return a},['']):[b.label];
+    g+=`<g class="bar" ${b.fid?`data-f="${b.fid}" tabindex="0" role="button" aria-label="${esc(b.label)} ${money(b.value)}"`:''}>${b.fid?`<rect x="${x-6}" y="${T}" width="${bw+12}" height="${H-T}" fill="transparent"/>`:''}<rect x="${x}" y="${top}" width="${bw}" height="${h}" rx="3" fill="${fill}"/>
+    <text class="val" x="${x+bw/2}" y="${top-7}" text-anchor="middle">${b.total?money(b.value):signed(b.value)}</text>
+    ${lbl.map((t,j)=>`<text x="${x+bw/2}" y="${H-B+18+j*13}" text-anchor="middle">${esc(t)}</text>`).join('')}</g>`});
+  $('#wf').innerHTML=g;
+  $$('#wf .bar[data-f]').forEach(el=>{el.onclick=()=>openFinding(el.dataset.f);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openFinding(el.dataset.f)}}});
+}
+
+/* ============ evidence drawer ============ */
+function orderItems(o){return o.items.map(i=>(i.qty>1?i.qty+'× ':'')+(MENU[i.sku]?MENU[i.sku].name:(i.name||'Unknown item'))).join(', ')}
+function openDrawer(eyebrow,title,body,foot){$('#dEyebrow').textContent=eyebrow;$('#dTitle').textContent=title;$('#dBody').innerHTML=body;$('#dFoot').innerHTML=foot||'';$('#scrim').hidden=false;$('#drawer').hidden=false;$('#dClose').focus()}
+function closeDrawer(){$('#scrim').hidden=true;$('#drawer').hidden=true}
+$('#dClose').onclick=closeDrawer;$('#scrim').onclick=closeDrawer;document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#drawer').hidden)closeDrawer();else closeAssist()}});
+
+function draftFor(f){
+  if(f.kind==='comm'){const amt=-f.impact;return`Subject: Commission billed above contract rate, ${weekOf(CUR).label}\n\nStore: Forbes Ave Slice Co., Pittsburgh, PA\nContract commission rate: ${(CONTRACT[f.ch]*100).toFixed(0)}%\nRate charged: ${(f.orders[0].rate*100).toFixed(0)}% on ${f.orders.length} orders\nTotal overcharge: ${money(amt,2)}\n\nAffected orders:\n${f.orders.slice(0,60).map(o=>`${o.id}  ${o.date}  subtotal ${money(o.subtotal,2)}  over ${money(o.subtotal*(o.rate-CONTRACT[f.ch]),2)}`).join('\n')}${f.orders.length>60?`\n…and ${f.orders.length-60} more`:''}\n\nPlease correct the rate and credit the difference.`}
+  if(f.kind==='promo')return`Subject: Promotion running without my approval\n\nStore: Forbes Ave Slice Co.\nPromotion: "${f.name}" (merchant-funded)\nOrders affected: ${f.orders.length}, ${f.orders[0].date} to ${f.orders[f.orders.length-1].date}\nCost to my store: ${money(-f.impact,2)}\n\nI did not approve this promotion. Please stop it and credit the merchant-funded amount.`;
+  if(f.kind==='dup'){const g=f.group;return`Subject: Duplicate payment, invoice ${g[0].id}\n\nHi ${g[0].vendor} team,\n\nInvoice ${g[0].id} dated ${g[0].date} for ${money(g[0].total,2)} was paid twice. Please apply a credit of ${money(g[0].total,2)} to our next invoice or refund it.\n\nThanks,\nForbes Ave Slice Co.`}
+  if(f.kind==='price')return`Subject: Price change on ${ING[f.g].name.toLowerCase()}\n\nHi ${ING[f.g].vendor} rep,\n\nOur price on ${ING[f.g].desc} went from ${money(A.p.P[f.g],2)} to ${money(A.c.P[f.g],2)} per ${ING[f.g].unit} this week. Can you confirm whether this is a market change and whether a contract price or alternate brand is available? We buy about ${Math.round(A.c.Q[f.g])} ${ING[f.g].unit} a week.\n\nThanks,\nForbes Ave Slice Co.`;
+  if(f.kind==='err')return`Packing station note, effective this weekend:\n\n1. Drinks go in the bag first, before food leaves the pass.\n2. Fri and Sat 6 to 9pm: second person checks every bag against the ticket.\n3. Highlight drinks on the receipt stapled to the bag.\n\nWhy: ${f.errs.length} missing-item charges last week, ${f.peak} of them Fri to Sat 6 to 9pm.`;
+  return'';
+}
+function openFinding(id){
+  const f=A.findings.find(x=>x.id===id);if(!f)return;
+  let body=`<div class="callout"><b>${signed(f.impact,2)} this week · ${signed(f.impact*52)} a year at this rate</b><span>${esc(f.sub)}</span></div>`;
+  let foot='';
+  if(f.kind==='price'){
+    const lines=DB.invoices.filter(i=>(i.week===CUR||i.week===prevOf(CUR))).flatMap(i=>i.lines.filter(l=>l.ing===f.g).map(l=>({i,l})));
+    body+=`<div class="box"><div class="box-h"><span>Invoice lines for ${esc(ING[f.g].name.toLowerCase())}</span><span class="mono">${esc(ING[f.g].desc)}</span></div><div class="tbl-wrap"><table><thead><tr><th>Invoice</th><th>Date</th><th class="n">Qty</th><th class="n">Unit price</th><th class="n">Total</th></tr></thead><tbody>${lines.map(({i,l})=>`<tr class="${i.week===CUR?'flag':''}"><td>${esc(i.vendor)} ${esc(i.id)}${l.page?` <span class="pill warn">${esc(i.source==='PDF invoice'?'PDF':'Photo')} page ${l.page}</span>`:''}${i.copy?' <span class="pill mute">copy</span>':''}</td><td>${nice(i.date)}</td><td class="n">${l.qty} ${l.unit}</td><td class="n">${money(l.unitPrice,2)}</td><td class="n">${money(l.total,2)}</td></tr>`).join('')}</tbody></table></div></div>`;
+    body+=`<div class="box"><div class="box-h"><span>Menu items affected</span><span>Food cost per item</span></div><div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="n">Last wk</th><th class="n">This wk</th><th class="n">Margin now</th></tr></thead><tbody>${f.affected.map(k=>{const a=itemCost(k,A.p.P),b=itemCost(k,A.c.P);return`<tr><td>${esc(MENU[k].name)}</td><td class="n">${money(a,2)}</td><td class="n">${money(b,2)}</td><td class="n">${((1-b/MENU[k].price)*100).toFixed(1)}%</td></tr>`}).join('')}</tbody></table></div></div>`;
+    const marg=itemCost('marg',A.c.P);
+    body+=`<div class="callout"><b>Options</b><span>Ask ${esc(ING[f.g].vendor)} for a contract price, compare a second distributor, or raise delivery prices on pizzas by $0.75, which covers the increase on about ${Math.round(A.c.Q[f.g]/.375)} pizzas a week.</span></div>`;
+    body+=`<div class="box"><div class="box-h"><span>Simulate a fix</span><span>Based on this week's sales</span></div><div class="pad sim" style="padding:14px"><div class="sim-in"><label for="simInc">Raise by <b class="num" id="simIncV">$0.75</b></label><input type="range" id="simInc" min="0.25" max="2" step="0.25" value="0.75"><label><input type="checkbox" id="simDel" checked> Delivery apps</label><label><input type="checkbox" id="simStore"> In-store</label></div><div id="simOut"></div></div></div>`;
+    foot=`<button class="btn" data-exec>Execute price increase</button><button class="btn ghost" id="planBtn">Change plan</button><button class="btn ghost" data-copy>Copy note to supplier</button><button class="btn ghost" data-ask="What should I do about the ${esc(ING[f.g].name.toLowerCase())} price increase?">Ask what to do</button>`;
+  }
+  if(f.kind==='comm'||f.kind==='promo'){
+    const rows=f.orders;
+    body+=`<div class="box"><div class="box-h"><span>${rows.length} orders from the ${esc(f.ch)} payout report</span><span>${f.kind==='comm'?'Contract '+(CONTRACT[f.ch]*100).toFixed(0)+'%':'Approved promos: '+APPROVED_PROMOS.filter(p=>p.channel===f.ch).length}</span></div><div class="tbl-wrap" style="max-height:340px"><table><thead><tr><th>Order</th><th>Date</th><th class="n">Subtotal</th>${f.kind==='comm'?'<th class="n">Rate</th><th class="n">Over</th>':'<th>Promo</th><th class="n">You paid</th>'}</tr></thead><tbody>${rows.map(o=>`<tr class="flag"><td class="mono">${o.id}</td><td>${DOW[o.dow]} ${nice(o.date)}</td><td class="n">${money(o.subtotal,2)}</td>${f.kind==='comm'?`<td class="n">${(o.rate*100).toFixed(0)}%</td><td class="n">${money(o.subtotal*(o.rate-CONTRACT[o.channel]),2)}</td>`:`<td>${esc(o.promo)}</td><td class="n">${money(o.promoAmt,2)}</td>`}</tr>`).join('')}</tbody></table></div></div>`;
+    body+=`<div><div class="eyebrow" style="margin-bottom:8px">Ready to send</div><pre class="draft">${esc(draftFor(f))}</pre></div><p class="note">You submit this from your own merchant portal. ProfitShield prepares the evidence; it never files on your behalf.</p>`;
+    foot=`<button class="btn" data-copy>Copy dispute</button><button class="btn ghost" data-go2="payouts">Open in payouts</button>`;
+  }
+  if(f.kind==='err'){
+    const byDay={};f.errs.forEach(e=>{const k=DOW[e.dow];byDay[k]=(byDay[k]||0)+1});
+    body+=`<div class="box"><div class="box-h"><span>${f.errs.length} error charges this week</span><span>usually ~${Math.round(f.baseN)}</span></div><div class="tbl-wrap"><table><thead><tr><th>Charge</th><th>Order</th><th>When</th><th>Item</th><th class="n">Charged</th></tr></thead><tbody>${f.errs.map(e=>`<tr class="${(e.dow===4||e.dow===5)&&e.hour>=18&&e.hour<=20?'flag':''}"><td class="mono">${e.id}</td><td class="mono">${e.orderId}</td><td>${DOW[e.dow]} ${hh(e.hour)}</td><td>${e.sku&&MENU[e.sku]?esc(MENU[e.sku].name):e.item?esc(e.item):'Whole order'} <span class="pill mute">${esc(e.reason)}</span></td><td class="n">${money(e.amount,2)}</td></tr>`).join('')}</tbody></table></div></div>`;
+    body+=`<div class="callout"><b>Pattern</b><span>${esc(f.sub)} This looks like a packing problem during the dinner rush, not random bad luck.</span></div><div><div class="eyebrow" style="margin-bottom:8px">Fix for the team</div><pre class="draft">${esc(draftFor(f))}</pre></div>`;
+    foot=`<button class="btn" data-copy>Copy team note</button>`;
+  }
+  if(f.kind==='dup'){
+    body+=f.group.map(i=>`<div class="box"><div class="box-h"><span>${esc(i.vendor)} ${esc(i.id)} · ${nice(i.date)}</span><span>${esc(i.source)}</span></div><div class="tbl-wrap"><table><tbody>${i.lines.map(l=>`<tr><td class="mono" style="font-size:12px">${esc(l.desc)}</td><td class="n">${l.qty} ${l.unit}</td><td class="n">${money(l.total,2)}</td></tr>`).join('')}<tr><td><b>Total</b></td><td></td><td class="n"><b>${money(i.total,2)}</b></td></tr></tbody></table></div></div>`).join('');
+    body+=`<div><div class="eyebrow" style="margin-bottom:8px">Ready to send</div><pre class="draft">${esc(draftFor(f))}</pre></div>`;
+    foot=`<button class="btn" data-copy>Copy credit request</button>`;
+  }
+  const st=statusOf(f);foot+=st==='open'?`<button class="btn ghost" id="stBtn" data-s="${f.kind==='price'||f.kind==='err'?'resolved':'disputed'}">${f.kind==='price'||f.kind==='err'?'Mark handled':'Mark disputed'}</button>`:st==='disputed'?'<button class="btn ghost" id="stBtn" data-s="resolved">Credit received</button>':'<button class="btn ghost" id="stBtn" data-s="open">Reopen</button>';
+  openDrawer(STAT_PILL[st][0]+' · '+f.tags[0][1],f.title,body,foot);
+  const sb=$('#stBtn');if(sb)sb.onclick=()=>{setStatus(f,sb.dataset.s);closeDrawer();toast(sb.dataset.s==='resolved'?'Marked as recovered':sb.dataset.s==='disputed'?'Marked as in dispute':'Reopened')};
+  if(f.kind==='price'){const upd=()=>{const inc=+$('#simInc').value;$('#simIncV').textContent=money(inc,2);const ch=[...($('#simDel').checked?['DoorDash','Uber Eats','Grubhub']:[]),...($('#simStore').checked?['In-store']:[])];const d=simulate(f.affected.filter(k=>k!=='knots'),inc,ch);$('#simOut').innerHTML=chartHTML({type:'sim',data:d,noexec:true}).replace('class="minichart"','class="minichart" style="margin:0"');return{inc,ch,d}};
+    ['simInc','simDel','simStore'].forEach(id=>$('#'+id).oninput=upd);upd();
+    $('#planBtn').onclick=()=>{const {inc,ch,d}=upd();const items=f.affected.filter(k=>k!=='knots');const plan=`Menu price change plan · ${new Date().toLocaleDateString()}\n\n${items.map(k=>`${MENU[k].name}: ${money(MENU[k].price,2)} → ${money(MENU[k].price+inc,2)}`).join('\n')}\n\nWhere to apply:\n${ch.map(c=>c==='In-store'?'- Square POS: Items → edit price (or via Square Catalog API)':`- ${c}: Merchant portal → Menu → edit item price`).join('\n')}\n\nExpected: ${signed(d.extra_profit_per_week)} a week, assuming order volume holds.`;
+      openDrawer('Change plan','Raise '+items.map(k=>MENU[k].name.toLowerCase()).join(' and ')+' by '+money(inc,2),`<div class="callout"><b>${signed(d.extra_profit_per_week)} a week if volume holds</b><span>Covers ${Math.round(d.extra_profit_per_week/Math.max(1,d.price_increase_leak_per_week)*100)}% of the ${ING[f.g].name.toLowerCase()} increase.</span></div><pre class="draft">${esc(plan)}</pre><p class="note">Delivery apps only allow menu edits through their merchant portals or partner APIs, so ProfitShield gives you the exact changes for each one. With the Square connection, in-store prices can be pushed directly.</p>`,`<button class="btn" id="cpPlan">Copy plan</button>`);$('#cpPlan').onclick=()=>copyText(plan)}}
+  const cp=$('#dFoot [data-copy]');if(cp)cp.onclick=()=>copyText(draftFor(f));
+  const ak=$('#dFoot [data-ask]');if(ak)ak.onclick=()=>{closeDrawer();openAssist();ask(ak.dataset.ask)};
+  const g2=$('#dFoot [data-go2]');if(g2)g2.onclick=()=>{closeDrawer();PAYF=f.kind;go('payouts')};
+}
+function itemCost(k,P){return Object.entries(MENU[k].recipe).reduce((s,[g,q])=>s+q*P[g],0)}
+
+/* ============ payouts ============ */
+let PAYF='all';
+function renderPayouts(){
+  const rows=DB.orders.filter(o=>o.week===CUR&&o.channel!=='In-store');
+  const errBy={};DB.errors.filter(e=>e.week===CUR).forEach(e=>(errBy[e.orderId]=errBy[e.orderId]||[]).push(e));
+  const F={all:['All',rows],comm:['Rate above contract',rows.filter(o=>o.rate>CONTRACT[o.channel]+0.002)],promo:['Unapproved promo',rows.filter(o=>o.promo&&!isApproved(o))],err:['Error charges',rows.filter(o=>errBy[o.id])]};
+  CHANNELS.slice(0,3).forEach(c=>F['ch:'+c]=[c,rows.filter(o=>o.channel===c)]);
+  if(!F[PAYF])PAYF='all';
+  $('#payFilters').innerHTML=Object.entries(F).map(([k,[l,r]])=>`<button class="chip" aria-pressed="${k===PAYF}" data-k="${k}">${esc(l)}<span class="num">${r.length}</span></button>`).join('');
+  $$('#payFilters .chip').forEach(b=>b.onclick=()=>{PAYF=b.dataset.k;renderPayouts()});
+  const list=F[PAYF][1];
+  const net=o=>o.subtotal-o.subtotal*o.rate-o.promoAmt-(errBy[o.id]||[]).reduce((s,e)=>s+e.amount,0);
+  $('#payoutSub').textContent=`${rows.length} delivery orders, ${weekOf(CUR).label}. Net payout ${money(rows.reduce((s,o)=>s+net(o),0))}.`;
+  $('#payTable').innerHTML=`<thead><tr><th>Order</th><th>Channel</th><th>When</th><th>Items</th><th class="n">Subtotal</th><th class="n">Rate</th><th class="n">Commission</th><th class="n">Promo</th><th class="n">Error charge</th><th class="n">Net</th></tr></thead><tbody>${list.slice(0,400).map(o=>{const bad=o.rate>CONTRACT[o.channel]+0.002||(o.promo&&!isApproved(o))||errBy[o.id];const ec=(errBy[o.id]||[]).reduce((s,e)=>s+e.amount,0);return`<tr class="${bad?'flag':''}"><td class="mono">${o.id}</td><td>${o.channel}</td><td style="white-space:nowrap">${DOW[o.dow]} ${nice(o.date)} ${hh(o.hour)}</td><td style="min-width:200px">${esc(orderItems(o))}</td><td class="n">${money(o.subtotal,2)}</td><td class="n">${(o.rate*100).toFixed(0)}%</td><td class="n">${money(o.subtotal*o.rate,2)}</td><td class="n">${o.promoAmt?money(o.promoAmt,2):'–'}</td><td class="n">${ec?money(ec,2):'–'}</td><td class="n">${money(net(o),2)}</td></tr>`}).join('')}</tbody>`;
+}
+
+/* ============ invoices ============ */
+function renderInvoices(){
+  const dups=new Set(dupGroups().flatMap(g=>g.slice(1)));
+  const list=[...DB.invoices].sort((a,b)=>b.date.localeCompare(a.date));
+  $('#invTable').innerHTML=`<thead><tr><th>Invoice</th><th>Vendor</th><th>Date</th><th>Source</th><th class="n">Lines</th><th class="n">Total</th><th>Status</th></tr></thead><tbody>${list.map(i=>`<tr class="${dups.has(i)?'flag':''}"><td class="mono">${esc(i.id)}</td><td>${esc(i.vendor)}</td><td>${nice(i.date)}</td><td>${esc(i.source)}</td><td class="n">${i.lines.length}</td><td class="n">${money(i.total,2)}</td><td>${dups.has(i)?'<span class="pill neg">Duplicate</span>':i.ai?'<span class="pill warn">Read by AI</span>':'<span class="pill pos">Matched</span>'}</td></tr>`).join('')}</tbody>`;
+  const PT=A.PT;
+  $('#priceTable').innerHTML=`<thead><tr><th>Ingredient</th><th>Unit</th>${WEEKS.map(w=>`<th class="n">${w.label}</th>`).join('')}<th class="n">Change</th></tr></thead><tbody>${Object.keys(ING).map(g=>{const a=PT[prevOf(CUR)][g],b=PT[CUR][g];const ch=(b-a)/a;return`<tr class="${ch>.1?'flag':''}"><td>${esc(ING[g].name)}</td><td>${ING[g].unit}</td>${WEEKS.map(w=>`<td class="n">${money(PT[w.id][g],2)}</td>`).join('')}<td class="n">${Math.abs(ch)<.0005?'–':`<span class="pill ${ch>0?'neg':'pos'}">${pct(ch,0)}</span>`}</td></tr>`}).join('')}</tbody>`;
+}
+
+/* ============ margins ============ */
+function renderMargins(){
+  const rows=Object.entries(MENU).map(([k,v])=>{const a=itemCost(k,A.p.P),b=itemCost(k,A.c.P);const sold=DB.orders.filter(o=>o.week===CUR).reduce((s,o)=>s+o.items.filter(i=>i.sku===k).reduce((x,i)=>x+i.qty,0),0);return{k,v,a,b,m:1-b/v.price,dm:1-b/v.price-CONTRACT['DoorDash'],sold,delta:(b-a)*sold}}).sort((x,y)=>y.delta-x.delta);
+  $('#marginTable').innerHTML=`<thead><tr><th>Item</th><th class="n">Price</th><th class="n">Sold</th><th class="n">Food cost</th><th class="n">Change</th><th>Margin in store</th><th class="n">Margin on DoorDash</th><th class="n">Profit lost</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.delta>20?'flag':''}"><td>${esc(r.v.name)}${Math.abs(r.v.price-MENU_BASE[r.k])>.001?' <span class="pill pos">repriced</span>':''}</td><td class="n">${money(r.v.price,2)}</td><td class="n">${r.sold}</td><td class="n">${money(r.b,2)}</td><td class="n">${Math.abs(r.b-r.a)<.005?'–':signed(r.b-r.a,2)}</td><td><div class="bar-cell"><div class="mbar"><i style="width:${(r.m*100).toFixed(1)}%"></i></div><span class="num">${(r.m*100).toFixed(1)}%</span></div></td><td class="n">${(r.dm*100).toFixed(1)}%</td><td class="n">${r.delta>0.5?money(-r.delta):'–'}</td></tr>`).join('')}</tbody>`;
+}
+
+/* ============ sources ============ */
+function renderSources(){
+  const n=w=>DB.orders.filter(o=>o.week===w);
+  const S=[
+    ['DoorDash','Weekly payout report','Imports automatically from the merchant portal CSV. Fees, promos and error charges come line by line.',`${n(CUR).filter(o=>o.channel==='DoorDash').length} orders this week`,'pos','Synced'],
+    ['Uber Eats','Payout report','Same format mapping as DoorDash, learned once.',`${n(CUR).filter(o=>o.channel==='Uber Eats').length} orders this week`,'pos','Synced'],
+    ['Grubhub','Payout report','CSV upload or scheduled email.',`${n(CUR).filter(o=>o.channel==='Grubhub').length} orders this week`,'pos','Synced'],
+    ['Square POS','In-store sales','Connected through the POS API. Menu items and modifiers come along.',`${n(CUR).filter(o=>o.channel==='In-store').length} orders this week`,'pos','Live'],
+    ['Supplier invoices','Email inbox','Suppliers send PDFs to your ProfitShield address (example: invoices@forbes-slice.example). Sysco and US Foods formats are learned, so they parse without AI.',`${DB.invoices.filter(i=>i.week===CUR).length} invoices this week`,'pos','Auto'],
+    ['Paper receipts','Phone photo','Cash-and-carry runs and handwritten tickets. AI reads them once and asks you to confirm anything unsure.',`${DB.invoices.filter(i=>i.ai).length} added by photo`,'warn','Needs a tap']];
+  $('#srcGrid').innerHTML=S.map(([t,s,p,m,c,l])=>`<div class="src"><div class="src-top"><b>${esc(t)}</b><span class="pill ${c}">${esc(l)}</span></div><div class="eyebrow">${esc(s)}</div><p>${esc(p)}</p><div class="meta">${esc(m)}</div></div>`).join('');
+  renderImports();
+  $('#ladder').innerHTML=[['Automatic','~80%','Delivery reports and the POS arrive as data. No AI needed, no typing.'],['Learned formats','~15%','Invoices from known suppliers. AI read the first one; templates and item mappings handle the rest.'],['AI read','~4%','New formats and phone photos. A vision model extracts lines with a confidence score.'],['You confirm','~1%','Only low-confidence lines. One tap, and the mapping is remembered next time.']].map(([a,b,c])=>`<div class="rung"><div class="eyebrow">${a}</div><div class="num">${b}</div><p>${c}</p></div>`).join('');
+}
+
+/* imports + square */
+function renderImports(){
+  const T=$('#importTable');if(!T)return;
+  if(!BACKEND.on){T.innerHTML='';$('#csvNote').textContent='Run server.py to import real files.';$('#squareBox').innerHTML='<p class="note">Run server.py with SQUARE_ACCESS_TOKEN set to sync real in-store orders.</p>';return}
+  $('#csvNote').textContent='';
+  T.innerHTML=`<thead><tr><th>When</th><th>File or source</th><th>Format</th><th>Mapped by</th><th class="n">Rows</th><th class="n">New</th><th>Privacy</th></tr></thead><tbody>${BACKEND.imports.map(i=>`<tr><td style="white-space:nowrap">${esc((i.ts||'').replace('T',' ').slice(5,16))}</td><td class="mono" style="font-size:12px">${esc(i.file)}</td><td>${esc(i.format||'')}${i.channel?` · ${esc(i.channel)}`:''}</td><td><span class="pill ${i.mapped_by==='AI'?'warn':i.mapped_by==='rules'?'mute':'pos'}">${esc(i.mapped_by)}</span></td><td class="n">${i.rows}</td><td class="n">${i.new_rows}</td><td>${i.redacted?`<span class="pill pos">${i.redacted} fields removed</span>`:'<span class="note">none found</span>'}</td></tr>`).join('')}</tbody>`;
+  $('#squareBox').innerHTML=BACKEND.square?`<div class="row"><span class="pill pos">Connected</span><span class="note">In-store orders from Square land in the same books as delivery orders.</span></div><div class="row"><button class="btn sm" id="sqSync">Sync orders now</button><button class="btn ghost sm" id="sqSeed">Create 3 test orders in Square, then sync</button></div><div id="sqOut" class="note"></div>`
+    :`<div class="row"><span class="pill mute">Not connected</span></div><p class="note">Get a free sandbox access token at developer.squareup.com (Applications → Credentials → Sandbox), then restart with SQUARE_ACCESS_TOKEN set.</p>`;
+  const run=async path=>{$('#sqOut').textContent='Talking to Square…';try{const r=await fetch(path,{method:'POST'});const j=await r.json();if(j.error)throw new Error(j.error);$('#sqOut').textContent=`Pulled ${j.pulled} orders from ${j.location||'Square'}, ${j.new_rows} new.`;await loadBackend();recompute();go('sources')}catch(e){$('#sqOut').textContent='Square said: '+e.message}};
+  if($('#sqSync')){$('#sqSync').onclick=()=>run('/api/square/sync');$('#sqSeed').onclick=()=>run('/api/square/seed')}
+}
+async function importFiles(files){
+  if(!BACKEND.on){toast('Run server.py to import real files');return}
+  const out=[];$('#csvResult').innerHTML='<p class="pad typing" style="padding-top:0">Importing…</p>';
+  for(const f of files){try{const text=await f.text();const r=await fetch('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,filename:f.name})});const j=await r.json();if(j.error)throw new Error(j.error);out.push(`<div class="callout"><b>${esc(f.name)}</b><span>${esc(j.format)}${j.channel?' · '+esc(j.channel):''} · columns mapped by ${esc(j.mapped_by)} · ${j.new_rows} new rows, ${j.duplicates_skipped} already in your books${j.redacted?` · ${j.redacted} personal fields removed`:''}</span>${j.mapped_by!=='known format'?`<span class="mono note" style="font-size:12px">${esc(Object.entries(j.mapping).map(([k,v])=>v+' → '+k).join('   '))}</span>`:''}</div>`)}
+    catch(e){out.push(`<div class="callout"><b>${esc(f.name)}</b><span>Couldn't import: ${esc(e.message)}</span></div>`)}}
+  $('#csvResult').innerHTML=`<div class="pad" style="padding-top:0;display:grid;gap:10px">${out.join('')}</div>`;
+  await loadBackend();recompute();go('sources');
+}
+$('#csvFile').onchange=e=>{importFiles([...e.target.files]);e.target.value=''};
+const cdrop=$('#csvDrop');cdrop.addEventListener('dragover',e=>{e.preventDefault();cdrop.classList.add('over')});cdrop.addEventListener('dragleave',()=>cdrop.classList.remove('over'));cdrop.addEventListener('drop',e=>{e.preventDefault();cdrop.classList.remove('over');importFiles([...e.dataTransfer.files])});
+
+/* receipt upload */
+const SAMPLE={vendor:'Restaurant Depot',invoice_number:'RD-20261030-118',date:'2026-10-30',total:null,lines:[
+  {description:'GALBANI MOZZ WM LMPS 6LB',qty:12,unit:'lb',unit_price:5.95,total:71.40,ingredient:'mozz',confidence:.94},
+  {description:'BASIL FRESH 1LB CLAM',qty:16,unit:'oz',unit_price:.40,total:6.40,ingredient:'basil',confidence:.88},
+  {description:'ROMAINE HEARTS 3PK',qty:9,unit:'lb',unit_price:2.10,total:18.90,ingredient:'romaine',confidence:.81},
+  {description:'FOIL PAN 1/2 SIZE 30CT',qty:1,unit:'ea',unit_price:14.99,total:14.99,ingredient:null,confidence:.52}]};
+let PENDING=null;
+function showReview(x,viaAI){
+  PENDING={...x,lines:x.lines.map(l=>({...l}))};const showPage=PENDING.lines.some(l=>(l.page||1)>1)||/\.pdf$/i.test(PENDING.filename||'');
+  const opts=g=>`<option value="">Not food (supplies)</option>`+Object.keys(ING).map(k=>`<option value="${k}" ${k===g?'selected':''}>${esc(ING[k].name)} (${ING[k].unit})</option>`).join('');
+  $('#review').innerHTML=`<div class="pad" style="padding-top:0;display:grid;gap:12px"><div class="row" style="justify-content:space-between"><div><b>${esc(x.vendor||'Unknown vendor')}</b> <span class="mono note">${esc(x.invoice_number||'')} · ${esc(x.date||'no date')}</span></div><span class="pill ${viaAI?'warn':'mute'}">${viaAI?'Read by AI':'Sample, pre-read'}</span></div>
+  <div class="box"><div class="tbl-wrap"><table class="review"><thead><tr>${showPage?'<th class="n">Page</th>':''}<th>Line on receipt</th><th>Matches ingredient</th><th class="n">Qty</th><th class="n">Unit price</th><th class="n">Confidence</th></tr></thead><tbody>${PENDING.lines.map((l,i)=>`<tr>${showPage?`<td class="n">${l.page||1}</td>`:''}<td class="mono" style="font-size:12px;min-width:160px">${esc(l.description)}</td><td style="min-width:170px"><select id="rv-g-${i}" data-i="${i}" data-f="ingredient">${opts(l.ingredient)}</select></td><td class="n" style="min-width:80px"><input id="rv-q-${i}" data-i="${i}" data-f="qty" type="number" step="any" value="${l.qty}"></td><td class="n" style="min-width:90px"><input id="rv-p-${i}" data-i="${i}" data-f="unit_price" type="number" step="any" value="${l.unit_price}"></td><td class="n"><span class="pill ${l.confidence>=.8?'pos':'warn'}">${Math.round(l.confidence*100)}%</span></td></tr>`).join('')}</tbody></table></div></div>
+  <div class="row"><button class="btn" id="addBooks">Add to books</button><button class="btn ghost" id="cancelRv">Discard</button><span class="note">Lines under 80% confidence are worth a glance before adding.</span></div></div>`;
+  $$('#review [data-f]').forEach(el=>el.onchange=()=>{const l=PENDING.lines[+el.dataset.i];l[el.dataset.f]=el.dataset.f==='ingredient'?(el.value||null):+el.value});
+  $('#cancelRv').onclick=()=>{PENDING=null;$('#review').innerHTML=''};
+  $('#addBooks').onclick=()=>{
+    let d=PENDING.date&&WEEKS.find(w=>PENDING.date>=w.start&&PENDING.date<=ymd(addDays(pd(w.start),6)))?PENDING.date:ymd(addDays(pd(weekOf(CUR).start),4));
+    const wk=WEEKS.find(w=>d>=w.start&&d<=ymd(addDays(pd(w.start),6))).id;
+    const lines=PENDING.lines.map(l=>({desc:l.description,ing:l.ingredient,qty:+l.qty,unit:l.unit||(l.ingredient?ING[l.ingredient].unit:'ea'),unitPrice:+l.unit_price,total:+(+l.qty*+l.unit_price).toFixed(2)}));
+    if(BACKEND.on){const body={vendor:PENDING.vendor,invoice_number:PENDING.invoice_number,date:d,lines:PENDING.lines,filename:PENDING.filename||''};PENDING=null;$('#review').innerHTML='';
+      fetch('/api/invoices',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.json()).then(async j=>{if(j.error)throw new Error(j.error);await loadBackend();recompute();toast('Saved to your books. Prices, margins and the overview are updated.')}).catch(e=>toast('Couldn\'t save: '+e.message));return}
+    DB.invoices.push({id:PENDING.invoice_number||('PHOTO-'+Date.now().toString().slice(-5)),vendor:PENDING.vendor||'Unknown vendor',date:d,week:wk,source:'Receipt photo',ai:true,lines,total:+lines.reduce((s,l)=>s+l.total,0).toFixed(2)});
+    PENDING=null;$('#review').innerHTML='';recompute();toast('Added. Prices, margins and the overview are updated.');
+  };
+}
+$('#sampleBtn').onclick=e=>{e.preventDefault();e.stopPropagation();showReview(SAMPLE,false)};
+$('#file').onchange=e=>{const f=e.target.files[0];if(f)readReceipt(f);e.target.value=''};
+const drop=$('#drop');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over')});
+drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');const f=e.dataTransfer.files[0];if(f)readReceipt(f)});
+function readReceipt(file){
+  if(!AI.on){$('#review').innerHTML=`<div class="pad" style="padding-top:0"><div class="callout"><b>AI isn't connected in this preview</b><span>Run server.py with your OpenRouter key to read real photos. Meanwhile, the sample receipt shows the same flow.</span></div></div>`;return}
+  $('#review').innerHTML=`<div class="pad typing" style="padding-top:0">Reading ${esc(file.name)}${/\.pdf$/i.test(file.name)?', every page':''}…</div>`;
+  const fr=new FileReader();fr.onload=async()=>{try{
+    const r=await fetch('/api/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:fr.result,filename:file.name,ingredients:Object.entries(ING).map(([k,v])=>({key:k,name:v.name,unit:v.unit,desc:v.desc}))})});
+    const j=await r.json();if(!r.ok||j.error)throw new Error(j.error||r.statusText);j.filename=file.name;showReview(j,true)}catch(err){$('#review').innerHTML=`<div class="pad" style="padding-top:0"><div class="callout"><b>Couldn't read that file</b><span>${esc(err.message)}. Try a sharper photo or the sample receipt.</span></div></div>`}};
+  fr.readAsDataURL(file);
+}
+
+/* ============ simulation ============ */
+let LAST_SIM=null;
+function simulate(skus,inc,channels){LAST_SIM={skus,inc,channels};
+  const units={};DB.orders.filter(o=>o.week===CUR&&channels.includes(o.channel)).forEach(o=>o.items.forEach(i=>{if(skus.includes(i.sku))units[o.channel]=(units[o.channel]||0)+i.qty}));
+  const per={};Object.entries(units).forEach(([ch,u])=>per[ch]=u*inc*(1-CONTRACT[ch]));
+  const leak=-A.findings.filter(f=>f.kind==='price').reduce((s,f)=>s+f.impact,0);
+  return{items:skus.map(k=>MENU[k].name),increase_per_item:inc,channels,units_sold_last_week:units,extra_profit_per_week_by_channel:per,extra_profit_per_week:Object.values(per).reduce((a,b)=>a+b,0),price_increase_leak_per_week:leak,assumes:'same order volume as last week'};
+}
+function chartHTML(ch){
+  if(!ch)return'';
+  if(ch.type==='bridge'){const hl=new Set(ch.highlight||[]);const st=A.steps.filter(s=>!s.total);const mx=Math.max(...st.map(s=>Math.abs(s.value)),1);
+    return`<div class="minichart"><div class="mc-row"><span class="mc-l">Last week</span><span></span><span class="mc-v">${money(A.p.profit)}</span></div>${st.map(s=>`<div class="mc-row ${s.fid?'click':''}" ${s.fid?`data-f="${s.fid}"`:''} style="${hl.size&&!hl.has(s.fid)?'opacity:.38':''}"><span class="mc-l">${hl.has(s.fid)?'<b style="color:var(--ink)">':''}${esc(s.label)}${hl.has(s.fid)?'</b>':''}</span><span class="mc-track"><i style="left:${s.value<0?50-50*Math.abs(s.value)/mx:50}%;width:${50*Math.abs(s.value)/mx}%;background:${s.value<0?'var(--neg)':'var(--pos)'}"></i></span><span class="mc-v" style="color:${s.value<0?'var(--neg)':'var(--pos)'}">${signed(s.value)}</span></div>`).join('')}<div class="mc-row"><span class="mc-l"><b style="color:var(--ink)">This week</b></span><span></span><span class="mc-v"><b>${money(A.c.profit)}</b></span></div></div>`}
+  if(ch.type==='sim'){const d=ch.data;const net=d.extra_profit_per_week-d.price_increase_leak_per_week;
+    return`<div class="minichart"><div class="note">Raise ${esc(d.items.join(', '))} by ${money(d.increase_per_item,2)} on ${esc(d.channels.join(', '))}</div><div class="sim-out"><div><small>Recovered / week</small><b style="color:var(--pos)">${signed(d.extra_profit_per_week)}</b></div><div><small>Price leak / week</small><b style="color:var(--neg)">${money(-d.price_increase_leak_per_week)}</b></div><div><small>Net / week</small><b style="color:${net>=0?'var(--pos)':'var(--neg)'}">${signed(net)}</b></div></div><div class="row" style="justify-content:space-between"><span class="note">Assumes ${esc(d.assumes)}.</span>${ch.noexec?'':'<button class="btn sm" data-exec>Execute price increase</button>'}</div></div>`}
+  return'';
+}
+
+async function executeSim(){
+  if(!LAST_SIM){toast('Run a simulation first');return}
+  const {skus,inc,channels}=LAST_SIM;const changes=skus.map(k=>({sku:k,price:+(MENU[k].price+inc).toFixed(2)}));
+  let results;
+  if(BACKEND.on){try{const r=await fetch('/api/menu/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({changes,channels})});const j=await r.json();if(j.error)throw new Error(j.error);results=j.results;await loadBackend()}catch(e){toast('Couldn\'t apply: '+e.message);return}}
+  else{results=changes.map(c=>{const old=MENU[c.sku].price;MENU[c.sku].price=c.price;const pushed={};if(channels.includes('In-store'))pushed['Square POS']='not connected in this preview';['DoorDash','Uber Eats','Grubhub'].filter(x=>channels.includes(x)).forEach(x=>pushed[x]='change ready for merchant portal (menu API is partner-only)');return{sku:c.sku,item:MENU[c.sku].name,old_price:old,new_price:c.price,pushed}})}
+  recompute();
+  const txt=`Menu price changes · ${new Date().toLocaleDateString()}\n\n${results.map(r=>`${r.item}: ${money(r.old_price,2)} -> ${money(r.new_price,2)}`).join('\n')}\n\nUpload in each merchant portal (Menu > edit item price):\n${channels.filter(c=>c!=='In-store').map(c=>'- '+c).join('\n')||'- none'}`;
+  const body=`<div class="callout"><b>${results.length} items repriced</b><span>Margins across ProfitShield already reflect the new prices.</span></div><div class="box"><div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="n">Old</th><th class="n">New</th><th>Where it went</th></tr></thead><tbody>${results.map(r=>`<tr><td>${esc(r.item)}</td><td class="n">${money(r.old_price,2)}</td><td class="n">${money(r.new_price,2)}</td><td style="display:grid;gap:4px">${Object.entries(r.pushed).map(([k,v])=>`<span><span class="pill ${/via Catalog API/.test(v)?'pos':/failed|not connected/.test(v)?'mute':'warn'}">${esc(k)}</span> <span class="note">${esc(v)}</span></span>`).join('')}</td></tr>`).join('')}</tbody></table></div></div><pre class="draft">${esc(txt)}</pre><p class="note">DoorDash, Uber Eats and Grubhub only allow menu edits through their merchant portals or partner APIs. With partner access, these become direct API calls like the Square one.</p>`;
+  openDrawer('Executed','Price increase applied',body,'<button class="btn" id="cpExec">Copy delivery app changes</button>');$('#cpExec').onclick=()=>copyText(txt);
+}
+document.addEventListener('click',e=>{if(e.target.closest('[data-exec]')){e.preventDefault();executeSim()}});
+
+/* ============ Ask ============ */
+const AI={on:false,model:''};
+const SUGG=['Why did profit drop?','Am I being overcharged?','What should I fix first?','What if I raise pizza prices by $0.75?','Which item lost the most margin?','Did I pay any invoice twice?'];
+let HISTORY=[];
+function facts(){
+  const {c,p,findings,steps}=A;
+  const r=x=>Math.round(x*100)/100;
+  return{store:'Forbes Ave Slice Co., Pittsburgh PA',week_start:CUR,this_week:weekOf(CUR).label,last_week:weekOf(prevOf(CUR)).label,
+    summary:{gross_sales_this:r(c.gross),gross_sales_last:r(p.gross),profit_this:r(c.profit),profit_last:r(p.profit),orders_this:c.orders,orders_last:p.orders,food_cost_this:r(c.food),food_cost_last:r(p.food),note:'Profit is before labor and rent.'},
+    profit_bridge:steps.map(s=>({step:s.label,amount:r(s.value),finding:s.fid||null})),
+    findings:findings.map(f=>({id:f.id,title:f.title,weekly_impact:r(f.impact),yearly_if_unchanged:r(f.impact*52),detail:f.sub,kind:f.kind,suggested_action:{price:'Ask supplier for contract price, compare a second distributor, or raise delivery pizza prices about $0.75',comm:'Dispute in merchant portal with the order list ProfitShield prepared',promo:'Turn off the promotion and request a credit',err:'Drinks-first packing rule and a second bag check Fri–Sat 6–9pm',dup:'Request a credit from the supplier'}[f.kind]})),
+    menu_margins:Object.entries(MENU).map(([k,v])=>({item:v.name,price:v.price,food_cost_last:r(itemCost(k,p.P)),food_cost_this:r(itemCost(k,c.P)),margin_this_pct:r((1-itemCost(k,c.P)/v.price)*100)})),
+    channels:Object.entries(c.byCh).map(([ch,x])=>({channel:ch,orders:x.orders,gross:r(x.gross),contract_rate:CONTRACT[ch]})),
+    approved_promotions:APPROVED_PROMOS};
+}
+function renderMsg(role,text,cites,meta,chart,tools){
+  const el=document.createElement('div');el.className='msg '+role;
+  if(role==='me'){el.textContent=text}
+  else{const parts=esc(text).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').split(/\n{2,}/).map(t=>`<p>${t.replace(/\n/g,'<br>').replace(/\[(F\d+)\]/g,(m,id)=>`<button class="cite" data-f="${id}">${id}</button>`)}</p>`).join('');
+    const ids=[...new Set([...(cites||[]),...(text.match(/F\d+/g)||[])])].filter(id=>A.findings.some(f=>f.id===id));
+    el.innerHTML=parts+chartHTML(chart)+(ids.length&&!/\[F\d+\]/.test(text)?`<div class="src">${ids.map(id=>`<button class="cite" data-f="${id}">${id} · ${esc(A.findings.find(f=>f.id===id).title.slice(0,38))}${A.findings.find(f=>f.id===id).title.length>38?'…':''}</button>`).join('')}</div>`:'')+(tools&&tools.length?`<div class="tools">Tools used: ${tools.map(esc).join(' → ')}</div>`:'')+(meta?`<small>${esc(meta)}</small>`:'');
+    el.querySelectorAll('.mc-row[data-f]').forEach(b=>b.onclick=()=>openFinding(b.dataset.f));
+    el.querySelectorAll('.cite').forEach(b=>b.onclick=()=>openFinding(b.dataset.f))}
+  $('#msgs').appendChild(el);el.scrollIntoView({block:'end',behavior:'smooth'});return el;
+}
+function localAnswer(q){
+  const {c,p,findings,steps}=A;const t=q.toLowerCase();const F=k=>findings.filter(f=>f.kind===k);
+  const line=f=>`**${f.title}** (${signed(f.impact)} this week) [${f.id}]`;
+  if(/overcharg|commission|fee|rate/.test(t)){const x=F('comm');return x.length?`Yes. ${x.map(f=>`${f.title}, while your contract says ${(CONTRACT[f.ch]*100).toFixed(0)}%. That cost ${money(-f.impact,2)} this week [${f.id}].`).join(' ')}\n\nThe order list and a dispute note are ready in the evidence panel. You file it from your merchant portal.`:'No. Every delivery order this week was billed at your contract rate.'}
+  if(/twice|duplicate|double/.test(t)){const x=F('dup');return x.length?x.map(f=>`Yes. ${f.title}, so you paid ${money(-f.impact,2)} extra [${f.id}]. A credit request is drafted.`).join(' '):'No duplicate invoices this week.'}
+  if(/promo|discount|coupon/.test(t)){const x=F('promo');return x.length?x.map(f=>`${f.title}. It isn't in your approved promotions and cost you ${money(-f.impact,2)} [${f.id}].`).join(' '):'Only your approved promotions ran this week.'}
+  if(/margin|item|menu|dish/.test(t)){const rows=Object.entries(MENU).map(([k,v])=>({v,d:itemCost(k,c.P)-itemCost(k,p.P),m:1-itemCost(k,c.P)/v.price})).sort((a,b)=>b.d-a.d);const top=rows[0];const pf=F('price')[0];
+    return`${top.v.name} lost the most: food cost rose ${money(top.d,2)} per item, so margin is now ${(top.m*100).toFixed(1)}%. ${pf?`The cause is ${pf.title.toLowerCase()} [${pf.id}].`:''}\n\nOn DoorDash, after the ${(CONTRACT.DoorDash*100).toFixed(0)}% commission, it keeps ${((top.m-CONTRACT.DoorDash)*100).toFixed(1)}%.`}
+  if(/missing|refund|error|wrong/.test(t)){const x=F('err');return x.length?`${x[0].title}. ${x[0].sub} [${x[0].id}]\n\nA drinks-first packing rule and a second bag check on Friday and Saturday evenings should cover most of it.`:'Error charges are normal this week.'}
+  if(/fix|first|priorit|start|should i/.test(t)){if(!findings.length)return'Nothing urgent this week.';const ord=[...findings].sort((a,b)=>{const easy={comm:0,dup:0,promo:1,err:2,price:3};return easy[a.kind]-easy[b.kind]||a.impact-b.impact});
+    return`Start with the money you can get back this week, then the ongoing leaks:\n\n${ord.map((f,i)=>`${i+1}. ${line(f)}`).join('\n')}\n\nThe first ones take a few minutes each: the dispute and credit notes are already written.`}
+  if(/mozz|cheese|price|supplier|sysco|invoice/.test(t)){const x=F('price');return x.length?x.map(f=>`${f.title}: ${f.sub} That's ${money(-f.impact)} this week and about ${money(-f.impact*52)} a year if it holds [${f.id}]. A note asking ${ING[f.g].vendor} for a contract price is drafted.`).join('\n\n'):'No big price changes on your invoices this week.'}
+  if(!/why|drop|profit|down|less|lose|lost|happen|week|money|summary|overview/.test(t))return`Without the AI connected I can only answer a few kinds of questions: why profit changed, overcharges, promotions, duplicate invoices, missing-item charges, menu margins, what to fix first, and "what if I raise prices". With the AI on, ask anything about your orders, payouts and invoices.`;
+  const drops=steps.filter(s=>!s.total&&s.value<0).sort((a,b)=>a.value-b.value);const ups=steps.filter(s=>!s.total&&s.value>0);
+  return`Profit went from ${money(p.profit)} to ${money(c.profit)} (${signed(c.profit-p.profit)}), even though sales were ${signed(c.gross-p.gross)}.\n\n${ups.length?`Helping: ${ups.map(s=>`${s.label.toLowerCase()} ${signed(s.value)}`).join(', ')}.\n`:''}Hurting: ${drops.map(s=>`${s.label.toLowerCase()} ${signed(s.value)}${s.fid?` [${s.fid}]`:''}`).join(', ')}.\n\nMost of the drop is money you can recover or stop: overcharges, a promo you didn't approve and a double payment.`;
+}
+async function ask(q){
+  q=q.trim();if(!q)return;renderMsg('me',q);HISTORY.push({role:'user',content:q});
+  if(/^(execute|apply|do it|go ahead|ship it)/i.test(q)&&LAST_SIM){renderMsg('bot','Applying the price change you simulated. Square gets it through its API; the delivery apps get a ready-to-upload change list.',[],'');executeSim();return}
+  const wait=document.createElement('div');wait.className='typing';wait.textContent=AI.on?'Checking your records…':'Thinking…';$('#msgs').appendChild(wait);
+  let text,cites=[],meta='',chart=null,tools=[];
+  const local=()=>{const t=q.toLowerCase();if(/what if|raise|increase price|simulat|charge more/.test(t)){const pf=A.findings.find(f=>f.kind==='price');const skus=pf?pf.affected:['marg','pep'];const inc=+((t.match(/\$?(\d+(?:\.\d+)?)/)||[])[1]||0.75);const d=simulate(skus,inc>5?0.75:inc,['DoorDash','Uber Eats','Grubhub','In-store']);chart={type:'sim',data:d};return`Raising ${d.items.join(' and ').toLowerCase()} by ${money(d.increase_per_item,2)} everywhere would bring back about ${money(d.extra_profit_per_week)} a week after app commissions, against a ${money(d.price_increase_leak_per_week)} weekly hit from the price increase${pf?` [${pf.id}]`:''}.\n\nThis assumes order volume holds. Try a smaller increase on delivery only if you're worried about in-store regulars.`}
+    if(!/overcharg|commission|fee|twice|duplicate|promo|discount|margin|item|menu|missing|refund|error|fix|first|mozz|cheese|supplier|invoice/.test(t))chart={type:'bridge'};return localAnswer(q)};
+  if(AI.on){try{const pw=prevOf(CUR);const r=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,facts:facts(),history:HISTORY.slice(-6),week:BACKEND.on?CUR:null,prev_week:BACKEND.on?pw:null})});const j=await r.json();if(!r.ok||j.error)throw new Error(j.error);text=j.answer;cites=j.cites||[];tools=j.tools||[];chart=j.chart||null;meta=`Answered by ${AI.model}`}catch(e){text=local();meta='AI call failed: '+String(e.message||e).slice(0,220)+'. Showing the built-in answer instead.'}}
+  else{await new Promise(r=>setTimeout(r,350));text=local();meta=BACKEND.on?'AI is off: the server has no OPENROUTER_API_KEY. Set it in the same terminal and restart server.py.':'Preview mode: open http://localhost:8000 with server.py running for the AI agent.'}
+  if(chart&&chart.type==='sim'&&chart.data&&chart.data.items){const sk=chart.data.items.map(n=>Object.keys(MENU).find(k=>MENU[k].name===n)).filter(Boolean);LAST_SIM={skus:sk,inc:+chart.data.increase_per_item,channels:chart.data.channels}}
+  if(!chart){const ids=[...new Set([...(cites||[]),...((text||'').match(/F\d+/g)||[])])];chart={type:'bridge',highlight:ids}}
+  wait.remove();renderMsg('bot',text,cites,meta,chart,tools);HISTORY.push({role:'assistant',content:text});
+}
+$('#askForm').onsubmit=e=>{e.preventDefault();const v=$('#askInput').value;$('#askInput').value='';ask(v)};
+$('#sugg').innerHTML=SUGG.map(s=>`<button>${esc(s)}</button>`).join('');
+$$('#sugg button').forEach(b=>b.onclick=()=>ask(b.textContent));
+function greet(){$('#msgs').innerHTML='';renderMsg('bot',`I've checked ${A.c.orders.toLocaleString()} orders, every payout line and your supplier invoices for the week of ${weekOf(CUR).label}. ${A.findings.length?`The biggest leak is ${A.findings[0].title.charAt(0).toLowerCase()+A.findings[0].title.slice(1)} [${A.findings[0].id}].`:'Nothing unusual.'} Ask me anything, or try a suggestion below.`)}
+
+/* ============ routing ============ */
+const VIEWS=['overview','leaks','payouts','invoices','margins','sources'];
+const HEAD={overview:['Home',()=>`Forbes Ave Slice Co. · week of ${weekOf(CUR).label}`],leaks:['Money leaks',()=>'Everything that cost you money last week, with the evidence and the fix.'],payouts:['Payouts',()=>'Every delivery order, line by line, as the apps paid it.'],invoices:['Invoices',()=>'Supplier invoices and what you paid per ingredient.'],margins:['Menu & margins',()=>'What each dish really earns, in store and on delivery.'],sources:['Connections',()=>'Where your numbers come from.']};
+let VIEW='overview';
+function go(v){if(v==='ask'){openAssist();return}if(!VIEWS.includes(v))v='overview';VIEW=v;$$('.view').forEach(s=>s.classList.toggle('active',s.id==='v-'+v));$$('.nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===v?'page':'false'));
+  $('#pageTitle').textContent=HEAD[v][0];$('#pageSub').textContent=HEAD[v][1]();if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);
+  ({leaks:renderLeaks,payouts:renderPayouts,invoices:renderInvoices,margins:renderMargins,sources:renderSources}[v]||(()=>{}))();window.scrollTo(0,0)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go)}});
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h!==VIEW)go(h)});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();openAssist()}});
+$('#assistClose').onclick=closeAssist;
+function recompute(){A=analyze();renderWeekSeg();renderOverview();go(VIEW);if(!HISTORY.length)greet()}
+
+/* ============ boot ============ */
+async function loadBackend(){
+  const r=await fetch('/api/data',{cache:'no-store'});const d=await r.json();
+  if(!d.weeks||!d.weeks.length)throw new Error('no data yet');
+  WEEKS=d.weeks;DB={orders:d.orders,errors:d.errors,invoices:d.invoices};Object.keys(MENU).forEach(k=>MENU[k].price=(d.menu_prices&&d.menu_prices[k])?d.menu_prices[k].price:MENU_BASE[k]);BACKEND.imports=d.imports||[];BACKEND.square=!!(d.square&&d.square.configured);
+  if(!WEEKS.some(w=>w.id===CUR)){const counts=WEEKS.map(w=>DB.orders.filter(o=>o.week===w.id&&o.channel!=='In-store').length);const mx=Math.max(...counts);let i=counts.length-1;while(i>0&&counts[i]<mx*.5)i--;CUR=WEEKS[Math.max(1,i)].id}
+}
+(async function boot(){
+  let health=null;
+  try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),2500);const r=await fetch('/api/health',{signal:ctl.signal});health=await r.json()}catch(e){}
+  if(health&&health.backend){try{await loadBackend();BACKEND.on=true}catch(e){BACKEND.on=false}}
+  AI.on=!!(health&&health.ai);AI.model=(health&&health.model)||'';
+  const h0=location.hash.slice(1);VIEW=VIEWS.includes(h0)?h0:'overview';recompute();if(h0==='ask')openAssist();
+  $('#aiDot').classList.toggle('on',AI.on);$('#aiText').textContent=AI.on?`AI connected · ${AI.model}`:'AI offline · preview mode';
+  $('#dataText').textContent=BACKEND.on?`Live database · ${DB.orders.length.toLocaleString()} orders`:'Example data in this preview';
+})();
+</script>

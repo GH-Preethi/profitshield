@@ -1,0 +1,51 @@
+﻿Txn #,Customer Name,Customer Phone,When,Food+Bev $,GH cut,Promo $ (you),Promo desc,Adj $,Adj note,Adj item,Basket
+GH-49552,Sam Smith,(412) 604-1791,2026-10-26 17:20,4.50,0.81,0.00,,0.00,,,1x Soda (2 L)
+GH-49518,Jordan Nguyen,(412) 574-1950,2026-10-26 18:12,22.00,3.96,0.00,,0.00,,,1x Buffalo wings (10); 1x Garlic knots
+GH-49526,Grace Kim,(412) 238-2408,2026-10-26 19:00,33.00,5.94,0.00,,0.00,,,1x Buffalo wings (10); 1x Pepperoni pizza
+GH-49527,Lena Brown,(412) 271-4943,2026-10-26 19:13,15.00,2.70,0.00,,0.00,,,1x Buffalo wings (10)
+GH-49510,Jordan Brown,(412) 260-3028,2026-10-26 19:16,22.50,4.05,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza
+GH-49536,Chris Patel,(412) 790-7499,2026-10-26 20:19,7.00,1.26,0.00,,0.00,,,1x Garlic knots
+GH-49609,Maya Kim,(412) 247-3181,2026-10-27 11:50,9.00,1.62,0.00,,0.00,,,2x Soda (2 L)
+GH-49584,Alex Brown,(412) 347-9858,2026-10-27 13:04,31.00,5.58,0.00,,0.00,,,1x Margherita pizza; 1x Buffalo wings (10)
+GH-49612,Jordan Garcia,(412) 773-3961,2026-10-27 18:01,50.00,9.00,0.00,,0.00,,,2x Margherita pizza; 1x Pepperoni pizza
+GH-49590,Jordan Kim,(412) 581-2596,2026-10-27 18:09,25.00,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots
+GH-49617,Grace Nguyen,(412) 777-1976,2026-10-27 20:15,15.00,2.70,0.00,,0.00,,,1x Buffalo wings (10)
+GH-49619,Dev Kim,(412) 708-9711,2026-10-27 20:46,23.50,4.23,0.00,,0.00,,,1x Soda (2 L); 1x Caesar salad; 1x Tiramisu
+GH-49624,Lena Lee,(412) 676-8424,2026-10-28 11:34,15.00,2.70,0.00,,0.00,,,1x Buffalo wings (10)
+GH-49640,Sam Garcia,(412) 454-3945,2026-10-28 11:52,25.00,4.50,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots
+GH-49665,Chris Nguyen,(412) 788-5919,2026-10-28 12:56,11.50,2.07,0.00,,0.00,,,1x Garlic knots; 1x Soda (2 L)
+GH-49684,Grace Khan,(412) 551-8353,2026-10-28 18:09,18.00,3.24,0.00,,0.00,,,1x Pepperoni pizza
+GH-49632,Alex Nguyen,(412) 320-9387,2026-10-28 19:58,35.50,6.39,0.00,,0.00,,,1x Buffalo wings (10); 1x Margherita pizza; 1x Soda (2 L)
+GH-49636,Lena Smith,(412) 975-6604,2026-10-28 20:06,20.50,3.69,0.00,,0.00,,,1x Soda (2 L); 1x Margherita pizza
+GH-49641,Priya Khan,(412) 631-1642,2026-10-28 20:56,32.00,5.76,0.00,,0.00,,,2x Margherita pizza
+GH-49643,Jordan Lee,(412) 548-6737,2026-10-28 21:37,41.00,7.38,0.00,,0.00,,,1x Pepperoni pizza; 1x Garlic knots; 1x Margherita pizza
+GH-49703,Dev Khan,(412) 793-8474,2026-10-29 11:48,34.00,6.12,0.00,,0.00,,,1x Margherita pizza; 1x Pepperoni pizza
+GH-49720,Jordan Nguyen,(412) 476-8767,2026-10-29 17:15,36.00,6.48,0.00,,0.00,,,2x Pepperoni pizza
+GH-49722,Jordan Patel,(412) 948-6072,2026-10-29 18:12,22.50,4.05,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L)
+GH-49724,Dev Khan,(412) 491-7320,2026-10-29 18:44,22.50,4.05,0.00,,0.00,,,1x Pepperoni pizza; 1x Soda (2 L)
+GH-49725,Sam Patel,(412) 672-6823,2026-10-29 20:44,30.00,5.40,0.00,,0.00,,,2x Buffalo wings (10)
+GH-49756,Priya Nguyen,(412) 705-1965,2026-10-30 11:27,24.00,4.32,0.00,,0.00,,,1x Tiramisu; 1x Margherita pizza
+GH-49746,Chris Garcia,(412) 332-5056,2026-10-30 11:30,31.00,5.58,0.00,,0.00,,,1x Buffalo wings (10); 1x Margherita pizza
+GH-49762,Lena Brown,(412) 708-2320,2026-10-30 11:31,24.00,4.32,0.00,,0.00,,,1x Margherita pizza; 1x Tiramisu
+GH-49795,Priya Khan,(412) 611-5552,2026-10-30 11:43,14.00,2.52,0.00,,0.00,,,2x Garlic knots
+GH-49770,Priya Brown,(412) 763-5561,2026-10-30 12:53,11.00,1.98,0.00,,0.00,,,1x Caesar salad
+GH-49755,Lena Lee,(412) 899-7233,2026-10-30 13:18,19.50,3.51,0.00,,0.00,,,1x Soda (2 L); 1x Buffalo wings (10)
+GH-49759,Chris Smith,(412) 284-3887,2026-10-30 13:22,30.00,5.40,0.00,,0.00,,,2x Garlic knots; 1x Margherita pizza
+GH-49794,Priya Kim,(412) 874-4822,2026-10-30 17:43,20.50,3.69,0.00,,0.00,,,1x Margherita pizza; 1x Soda (2 L)
+GH-49793,Maya Khan,(412) 803-3987,2026-10-30 20:54,40.00,7.20,0.00,,0.00,,,1x Garlic knots; 1x Pepperoni pizza; 1x Buffalo wings (10)
+GH-49775,Alex Garcia,(412) 204-3386,2026-10-30 22:05,26.00,4.68,0.00,,0.00,,,1x Buffalo wings (10); 1x Caesar salad
+GH-49861,Lena Lee,(412) 824-6220,2026-10-31 12:11,50.00,9.00,0.00,,0.00,,,1x Pepperoni pizza; 2x Margherita pizza
+GH-49903,Priya Patel,(412) 667-7428,2026-10-31 12:11,36.00,6.48,0.00,,0.00,,,2x Pepperoni pizza
+GH-49819,Lena Brown,(412) 603-2696,2026-10-31 12:31,22.50,4.05,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza
+GH-49909,Omar Brown,(412) 263-4122,2026-10-31 12:39,15.00,2.70,0.00,,0.00,,,1x Buffalo wings (10)
+GH-49896,Jordan Kim,(412) 651-3659,2026-10-31 17:34,51.00,9.18,0.00,,0.00,,,2x Pepperoni pizza; 1x Buffalo wings (10)
+GH-49830,Jordan Lee,(412) 815-1861,2026-10-31 18:01,18.50,3.33,0.00,,0.00,,,1x Soda (2 L); 2x Garlic knots
+GH-49883,Jordan Patel,(412) 780-3478,2026-10-31 18:02,7.00,1.26,0.00,,0.00,,,1x Garlic knots
+GH-49856,Grace Nguyen,(412) 572-1417,2026-10-31 20:53,18.00,3.24,0.00,,0.00,,,1x Pepperoni pizza
+GH-49952,Jordan Kim,(412) 828-7164,2026-11-01 11:12,36.00,6.48,0.00,,0.00,,,2x Pepperoni pizza
+GH-49916,Priya Garcia,(412) 555-6966,2026-11-01 12:01,22.00,3.96,0.00,,0.00,,,1x Buffalo wings (10); 1x Garlic knots
+GH-49917,Omar Nguyen,(412) 318-8996,2026-11-01 13:18,22.50,4.05,0.00,,0.00,,,1x Soda (2 L); 1x Pepperoni pizza
+GH-49910,Omar Khan,(412) 695-6109,2026-11-01 13:44,33.00,5.94,0.00,,0.00,,,1x Pepperoni pizza; 1x Buffalo wings (10)
+GH-49940,Jordan Smith,(412) 304-6613,2026-11-01 18:13,48.00,8.64,0.00,,0.00,,,1x Pepperoni pizza; 2x Buffalo wings (10)
+GH-49957,Alex Khan,(412) 908-3645,2026-11-01 19:02,7.00,1.26,0.00,,0.00,,,1x Garlic knots
+GH-49942,Grace Patel,(412) 410-9654,2026-11-01 19:07,27.00,4.86,0.00,,0.00,,,1x Caesar salad; 1x Margherita pizza
