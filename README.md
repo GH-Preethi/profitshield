@@ -104,5 +104,18 @@ python3 -m unittest discover -s tests -v
 node --test tests/js/*.test.cjs
 ```
 
-See [tests/README.md](tests/README.md) for isolated fixtures, audit baselines,
-mocked integrations, calculation-test boundaries, CI and known limitations.
+Tests cover production environment overrides, runtime endpoint tampering,
+redirect denial, direct mutation guards, exact confirmation, stale/expired plans,
+changed connection/catalog/location/data, replay, concurrent submissions,
+restart/crash persistence, unknown outcomes, missing-item creation and seed
+idempotency. Browser checks exercise all six views, read-only review, typed
+confirmation, stale simulations and repeated clicks/chat without duplicate writes.
+No production credentials or real Square/AI calls are used.
+
+## Contributing and development workflow
+
+`development` is the integration branch. Start a dedicated task branch from its
+latest state and target `development` in the PR; never commit directly to `main`
+or merge/deploy automatically. See [AGENTS.md](AGENTS.md) and
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for workflow, product constraints, CI,
+verification and migration/recovery conventions. Use the pull request template.
