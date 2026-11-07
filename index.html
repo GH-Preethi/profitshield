@@ -794,7 +794,7 @@ function openFinding(id){
     const marg=itemCost('marg',A.c.P);
     body+=`<div class="callout"><b>Options</b><span>Ask ${esc(ING[f.g].vendor)} for a contract price, compare a second distributor, or raise delivery prices on pizzas by $0.75, which covers the increase on about ${Math.round(A.c.Q[f.g]/.375)} pizzas a week.</span></div>`;
     body+=`<div class="box"><div class="box-h"><span>Simulate a fix</span><span>Based on this week's sales</span></div><div class="pad sim" style="padding:14px"><div class="sim-in"><label for="simInc">Raise by <b class="num" id="simIncV">$0.75</b></label><input type="range" id="simInc" min="0.25" max="2" step="0.25" value="0.75"><label><input type="checkbox" id="simDel" checked> Delivery apps</label><label><input type="checkbox" id="simStore"> In-store</label></div><div id="simOut"></div></div></div>`;
-    foot=`<button class="btn" data-exec>Execute price increase</button><button class="btn ghost" id="planBtn">Change plan</button><button class="btn ghost" data-copy>Copy note to supplier</button><button class="btn ghost" data-ask="What should I do about the ${esc(ING[f.g].name.toLowerCase())} price increase?">Ask what to do</button>`;
+    foot=`<button class="btn" data-review-sim>Review sandbox changes</button><button class="btn ghost" id="planBtn">Change plan</button><button class="btn ghost" data-copy>Copy note to supplier</button><button class="btn ghost" data-ask="What should I do about the ${esc(ING[f.g].name.toLowerCase())} price increase?">Ask what to do</button>`;
   }
   if(f.kind==='comm'||f.kind==='promo'){
     const rows=f.orders;
@@ -818,6 +818,7 @@ function openFinding(id){
   const sb=$('#stBtn');if(sb)sb.onclick=()=>{setStatus(f,sb.dataset.s);closeDrawer();toast(sb.dataset.s==='resolved'?'Marked as recovered':sb.dataset.s==='disputed'?'Marked as in dispute':'Reopened')};
   if(f.kind==='price'){const upd=()=>{const inc=+$('#simInc').value;$('#simIncV').textContent=money(inc,2);const ch=[...($('#simDel').checked?['DoorDash','Uber Eats','Grubhub']:[]),...($('#simStore').checked?['In-store']:[])];const d=simulate(f.affected.filter(k=>k!=='knots'),inc,ch);$('#simOut').innerHTML=chartHTML({type:'sim',data:d,noexec:true}).replace('class="minichart"','class="minichart" style="margin:0"');return{inc,ch,d}};
     ['simInc','simDel','simStore'].forEach(id=>$('#'+id).oninput=upd);upd();
+    const reviewButton=$('#dFoot [data-review-sim]');reviewButton.onclick=()=>reviewSimulation(reviewButton,simulationSpec(upd().d));
     $('#planBtn').onclick=()=>{const {inc,ch,d}=upd();const items=f.affected.filter(k=>k!=='knots');const plan=`Menu price change plan · ${new Date().toLocaleDateString()}\n\n${items.map(k=>`${MENU[k].name}: ${money(MENU[k].price,2)} → ${money(MENU[k].price+inc,2)}`).join('\n')}\n\nWhere to apply:\n${ch.map(c=>c==='In-store'?'- Square POS: Items → edit price (or via Square Catalog API)':`- ${c}: Merchant portal → Menu → edit item price`).join('\n')}\n\nExpected: ${signed(d.extra_profit_per_week)} a week, assuming order volume holds.`;
       openDrawer('Change plan','Raise '+items.map(k=>MENU[k].name.toLowerCase()).join(' and ')+' by '+money(inc,2),`<div class="callout"><b>${signed(d.extra_profit_per_week)} a week if volume holds</b><span>Covers ${Math.round(d.extra_profit_per_week/Math.max(1,d.price_increase_leak_per_week)*100)}% of the ${ING[f.g].name.toLowerCase()} increase.</span></div><pre class="draft">${esc(plan)}</pre><p class="note">Delivery apps only allow menu edits through their merchant portals or partner APIs, so ProfitShield gives you the exact changes for each one. With the Square connection, in-store prices can be pushed directly.</p>`,`<button class="btn" id="cpPlan">Copy plan</button>`);$('#cpPlan').onclick=()=>copyText(plan)}}
   const cp=$('#dFoot [data-copy]');if(cp)cp.onclick=()=>copyText(draftFor(f));
@@ -864,7 +865,7 @@ function renderSources(){
     ['DoorDash','Weekly payout report','Imports automatically from the merchant portal CSV. Fees, promos and error charges come line by line.',`${n(CUR).filter(o=>o.channel==='DoorDash').length} orders this week`,'pos','Synced'],
     ['Uber Eats','Payout report','Same format mapping as DoorDash, learned once.',`${n(CUR).filter(o=>o.channel==='Uber Eats').length} orders this week`,'pos','Synced'],
     ['Grubhub','Payout report','CSV upload or scheduled email.',`${n(CUR).filter(o=>o.channel==='Grubhub').length} orders this week`,'pos','Synced'],
-    ['Square POS','In-store sales','Connected through the POS API. Menu items and modifiers come along.',`${n(CUR).filter(o=>o.channel==='In-store').length} orders this week`,'pos','Live'],
+    ['Square sandbox POS','In-store test sales','Sandbox only. Menu items and modifiers come along.',`${n(CUR).filter(o=>o.channel==='In-store').length} orders this week`,'pos','Live'],
     ['Supplier invoices','Email inbox','Suppliers send PDFs to your ProfitShield address (example: invoices@forbes-slice.example). Sysco and US Foods formats are learned, so they parse without AI.',`${DB.invoices.filter(i=>i.week===CUR).length} invoices this week`,'pos','Auto'],
     ['Paper receipts','Phone photo','Cash-and-carry runs and handwritten tickets. AI reads them once and asks you to confirm anything unsure.',`${DB.invoices.filter(i=>i.ai).length} added by photo`,'warn','Needs a tap']];
   $('#srcGrid').innerHTML=S.map(([t,s,p,m,c,l])=>`<div class="src"><div class="src-top"><b>${esc(t)}</b><span class="pill ${c}">${esc(l)}</span></div><div class="eyebrow">${esc(s)}</div><p>${esc(p)}</p><div class="meta">${esc(m)}</div></div>`).join('');
@@ -878,10 +879,10 @@ function renderImports(){
   if(!BACKEND.on){T.innerHTML='';$('#csvNote').textContent='Run server.py to import real files.';$('#squareBox').innerHTML='<p class="note">Run server.py with SQUARE_ACCESS_TOKEN set to sync real in-store orders.</p>';return}
   $('#csvNote').textContent='';
   T.innerHTML=`<thead><tr><th>When</th><th>File or source</th><th>Format</th><th>Mapped by</th><th class="n">Rows</th><th class="n">New</th><th>Privacy</th></tr></thead><tbody>${BACKEND.imports.map(i=>`<tr><td style="white-space:nowrap">${esc((i.ts||'').replace('T',' ').slice(5,16))}</td><td class="mono" style="font-size:12px">${esc(i.file)}</td><td>${esc(i.format||'')}${i.channel?` · ${esc(i.channel)}`:''}</td><td><span class="pill ${i.mapped_by==='AI'?'warn':i.mapped_by==='rules'?'mute':'pos'}">${esc(i.mapped_by)}</span></td><td class="n">${i.rows}</td><td class="n">${i.new_rows}</td><td>${i.redacted?`<span class="pill pos">${i.redacted} fields removed</span>`:'<span class="note">none found</span>'}</td></tr>`).join('')}</tbody>`;
-  $('#squareBox').innerHTML=BACKEND.square?`<div class="row"><span class="pill pos">Connected</span><span class="note">In-store orders from Square land in the same books as delivery orders.</span></div><div class="row"><button class="btn sm" id="sqSync">Sync orders now</button><button class="btn ghost sm" id="sqSeed">Create 3 test orders in Square, then sync</button></div><div id="sqOut" class="note"></div>`
+  $('#squareBox').innerHTML=BACKEND.square?`<div class="row"><span class="pill pos">Sandbox connected</span><span class="note">Sandbox in-store orders from Square land in the same books as delivery orders.</span></div><div class="row"><button class="btn sm" id="sqSync">Sync orders now</button><button class="btn ghost sm" id="sqSeed">Review 3 sandbox test orders</button></div><div id="sqOut" class="note"></div>`
     :`<div class="row"><span class="pill mute">Not connected</span></div><p class="note">Get a free sandbox access token at developer.squareup.com (Applications → Credentials → Sandbox), then restart with SQUARE_ACCESS_TOKEN set.</p>`;
-  const run=async path=>{$('#sqOut').textContent='Talking to Square…';try{const r=await apiFetch(path,{method:'POST'});const j=await r.json();if(j.error)throw new Error(j.error);$('#sqOut').textContent=`Pulled ${j.pulled} orders from ${j.location||'Square'}, ${j.new_rows} new.`;await loadBackend();recompute();go('sources')}catch(e){$('#sqOut').textContent='Square said: '+e.message}};
-  if($('#sqSync')){$('#sqSync').onclick=()=>run('/api/square/sync');$('#sqSeed').onclick=()=>run('/api/square/seed')}
+  const run=async path=>{$('#sqOut').textContent='Talking to Square…';try{const r=await fetch(path,{method:'POST'});const j=await r.json();if(j.error)throw new Error(j.error);$('#sqOut').textContent=`Pulled ${j.pulled} orders from ${j.location||'Square'}, ${j.new_rows} new.`;await loadBackend();recompute();go('sources')}catch(e){$('#sqOut').textContent='Square said: '+e.message}};
+  if($('#sqSync')){$('#sqSync').onclick=()=>run('/api/square/sync');$('#sqSeed').onclick=()=>reviewSeed($('#sqSeed'))}
 }
 async function importFiles(files){
   if(!BACKEND.on){toast('Run server.py to import real files');return}
@@ -936,8 +937,11 @@ function readReceipt(file){
 }
 
 /* ============ simulation ============ */
-let LAST_SIM=null;
-function simulate(skus,inc,channels){LAST_SIM={skus,inc,channels};
+function simulationSpec(data,week=CUR,prices=Object.fromEntries(Object.entries(MENU).map(([k,v])=>[k,v.price]))){
+  const skus=data.items.map(name=>Object.keys(MENU).find(k=>MENU[k].name===name)).filter(Boolean);
+  return {week,channels:[...data.channels],changes:skus.map(sku=>({sku,old_price:prices[sku],price:+(prices[sku]+data.increase_per_item).toFixed(2)}))};
+}
+function simulate(skus,inc,channels){
   const units={};DB.orders.filter(o=>o.week===CUR&&channels.includes(o.channel)).forEach(o=>o.items.forEach(i=>{if(skus.includes(i.sku))units[o.channel]=(units[o.channel]||0)+i.qty}));
   const per={};Object.entries(units).forEach(([ch,u])=>per[ch]=u*inc*(1-CONTRACT[ch]));
   const leak=-A.findings.filter(f=>f.kind==='price').reduce((s,f)=>s+f.impact,0);
@@ -948,22 +952,49 @@ function chartHTML(ch){
   if(ch.type==='bridge'){const hl=new Set(ch.highlight||[]);const st=A.steps.filter(s=>!s.total);const mx=Math.max(...st.map(s=>Math.abs(s.value)),1);
     return`<div class="minichart"><div class="mc-row"><span class="mc-l">Last week</span><span></span><span class="mc-v">${money(A.p.profit)}</span></div>${st.map(s=>`<div class="mc-row ${s.fid?'click':''}" ${s.fid?`data-f="${s.fid}"`:''} style="${hl.size&&!hl.has(s.fid)?'opacity:.38':''}"><span class="mc-l">${hl.has(s.fid)?'<b style="color:var(--ink)">':''}${esc(s.label)}${hl.has(s.fid)?'</b>':''}</span><span class="mc-track"><i style="left:${s.value<0?50-50*Math.abs(s.value)/mx:50}%;width:${50*Math.abs(s.value)/mx}%;background:${s.value<0?'var(--neg)':'var(--pos)'}"></i></span><span class="mc-v" style="color:${s.value<0?'var(--neg)':'var(--pos)'}">${signed(s.value)}</span></div>`).join('')}<div class="mc-row"><span class="mc-l"><b style="color:var(--ink)">This week</b></span><span></span><span class="mc-v"><b>${money(A.c.profit)}</b></span></div></div>`}
   if(ch.type==='sim'){const d=ch.data;const net=d.extra_profit_per_week-d.price_increase_leak_per_week;
-    return`<div class="minichart"><div class="note">Raise ${esc(d.items.join(', '))} by ${money(d.increase_per_item,2)} on ${esc(d.channels.join(', '))}</div><div class="sim-out"><div><small>Recovered / week</small><b style="color:var(--pos)">${signed(d.extra_profit_per_week)}</b></div><div><small>Price leak / week</small><b style="color:var(--neg)">${money(-d.price_increase_leak_per_week)}</b></div><div><small>Net / week</small><b style="color:${net>=0?'var(--pos)':'var(--neg)'}">${signed(net)}</b></div></div><div class="row" style="justify-content:space-between"><span class="note">Assumes ${esc(d.assumes)}.</span>${ch.noexec?'':'<button class="btn sm" data-exec>Execute price increase</button>'}</div></div>`}
+    return`<div class="minichart"><div class="note">Raise ${esc(d.items.join(', '))} by ${money(d.increase_per_item,2)} on ${esc(d.channels.join(', '))}</div><div class="sim-out"><div><small>Recovered / week</small><b style="color:var(--pos)">${signed(d.extra_profit_per_week)}</b></div><div><small>Price leak / week</small><b style="color:var(--neg)">${money(-d.price_increase_leak_per_week)}</b></div><div><small>Net / week</small><b style="color:${net>=0?'var(--pos)':'var(--neg)'}">${signed(net)}</b></div></div><div class="row" style="justify-content:space-between"><span class="note">Assumes ${esc(d.assumes)}.</span>${ch.noexec?'':'<button class="btn sm" data-review-sim>Review sandbox changes</button>'}</div></div>`}
   return'';
 }
 
-async function executeSim(){
-  if(!LAST_SIM){toast('Run a simulation first');return}
-  const {skus,inc,channels}=LAST_SIM;const changes=skus.map(k=>({sku:k,price:+(MENU[k].price+inc).toFixed(2)}));
-  let results;
-  if(BACKEND.on){try{const r=await apiFetch('/api/menu/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({changes,channels})});const j=await r.json();if(j.error)throw new Error(j.error);results=j.results;await loadBackend()}catch(e){toast('Couldn\'t apply: '+e.message);return}}
-  else{results=changes.map(c=>{const old=MENU[c.sku].price;MENU[c.sku].price=c.price;const pushed={};if(channels.includes('In-store'))pushed['Square POS']='not connected in this preview';['DoorDash','Uber Eats','Grubhub'].filter(x=>channels.includes(x)).forEach(x=>pushed[x]='change ready for merchant portal (menu API is partner-only)');return{sku:c.sku,item:MENU[c.sku].name,old_price:old,new_price:c.price,pushed}})}
-  recompute();
-  const txt=`Menu price changes · ${new Date().toLocaleDateString()}\n\n${results.map(r=>`${r.item}: ${money(r.old_price,2)} -> ${money(r.new_price,2)}`).join('\n')}\n\nUpload in each merchant portal (Menu > edit item price):\n${channels.filter(c=>c!=='In-store').map(c=>'- '+c).join('\n')||'- none'}`;
-  const body=`<div class="callout"><b>${results.length} items repriced</b><span>Margins across ProfitShield already reflect the new prices.</span></div><div class="box"><div class="tbl-wrap"><table><thead><tr><th>Item</th><th class="n">Old</th><th class="n">New</th><th>Where it went</th></tr></thead><tbody>${results.map(r=>`<tr><td>${esc(r.item)}</td><td class="n">${money(r.old_price,2)}</td><td class="n">${money(r.new_price,2)}</td><td style="display:grid;gap:4px">${Object.entries(r.pushed).map(([k,v])=>`<span><span class="pill ${/via Catalog API/.test(v)?'pos':/failed|not connected/.test(v)?'mute':'warn'}">${esc(k)}</span> <span class="note">${esc(v)}</span></span>`).join('')}</td></tr>`).join('')}</tbody></table></div></div><pre class="draft">${esc(txt)}</pre><p class="note">DoorDash, Uber Eats and Grubhub only allow menu edits through their merchant portals or partner APIs. With partner access, these become direct API calls like the Square one.</p>`;
-  openDrawer('Executed','Price increase applied',body,'<button class="btn" id="cpExec">Copy delivery app changes</button>');$('#cpExec').onclick=()=>copyText(txt);
+async function actionPost(path,payload){
+  const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Request failed');return data;
 }
-document.addEventListener('click',e=>{if(e.target.closest('[data-exec]')){e.preventDefault();executeSim()}});
+function showActionReview(plan){
+  const review=plan.review;
+  const details=plan.kind==='menu'?`<div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Local reference</th><th>Sandbox now</th><th>Proposed</th></tr></thead><tbody>${review.changes.map(c=>`<tr><td>${esc(c.item)}<br><small>${esc(c.target.mode==='update'?c.target.variation.id:c.target.mode)}</small></td><td>${money(c.old_price,2)}</td><td>${c.target.mode==='update'?money(c.target.variation.item_variation_data.price_money.amount/100,2):esc(c.target.mode==='create'?'Create new sandbox item':'No Square connection/write')}</td><td>${money(c.new_price,2)}</td></tr>`).join('')}</tbody></table></div><p>Channels: ${esc(review.channels.join(', '))}. Week: ${esc(review.week)}.</p>`:
+    `<p>Location: ${esc(review.location.name)} (${esc(review.location.id)})</p><ol>${review.baskets.map(b=>`<li>${b.map(([sku,q])=>esc(q+' × '+MENU[sku].name+' @ ')+money(review.unit_prices[sku]/100,2)).join(', ')}</li>`).join('')}</ol>`;
+  openDrawer('Sandbox only · review required','Confirm '+(plan.kind==='menu'?'price changes':'3 test orders'),
+    `<div class="callout"><b>Review the exact changes before confirming</b><span>${esc(review.notice)}</span></div>${details}<p>Plan expires ${esc(new Date(plan.expires_at*1000).toLocaleTimeString())}. This plan can be submitted once, including when a request fails.</p><label for="actionPhrase">Type <b>${esc(plan.confirmation)}</b> to confirm</label><input id="actionPhrase" autocomplete="off" aria-label="Confirmation phrase"><p id="actionResult" role="status"></p>`,
+    '<button class="btn" id="confirmAction" disabled>Confirm sandbox operation</button><button class="btn ghost" id="cancelAction">Cancel</button>');
+  const phrase=$('#actionPhrase'),button=$('#confirmAction'),result=$('#actionResult');let submitted=false;
+  phrase.oninput=()=>button.disabled=submitted||phrase.value!==plan.confirmation;
+  $('#cancelAction').onclick=closeDrawer;
+  button.onclick=async()=>{
+    if(submitted||phrase.value!==plan.confirmation)return;
+    if(plan.kind==='menu'&&CUR!==review.week){result.textContent='Week changed. Simulate and review again.';button.disabled=true;return}
+    submitted=true;button.disabled=true;phrase.disabled=true;result.textContent='Submitting this one-use sandbox plan…';
+    try{
+      const payload={plan_id:plan.plan_id,confirmation:phrase.value};if(plan.kind==='menu')payload.week=CUR;
+      const done=await actionPost(plan.kind==='menu'?'/api/menu/apply':'/api/square/seed',payload);
+      result.textContent='Review plan completed. Sandbox results are listed below; delivery menus require manual edits. Repeated submission is blocked.';
+      const pre=document.createElement('pre');pre.className='draft';pre.textContent=JSON.stringify(done,null,2);result.after(pre);
+      await loadBackend();recompute();
+    }catch(error){result.textContent='Not retried: '+error.message+'. Inspect the sandbox before reviewing another plan.'}
+  };
+}
+async function reviewSimulation(button,spec){
+  if(button.disabled)return;
+  if(!BACKEND.on){toast('Start the backend to review a sandbox operation.');return}
+  if(spec.week!==CUR||spec.changes.some(c=>MENU[c.sku].price!==c.old_price)){toast('Simulation is stale. Run a new simulation.');return}
+  button.disabled=true;button.textContent='Review requested; simulate again for another plan';
+  try{showActionReview(await actionPost('/api/menu/preview',spec))}catch(error){toast(error.message)}
+}
+async function reviewSeed(button){
+  if(button.disabled)return;button.disabled=true;
+  try{showActionReview(await actionPost('/api/square/seed/preview',{}))}catch(error){toast(error.message)}
+  finally{button.disabled=false}
+}
 
 /* ============ agents ============ */
 const AGENTS=[
@@ -971,7 +1002,7 @@ const AGENTS=[
   {k:'audit',icon:'i-bell',name:'Audit agent',where:'Runs in the background after new data lands',desc:'Checks every order against your contract rates and approved promotions, compares supplier prices week over week, catches duplicate invoices and error-charge spikes, then raises alerts.'},
   {k:'guru',icon:'i-spark',name:'Guru',where:'Ask ProfitShield, on every page',desc:'Answers plain-language questions by choosing which tools to run: profit bridge, commission check, promo finder, price-change finder, margins. Every number comes from code and links to its rows.'},
   {k:'sim',icon:'i-trend',name:'Simulation agent',where:'Inside each leak and in chat',desc:'Tests fixes before you make them, like raising pizza prices on delivery only, and shows the weekly profit each option brings back.'},
-  {k:'exec',icon:'i-check',name:'Execution agent',where:'After you approve a change',desc:'Pushes approved price changes to your POS through the Square API and prepares the exact edits for each delivery app portal.'},
+  {k:'exec',icon:'i-check',name:'Execution agent',where:'After you approve a change',desc:'Requires a specific review and typed confirmation, writes only to Square sandbox, and prepares manual delivery-portal edits.'},
   {k:'dispute',icon:'i-inv',name:'Dispute agent',where:'Recovery module',desc:'Builds dispute tickets and credit requests with the exact order IDs, payout rows and invoice lines, ready for you to file.'}];
 function agentStats(){
   const F=A.findings,imps=BACKEND.imports||[];
@@ -983,7 +1014,7 @@ function agentStats(){
     audit:[[F.length,'leaks found'],[money(-F.reduce((s,f)=>s+Math.min(0,f.impact),0)),'at stake this week'],[A.c.orders.toLocaleString(),'orders checked']],
     guru:[[8,'tools'],[HISTORY.filter(h=>h.role==='user').length,'questions this session'],[AI.on?'On':'Off','AI status']],
     sim:[[sim?signed(sim.extra_profit_per_week):'–','best fix / week'],[sim?Math.round(sim.extra_profit_per_week/Math.max(1,sim.price_increase_leak_per_week)*100)+'%':'–','of the leak covered']],
-    exec:[[repriced.length,'prices changed'],[BACKEND.square?'Connected':'Not connected','Square POS']],
+    exec:[[repriced.length,'prices changed'],[BACKEND.square?'Sandbox connected':'Not connected','Square POS']],
     dispute:[[disp.length,'tickets ready'],[money(-disp.reduce((s,f)=>s+f.impact,0)),'claimable']],_sim:sim,_pf:pf,_disp:disp,_repriced:repriced};
 }
 function renderFeed(){
@@ -996,7 +1027,7 @@ function renderFeed(){
   cards.push(card('i-plug',false,'Ingestion agent',lastMap?'Mapped '+esc(lastMap.file):'Synced',lastMap?`Unfamiliar ${esc(lastMap.channel||'')} layout mapped by ${esc(lastMap.mapped_by)}. ${lastMap.redacted?lastMap.redacted+' personal fields removed before storage.':''}`:`${DB.orders.length.toLocaleString()} orders and ${DB.invoices.length} invoices in your books. Drop an unfamiliar export on Connections to watch it map the columns.`,
     mp.map(([k,v])=>`<div class="map"><span>${esc(v)}</span><svg class="i" style="width:14px;height:14px;color:var(--faint)"><use href="#i-send"/></svg><span>${esc(k.replace(/_/g,' '))}</span></div>`).join(''),lastMap?'':`<span></span><button class="btn ghost sm" data-go="sources">Connections</button>`));
   if(S._sim)cards.push(card('i-trend',false,'Simulation agent','Suggested fix',`Raise ${esc(S._sim.items.join(' and ').toLowerCase())} by $0.75 on delivery apps: <b>${signed(S._sim.extra_profit_per_week)} a week</b>, covering ${S.sim[1][0]} of the ${esc(ING[S._pf.g].name.toLowerCase())} increase.`,'',`<span class="note">Assumes volume holds</span><button class="btn ghost sm" data-f="${S._pf.id}">Simulate</button>`));
-  cards.push(card('i-check',false,'Execution agent',S._repriced.length?'Applied':'Waiting',S._repriced.length?`${S._repriced.length} price changes live: ${S._repriced.map(k=>esc(MENU[k].name)+' '+money(MENU[k].price,2)).join(', ')}.`:'No changes pending. Approve a simulated fix and it pushes to Square, plus a ready change list for each delivery app.','',''));
+  cards.push(card('i-check',false,'Execution agent',S._repriced.length?'Reference updated':'Waiting',S._repriced.length?`${S._repriced.length} local reference prices updated: ${S._repriced.map(k=>esc(MENU[k].name)+' '+money(MENU[k].price,2)).join(', ')}.`:'No changes pending. Review a specific simulation and type its confirmation phrase. Only sandbox writes are permitted; delivery menus require manual edits.','',''));
   $('#feed').innerHTML=cards.slice(0,6).join('');
   $$('#feed [data-f]').forEach(b=>b.onclick=()=>openFinding(b.dataset.f));
 }
@@ -1026,6 +1057,7 @@ function renderMsg(role,text,cites,meta,chart,tools){
   else{const parts=esc(text).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').split(/\n{2,}/).map(t=>`<p>${t.replace(/\n/g,'<br>').replace(/\[(F\d+)\]/g,(m,id)=>`<button class="cite" data-f="${id}">${id}</button>`)}</p>`).join('');
     const ids=[...new Set([...(cites||[]),...(text.match(/F\d+/g)||[])])].filter(id=>A.findings.some(f=>f.id===id));
     el.innerHTML=parts+chartHTML(chart)+(ids.length&&!/\[F\d+\]/.test(text)?`<div class="src">${ids.map(id=>`<button class="cite" data-f="${id}">${id} · ${esc(A.findings.find(f=>f.id===id).title.slice(0,38))}${A.findings.find(f=>f.id===id).title.length>38?'…':''}</button>`).join('')}</div>`:'')+(tools&&tools.length?`<div class="tools">Tools used: ${tools.map(esc).join(' → ')}</div>`:'')+(meta?`<small>${esc(meta)}</small>`:'');
+    el.querySelectorAll('[data-review-sim]').forEach(button=>{const spec=JSON.parse(JSON.stringify(chart.reviewSpec||simulationSpec(chart.data)));button.onclick=()=>reviewSimulation(button,spec)});
     el.querySelectorAll('.mc-row[data-f]').forEach(b=>b.onclick=()=>openFinding(b.dataset.f));
     el.querySelectorAll('.cite').forEach(b=>b.onclick=()=>openFinding(b.dataset.f))}
   $('#msgs').appendChild(el);el.scrollIntoView({block:'end',behavior:'smooth'});return el;
@@ -1047,15 +1079,15 @@ function localAnswer(q){
   return`Profit went from ${money(p.profit)} to ${money(c.profit)} (${signed(c.profit-p.profit)}), even though sales were ${signed(c.gross-p.gross)}.\n\n${ups.length?`Helping: ${ups.map(s=>`${s.label.toLowerCase()} ${signed(s.value)}`).join(', ')}.\n`:''}Hurting: ${drops.map(s=>`${s.label.toLowerCase()} ${signed(s.value)}${s.fid?` [${s.fid}]`:''}`).join(', ')}.\n\nMost of the drop is money you can recover or stop: overcharges, a promo you didn't approve and a double payment.`;
 }
 async function ask(q){
-  q=q.trim();if(!q)return;renderMsg('me',q);HISTORY.push({role:'user',content:q});
-  if(/^(execute|apply|do it|go ahead|ship it)/i.test(q)&&LAST_SIM){renderMsg('bot','Applying the price change you simulated. Square gets it through its API; the delivery apps get a ready-to-upload change list.',[],'');executeSim();return}
+  q=q.trim();if(!q)return;const askedWeek=CUR,askedPrices=Object.fromEntries(Object.entries(MENU).map(([k,v])=>[k,v.price]));renderMsg('me',q);HISTORY.push({role:'user',content:q});
+  if(/^(execute|apply|do it|go ahead|ship it)/i.test(q)){renderMsg('bot','Chat commands cannot execute changes. Use Review sandbox changes on the specific simulation, inspect the plan, then type its confirmation phrase.',[],'');return}
   const wait=document.createElement('div');wait.className='typing';wait.textContent=AI.on?'Checking your records…':'Thinking…';$('#msgs').appendChild(wait);
   let text,cites=[],meta='',chart=null,tools=[];
   const local=()=>{const t=q.toLowerCase();if(/what if|raise|increase price|simulat|charge more/.test(t)){const pf=A.findings.find(f=>f.kind==='price');const skus=pf?pf.affected:['marg','pep'];const inc=+((t.match(/\$?(\d+(?:\.\d+)?)/)||[])[1]||0.75);const d=simulate(skus,inc>5?0.75:inc,['DoorDash','Uber Eats','Grubhub','In-store']);chart={type:'sim',data:d};return`Raising ${d.items.join(' and ').toLowerCase()} by ${money(d.increase_per_item,2)} everywhere would bring back about ${money(d.extra_profit_per_week)} a week after app commissions, against a ${money(d.price_increase_leak_per_week)} weekly hit from the price increase${pf?` [${pf.id}]`:''}.\n\nThis assumes order volume holds. Try a smaller increase on delivery only if you're worried about in-store regulars.`}
     if(!/overcharg|commission|fee|twice|duplicate|promo|discount|margin|item|menu|missing|refund|error|fix|first|mozz|cheese|supplier|invoice/.test(t))chart={type:'bridge'};return localAnswer(q)};
   if(AI.on){try{const pw=prevOf(CUR);const r=await apiFetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,facts:facts(),history:HISTORY.slice(-6),week:BACKEND.on?CUR:null,prev_week:BACKEND.on?pw:null})});const j=await r.json();if(!r.ok||j.error)throw new Error(j.error);text=j.answer;cites=j.cites||[];tools=j.tools||[];chart=j.chart||null;meta=`Answered by ${AI.model}`}catch(e){text=local();meta='AI call failed: '+String(e.message||e).slice(0,220)+'. Showing the built-in answer instead.'}}
   else{await new Promise(r=>setTimeout(r,350));text=local();meta=BACKEND.on?'AI is off: the server has no OPENROUTER_API_KEY. Set it in the same terminal and restart server.py.':'Preview mode: open http://localhost:8000 with server.py running for the AI agent.'}
-  if(chart&&chart.type==='sim'&&chart.data&&chart.data.items){const sk=chart.data.items.map(n=>Object.keys(MENU).find(k=>MENU[k].name===n)).filter(Boolean);LAST_SIM={skus:sk,inc:+chart.data.increase_per_item,channels:chart.data.channels}}
+  if(chart&&chart.type==='sim'&&chart.data&&chart.data.items)chart.reviewSpec=simulationSpec(chart.data,askedWeek,askedPrices);
   if(!chart){const ids=[...new Set([...(cites||[]),...((text||'').match(/F\d+/g)||[])])];chart={type:'bridge',highlight:ids}}
   wait.remove();renderMsg('bot',text,cites,meta,chart,tools);HISTORY.push({role:'assistant',content:text});
 }
