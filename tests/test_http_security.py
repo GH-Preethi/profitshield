@@ -19,10 +19,13 @@ def valid_payload(route):
     return {
         '/api/import': {'text': 'Order,Date,Time,Gross Sales,Itemization\nx,2026-10-26,12:00,10,1x Margherita pizza', 'filename': 'square.csv'},
         '/api/invoices': {'date': '2026-10-26', 'lines': [{'description': 'Supplies', 'qty': 1, 'unit': 'ea', 'unit_price': 2}]},
-        '/api/menu/apply': {'changes': [{'sku': 'soda', 'price': 5}]},
+        '/api/menu/preview': {'week': '2026-10-26', 'changes': [{'sku': 'soda', 'old_price': 4.5, 'price': 5}], 'channels': ['In-store']},
+        '/api/menu/apply': {'plan_id': 'P'*43, 'confirmation': 'APPLY SANDBOX PRICES', 'week': '2026-10-26'},
+        '/api/square/seed': {'plan_id': 'P'*43, 'confirmation': 'CREATE 3 SANDBOX ORDERS'},
         '/api/ask': {'question': 'Why?', 'facts': {}, 'week': '2026-10-26', 'prev_week': '2026-10-19'},
         '/api/extract': {'image': 'data:image/jpeg;base64,/9j/dGVzdA=='},
     }.get(route, {})
+
 
 
 class HTTPFixture(unittest.TestCase):
@@ -36,7 +39,7 @@ class HTTPFixture(unittest.TestCase):
         cls.private_paths = [
             '.env', '.env.example', 'backhouse.db', 'other.sqlite',
             'other.sqlite3', 'backhouse.db-wal', 'backhouse.db-shm',
-            'server.py', 'README.md', '.git/config', '.hidden',
+            'server.py', 'square_actions.py', 'README.md', '.git/config', '.hidden',
             'samples/orders.csv', 'samples/invoice.pdf', 'samples/receipt.jpg',
             'future-asset.js', 'nested/index.html', 'private/financial-report.pdf',
             'backups/restaurant.sqlite3', '.env.production', 'backhouse.db-journal',
@@ -47,13 +50,15 @@ class HTTPFixture(unittest.TestCase):
             target.write_bytes(cls.marker)
         cls.root_patch = patch.object(server, 'ROOT', cls.root)
         cls.root_patch.start()
-        cls.limiter_patch = patch.object(server, 'REQUEST_LIMITER', RequestLimiter(10000, 20000, 10000))
+        cls.limiter_patch = patch.object(server, "REQUEST_LIMITER", RequestLimiter(10000, 20000, 10000))
         cls.limiter_patch.start()
-        cls.db_patch = patch.object(server, 'DB_PATH', cls.root / 'temporary.db')
+        cls.db_patch = patch.object(server, 'DB_PATH', cls.root / 'test.db')
         cls.db_patch.start()
         cls.network_patch = patch.object(
             server.urllib.request, 'urlopen', side_effect=AssertionError('External call'))
         cls.network_patch.start()
+        cls.square_patch = patch.object(server.SQUARE_OPENER, 'open', side_effect=AssertionError('External Square call'))
+        cls.square_patch.start()
         cls.httpd = server.ThreadingHTTPServer(('127.0.0.1', 0), server.Handler)
         cls.thread = threading.Thread(target=cls.httpd.serve_forever, daemon=True)
         cls.thread.start()
@@ -64,6 +69,7 @@ class HTTPFixture(unittest.TestCase):
         cls.httpd.server_close()
         cls.thread.join()
         cls.network_patch.stop()
+        cls.square_patch.stop()
         cls.db_patch.stop()
         cls.limiter_patch.stop()
         cls.root_patch.stop()
@@ -184,7 +190,8 @@ class PublicAssetTests(HTTPFixture):
     def test_post_api_dispatch_preserved_without_side_effects(self):
         routes = {
             '/api/import': 'import_csv', '/api/invoices': 'save_invoice',
-            '/api/menu/apply': 'apply_menu', '/api/reset': 'reset',
+            '/api/menu/apply': 'apply_menu', '/api/menu/preview': 'preview_menu',
+            '/api/square/seed/preview': 'preview_seed', '/api/square/seed': 'confirm_seed', '/api/reset': 'reset',
             '/api/ask': 'ask', '/api/extract': 'extract',
             '/api/square/sync': 'square_sync',
         }
@@ -197,10 +204,6 @@ class PublicAssetTests(HTTPFixture):
                     self.assertEqual(status, 200)
                     self.assertEqual(json.loads(body), {'ok': True})
                     mock.assert_called_once()
-            with patch.object(server, 'square_seed') as seed, patch.object(
-                    server, 'square_sync', return_value={'pulled': 3}), patch.object(server.time, 'sleep'):
-                self.assertEqual(self.request('POST', '/api/square/seed', {})[0], 200)
-                seed.assert_called_once()
         with patch.object(server, 'KEY', ''), patch.object(server, 'SQUARE_TOKEN', ''):
             for path in ['/api/ask', '/api/extract', '/api/square/sync']:
                 self.assertEqual(self.request('POST', path, valid_payload(path))[0], 400)

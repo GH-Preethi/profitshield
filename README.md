@@ -23,7 +23,7 @@ Without keys the app still runs: database, imports, every number, chart and find
 ### Square POS (real API, 3 minutes)
 1. developer.squareup.com → sign in → create an application
 2. Credentials → **Sandbox** access token → `export SQUARE_ACCESS_TOKEN=...`
-3. Restart, open Sources → "Create 3 test orders in Square, then sync". Orders are created in your Square sandbox and pulled back through the Orders API.
+3. Restart, open Sources → "Review 3 sandbox test orders". Inspect the location, quantities and prices, then type `CREATE 3 SANDBOX ORDERS` and confirm. Orders are created only in the sandbox and pulled back through the Orders API.
 
 ## What's real vs. what isn't (say this to judges)
 
@@ -32,11 +32,11 @@ Without keys the app still runs: database, imports, every number, chart and find
 | SQLite database, CSV importers, dedupe on re-import | Real |
 | Column mapping for unfamiliar export layouts | Real (AI via OpenRouter, rules fallback) |
 | PII removal before storage and before any AI call | Real (customer/staff/driver/email/phone columns dropped, emails and phones scrubbed) |
-| Square POS sync | Real API (sandbox or production) |
+| Square POS sync | Real API, sandbox only |
 | Receipt photos and multi-page PDF invoices | Real (vision model via OpenRouter), each line tagged with its page |
 | Ask: tool-calling agent | Real: model picks tools, tools run exact SQL/Python over your data |
 | DoorDash / Uber Eats / Grubhub APIs | Not public. They need partner approval, so ProfitShield reads the payout CSVs owners already download from each merchant portal |
-| Execute price increase | Square POS: real Catalog API call (finds or creates the item, sets the price). DoorDash / Uber Eats / Grubhub: menu APIs are partner-only, so it outputs the exact change list for each merchant portal |
+| Execute price increase | Square sandbox: reviewed, confirmed Catalog API call (finds or creates the item, sets the price). DoorDash / Uber Eats / Grubhub: menu APIs are partner-only, so it outputs the exact change list for each merchant portal |
 | Demo store data | Example: Forbes Ave Slice Co., 1,776 orders over 4 weeks with planted problems |
 
 ## Architecture
@@ -90,7 +90,7 @@ Week-over-week change splits into sales & mix, a price effect per ingredient (th
 1. **Problem (15s).** Read DoorDash's Back House prompt.
 2. **Overview (20s).** "Sales up 12%. Profit down $574." Five portals can't tell you why.
 3. **Bridge (25s).** Click the DoorDash commission bar: 112 orders at 25% vs 20%. Dispute drafted; the owner files it.
-4. **Ask (25s).** "Why did my profit drop?" then "What if I raise pizza prices by $0.75?" Point at the tools-used line and the chart. Type "execute": Square gets the new price via API, the delivery apps get a change list.
+4. **Ask (25s).** "Why did my profit drop?" then "What if I raise pizza prices by $0.75?" Point at the tools-used line and the chart. Click "Review sandbox changes", inspect the exact targets, then type the confirmation phrase. Square sandbox gets the new price; delivery apps get manual instructions.
 5. **Real data (25s).** Sources: drop the unusual Grubhub CSV (AI maps the columns, 100 personal fields removed, 0 duplicates). Drop the Sysco PDF; it reads all 3 pages and the mozzarella line shows its page number.
 6. **Close (10s).** "Swiggy built Guru for one platform. Owners live across five. ProfitShield sees all of them and shows its receipts."
 
@@ -113,83 +113,98 @@ Tests use temporary dummy private files and mock API operations; they do not
 use integration credentials, call external services or reset the real database.
 This file allowlist does not add authentication to the application APIs.
 
-## Input and HTTP security
+## Square sandbox mutation safety
 
-The server escapes imported order IDs, invoice units/pages/quantities and review
-input values before inserting them into HTML. Text remains text, including
-legacy records that predate validation. A fresh per-response nonce authorizes
-the dashboard script; inline event handlers and eval are blocked by CSP. Google
-Fonts are still allowed, and inline styles remain allowed for the existing UI.
-Responses also set nosniff, frame denial, same-origin referrer policy and disabled
-camera/microphone/geolocation permissions. HTTPS origins additionally enable
-HSTS; configure TLS at a trusted reverse proxy before hosted use.
+Square is now **sandbox only**. `SQUARE_ENV=production` is ignored; requests use
+only the literal `https://connect.squareupsandbox.com` host. A changed runtime
+base URL, unsupported endpoint or redirect fails closed. Authorization headers
+are never forwarded through redirects. Supply only a sandbox access token;
+opaque tokens cannot be identified as sandbox/production from their text, but
+a production token cannot cause the app to send a production-host request.
+OpenRouter behavior is unchanged.
 
-All POST requests must use `application/json`, a single valid Content-Length and
-the exact configured Origin. Compressed/chunked request bodies and cross-site
-Fetch Metadata requests are rejected. Configure the browser origin explicitly:
+Square read/search sync calls remain available. Test-order creation and price
+changes use a mandatory two-step review contract. Direct mutation helper calls
+without a claimed plan and the old unreviewed HTTP payloads are rejected.
 
-```bash
-# Local default is http://localhost:8000; use this if opening via 127.0.0.1:
-export PROFITSHIELD_ORIGIN=http://127.0.0.1:8000
-# Hosted: use the actual HTTPS browser origin, without a path or trailing slash.
-# export PROFITSHIELD_ORIGIN=https://your-profitshield-host.example
-```
+| Step | Endpoint | Input |
+|---|---|---|
+| Review prices (read only) | POST `/api/menu/preview` | `week` (ISO Monday), `channels`, `changes` with SKU, `old_price` and absolute `price` |
+| Confirm prices | POST `/api/menu/apply` | Returned `plan_id`, exact `confirmation` phrase, and selected `week` |
+| Review test orders (read only) | POST `/api/square/seed/preview` | `{}` |
+| Confirm test orders | POST `/api/square/seed` | Returned `plan_id` and exact `confirmation` phrase |
 
-The origin is never inferred from Host or forwarded headers. Non-browser clients
-must supply the same Origin and JSON content type. These checks defend browser
-cross-origin writes; they are not authentication. Owner authentication remains
-in its separate PR and must be integrated before exposing sensitive APIs to a
-hosted network. Keep the backend private behind the HTTPS proxy.
+New/reviewed mutation endpoints require JSON, the exact configured browser
+Origin and a body up to 32 KiB. Set `PROFITSHIELD_ORIGIN` to the actual browser
+origin when it differs from `http://localhost:8000` (or configured PORT).
+These origin checks are not owner authentication. The separate owner-auth and
+input-security PRs still need integration before hosted network exposure.
 
-Validation happens before database writes or integration dispatch. JSON must be
-an object with recognized fields, supported nested shapes, valid dates, allowed
-channels/SKUs/ingredients/units, and finite bounded numbers. Duplicate JSON keys,
-NaN/Infinity, excessive nesting, malformed structures and invalid Unicode are
-rejected. Monetary inputs are bounded by 1e12; menu prices by 1e6. Invoice lines
-require positive quantities (up to 1e6), nonnegative unit prices (up to 1e6), and
-units matching the selected ingredient. Negative invoice/credit-note quantities
-are not supported. Existing refund/sign accounting semantics are unchanged.
-AI extraction output and tool arguments are also validated before use.
+The review lists old local reference prices, current sandbox variation/price
+(or an explicit new-item creation), proposed absolute prices, selected channels
+and week. Missing/multiple catalog matches are not silently resolved: multiple
+items/variations or paginated matches require cleanup in the sandbox first.
+Prices must be finite, positive, at most 1,000,000 and have no more than two
+decimal places. The seed review freezes three baskets and their unit prices
+for one named sandbox location.
 
-Limits:
-- JSON body: 16 MiB; CSV text: 4 MiB, 20,000 rows, 100 distinct headers,
-  4,096 characters per cell.
-- Receipt/PDF: 8 MiB decoded; only base64 JPEG, PNG, WebP and PDF with matching
-  signatures. Signature checks do not prove a complete document is readable.
-- Invoice: 1–500 lines. Questions: 2,000 characters; history: six messages.
-- Per process: 120 requests/minute per peer IP, 300 total requests/minute and
-  10 write/integration requests/minute globally. Rejections return 429 with
-  Retry-After: 60. Limits use locked, bounded in-memory sliding windows and reset
-  on process restart. At most 1,024 active peer windows are retained.
-- Client sockets use a 10-second inactivity timeout. Proxy-level connection,
-  header/body deadline and DDoS limits are still required for hosted access.
+Each server-stored plan expires after five minutes. Confirmation cannot change
+its prices, channels or baskets. Changing the selected week, restaurant data,
+local prices, menu definition, sandbox catalog/location or connection invalidates
+it. All catalog targets are rechecked before the first price write; existing
+variation writes retain Square's version check. Remote catalog changes in the
+small interval after validation can still reject a write; creation-by-name is
+not an atomic uniqueness constraint in Square.
 
-All peer limits use the direct connection IP, ignoring spoofable forwarded IP
-headers. Behind a proxy, requests may share its IP. This policy is intended for
-one restaurant and one server process, not multiple workers or replicas.
+The `square_actions` table is part of the private application SQLite database.
+Plans transition from pending to executing **before** external mutations, then
+completed or failed. Atomic SQLite claiming rejects replay and concurrent
+confirmation of the same plan, including after process restart. An interrupted
+executing plan stays consumed. Deleting/resetting the database also invalidates
+old plan IDs; it never makes them executable again.
 
-Invalid CSV rows reject and roll back the whole import instead of silently
-skipping rows or converting bad numeric values to zero. Blank optional numbers
-still default to zero; supported CSV date formats are preserved. Error statuses
-are 400 for invalid data/file limits, 403 for origin policy, 413 for oversized
-HTTP bodies/unsupported encodings, 415 for content type, and 429 for throttling.
-Internal exceptions return generic errors without upstream diagnostic details.
-Live-data load failures show an error instead of silently switching to demo.
+Each external write has a stable Square idempotency key derived from its plan
+and item/order index. Errors, partial multi-item success, network timeouts and
+uncertain responses are never automatically retried. Inspect the sandbox and
+local reference prices before explicitly creating a fresh review. This is
+at-most-once plan submission, not a distributed transaction or a guarantee that
+all requested external changes succeeded together. Use one application process
+per restaurant database.
 
-Run the dependency-free suite:
+There is no global `LAST_SIM` or text-command execution. Each simulation button
+captures its own prices and week; old buttons cannot silently reuse a newer
+simulation. Chat commands such as `execute`, `apply` and `do it` only explain
+how to open a review. The owner must review the specific plan and type
+`APPLY SANDBOX PRICES` or `CREATE 3 SANDBOX ORDERS` before its confirmation button
+enables. A submitted button cannot send again; after cancellation/expiry/failure,
+run a new simulation or request a fresh seed review.
+
+Delivery channels still require manual merchant-portal edits. Disconnected
+Square selections make no Square write. Local reference prices update on a
+completed price step, and are not proof that a production/delivery menu changed;
+this PR does not redesign the financial price-history model.
+
+Run regression tests (all external integrations mocked/blocked):
 
 ```bash
 python3 -m unittest discover -s tests -v
+# Optional, with Playwright and Chromium already installed:
+python3 tests/browser_square_guard.py
 ```
 
-With Playwright and Chromium already installed, run the optional stored-XSS/UI
-regression (temporary sample databases; integrations mocked/blocked):
+Tests cover production environment overrides, runtime endpoint tampering,
+redirect denial, direct mutation guards, exact confirmation, stale/expired plans,
+changed connection/catalog/location/data, replay, concurrent submissions,
+restart/crash persistence, unknown outcomes, missing-item creation and seed
+idempotency. Browser checks exercise all six views, read-only review, typed
+confirmation, stale simulations and repeated clicks/chat without duplicate writes.
+No production credentials or real Square/AI calls are used.
 
-```bash
-python3 tests/browser_input_security.py
-```
+## Input/Square integration reconciliation
 
-It checks imported malicious IDs, legacy malicious invoice units/pages, receipt
-review attributes, all six views, a sample receipt save, the current Ask request
-schema with AI mocked, and mobile rendering. No production credentials or real
-financial documents are used.
+The common HTTP boundary applies origin, JSON, size, throttle and CSP protections
+to both ordinary APIs and the two-step Square review routes. Price/seed preview
+payloads are validated separately from one-use confirmation payloads; unreviewed
+legacy price writes remain rejected. The review endpoints retain their 32 KiB
+limit and action failures retain their conflict/status codes. Import validation
+helpers and request-security imports must remain wired when merging features.
